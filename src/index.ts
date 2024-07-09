@@ -3,12 +3,12 @@ import { jwt } from "@elysiajs/jwt"
 import { bearer } from '@elysiajs/bearer'
 import { swagger } from '@elysiajs/swagger'
 import { cors } from '@elysiajs/cors'
-import { UserRoute } from "./routes/user_rou";
 import { AuthenticationError } from "./exception/AuthenticationError";
 import { AuthorizationError } from "./exception/AuthorizationError";
 import { DataNotFoundError } from "./exception/DataNotFound";
 import { response } from "./controller/reponse";
 import { MainRoute } from "./routes";
+import { logger } from '@grotto/logysia';
 
 const app = new Elysia()
   .use(swagger())
@@ -68,6 +68,14 @@ const app = new Elysia()
         }
     }
   })
+  .use(logger({
+    logIP: false,
+    writer: {
+      write(msg: string) {
+        console.log(msg + ' | ' + new Date())
+      }
+    }
+  }))
 
   .group("/api", MainRoute)
 

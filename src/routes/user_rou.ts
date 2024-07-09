@@ -2,16 +2,63 @@ import { Elysia, t } from "elysia";
 import { UserCtrl } from "../controller/user_ctrl";
 import { middleware } from "../middleware/auth";
 
-export function UserRoute(app:any) {
+export function UserRoute(app: any) {
     return app
-        .get("/", UserCtrl.getallUsers)
-        .get("/id/:id", UserCtrl.getUserbyID)
-        .post("/", UserCtrl.createUser, { beforeHandle: middleware.IsAuth })
+        .get("/", UserCtrl.getallUsers, {
+            beforeHandle: middleware.IsAuth,
+            headers: t.Object({
+                authorization: t.String()
+            }),
+            query: t.Object({
+                limit: t.Numeric(),
+                page: t.Numeric(),
+                search: t.Optional(t.String())
+            }),
+            detail: {
+                tags: ['User']
+            }
+        })
+        .get("/id/:id", UserCtrl.getUserbyID, {
+            beforeHandle: middleware.IsAuth,
+            headers: t.Object({
+                authorization: t.String()
+            }),
+            detail: {
+                tags: ['User']
+            }
+        })
+        .post("/", UserCtrl.createUser, {
+            // beforeHandle: middleware.IsAuth,
+            // headers: t.Object({
+            //     authorization: t.String()
+            // }),
+            body: t.Object({
+                email: t.String(),
+                fullname: t.String(),
+                password: t.String(),
+                phone: t.Optional(t.String()),
+
+            }),
+            detail: {
+                tags: ['User']
+            }
+        })
         .post("/login", UserCtrl.Login, {
             body: t.Object({
                 email: t.String(),
                 password: t.String()
-            })
+            }),
+            detail: {
+                tags: ['User']
+            }
         })
-        .get("/whoami", UserCtrl.whoami, { beforeHandle: middleware.IsAuth, })
+        .get("/whoami", UserCtrl.whoami, {
+            beforeHandle: middleware.IsAuth,
+            headers: t.Object({
+                authorization: t.String()
+            }),
+            detail: {
+                tags: ['User']
+            }
+        })
 }

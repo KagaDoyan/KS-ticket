@@ -13,14 +13,14 @@ export const UserCtrl = {
 
     whoami: async (ctx: any) => {
         const userID = await middleware.GetUserFromToken(ctx)
-        console.log(userID);
+        // console.log(userID);
 
         const user = await UserSvc.getUserbyID(userID)
         return response.SuccessResponse(ctx, user)
     },
 
     getallUsers: async (ctx: any) => {
-        const data = await UserSvc.getallUsers()
+        const data = await UserSvc.getallUsers(ctx.query.limit, ctx.query.page, ctx.query.search)
         return response.SuccessResponse(ctx, data)
     },
 
@@ -39,7 +39,7 @@ export const UserCtrl = {
         ctx.set.status = 201;
         return {
             status: "success",
-            message: `user ${ctx.body.name} successfully created!`,
+            message: `user ${ctx.body.fullname} successfully created!`,
             data: {
                 id: userid
             }

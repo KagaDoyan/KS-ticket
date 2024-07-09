@@ -1,13 +1,14 @@
-import { error, NotFoundError } from "elysia";
 import db from "../adapter.ts/database";
 import { middleware } from "../middleware/auth";
 import { AuthenticationError } from "../exception/AuthenticationError";
 import { DataNotFoundError } from "../exception/DataNotFound";
 import { CryptoUtil } from "../utilities/encryption";
+import { Prisma } from "@prisma/client";
 interface userPayload {
     id?: number,
     email: string,
-    name: string,
+    phone: string,
+    fullname: string,
     password: string
 }
 export const UserSvc = {
@@ -36,9 +37,10 @@ export const UserSvc = {
 
             data: {
                 id: payload.id,
-                name: payload.name,
+                fullname: payload.fullname,
                 email: payload.email,
                 password: hashpassword,
+                phone: payload.phone
             },
             select: {
                 id: true
@@ -47,17 +49,53 @@ export const UserSvc = {
         return user.id
     },
 
-    getallUsers: async () => {
+    getallUsers: async (limit: number, page: number, search: string) => {
+        const whereCondition: Prisma.usersWhereInput = {
+            deleted_at: null
+        }
+        if (search) {
+            whereCondition.AND = [
+                {
+                    OR: [
+                        { fullname: { contains: search } },
+                        { email: { contains: search } },
+                        { role: { contains: search } }
+                    ]
+                }
+            ];
+        }
+
+        const total_users = await db.users.count({
+            where: whereCondition
+        });
+
+        const totalPages = Math.ceil(total_users / limit);
+        const offset = (page - 1) * limit;
+
         const users = await db.users.findMany({
-            where: {
-                deleted_at: null
-            }
-        })
-        return users
+            omit: {
+                password: true
+            },
+            where: whereCondition,
+            skip: offset,
+            take: limit
+        });
+
+        return {
+            page: page,
+            limit: limit,
+            total_page: totalPages,
+            total_rows: total_users,
+            data: users,
+        };
+
     },
 
     getUserbyID: async (id: number) => {
         const user = await db.users.findUnique({
+            omit: {
+                password: true
+            },
             where: {
                 id: id
             }
