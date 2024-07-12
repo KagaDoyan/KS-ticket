@@ -11,7 +11,7 @@ import { MainRoute } from "./routes";
 import { logger } from '@grotto/logysia';
 import * as log from './utilities/logger';
 
-const app = new Elysia()
+export const app = new Elysia()
   .use(swagger())
   .use(bearer())
   .use(cors())
@@ -99,9 +99,3 @@ const app = new Elysia()
   }))
 
   .group("/api", MainRoute)
-
-  .listen(Bun.env.PORT!);
-
-console.log(
-  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
-);
