@@ -97,5 +97,9 @@ export const app = new Elysia()
       }
     }
   }))
-
+  .get('/api/health', () => 'OK', {
+    detail: {
+      tags: ['health']
+    }
+  })
   .group("/api", MainRoute)
