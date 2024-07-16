@@ -8,6 +8,26 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum item_status {
+  return
+  spare
+  repair
+}
+
+enum ticket_status {
+  open
+  pending
+  spare
+  close
+}
+
+enum action_status {
+  repair
+  clean
+  spare
+  replace
+}
+
 model users {
   id          Int         @id @default(autoincrement())
   deleted_at  DateTime?
@@ -50,4 +70,125 @@ model provinces {
   name String
   code String
   shop shops[]
+}
+
+model shops {
+  id Int @id @default(autoincrement())
+  shop_number String
+  shop_name String
+  phone String
+  email String
+  location String
+  province_id Int
+  province provinces @relation(fields: [province_id], references: [id])
+  customer customers[]
+}
+
+model customers {
+  id Int @id @default(autoincrement())
+  fullname String
+  shortname String
+  shop_id Int
+  shops shops @relation(fields: [shop_id], references: [id])
+}
+
+model brands {
+  id   Int    @id @default(autoincrement())
+  name String
+}
+
+model categories {
+  id     Int      @id @default(autoincrement())
+  name   String
+  models models[]
+}
+
+model models {
+  id          Int        @id @default(autoincrement())
+  name        String
+  category_id Int
+  category    categories @relation(fields: [category_id], references: [id])
+  items       items[]
+}
+
+model items {
+  id              Int         @id @default(autoincrement())
+  sn              String
+  model_id        Int
+  insure_exp_date DateTime?
+  inc_num         String
+  status          item_status
+  model           models      @relation(fields: [model_id], references: [id])
+}
+
+model priority_groups {
+  id Int @id @default(autoincrement())
+  group_name String
+  provinces provinces[]
+}
+
+model priorities {
+  id Int @id @default(autoincrement())
+  name String
+  time_sec String
+}
+
+model provinces {
+  id Int @id @default(autoincrement())
+  name String
+  code String
+  priority_group_id Int
+  priority_group priority_groups @relation(fields: [priority_group_id], references: [id])
+  shops shops[]
+  engineers engineers[]
+}
+
+model engineers {
+  id Int @id @default(autoincrement())
+  name String
+  lastname String
+  phone String
+  line_name String
+  location String
+  province_id Int
+  node String
+  password String
+  province provinces @relation(fields: [province_id], references: [id])
+}
+
+model tickets {
+  id Int @id @default(autoincrement())
+  inc_number String
+  ticket_number String
+  customer_id Int
+  store_id Int
+  open_date DateTime @db.Date
+  open_time DateTime @db.Time()
+  close_date DateTime @db.Date
+  close_time DateTime @db.Time()
+  title String
+  description String @db.LongText
+  due_by String
+  sla_priority_level String
+  contact_name String
+  contact_tel String
+  assigned_to String
+  created_by String
+  updated_by String
+  ticket_status ticket_status
+  appointment_date DateTime @db.Date
+  appointment_time DateTime @db.Time()
+  engineer_id Int
+  solution String
+  investigation String
+  item_brand String
+  item_category String
+  item_model String
+  item_sn String
+  warranty_exp DateTime
+  resolve_status String
+  resolve_remark String
+  action action_status
+  time_in DateTime
+  time_out DateTime
 }
