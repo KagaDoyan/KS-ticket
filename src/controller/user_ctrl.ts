@@ -13,8 +13,6 @@ export const UserCtrl = {
 
     whoami: async (ctx: any) => {
         const userID = await middleware.GetUserFromToken(ctx)
-        // console.log(userID);
-
         const user = await UserSvc.getUserbyID(userID)
         return response.SuccessResponse(ctx, user)
     },
@@ -44,5 +42,20 @@ export const UserCtrl = {
                 id: userid
             }
         };
+    },
+
+    updateUser: async (ctx: any) => {
+        const data = await UserSvc.updateUser(
+            ctx.params.id,
+            {
+                ...ctx.body
+            }
+        );
+        return response.SuccessResponse(ctx, data)
+    },
+
+    softDeleteUser: async (ctx: any) => {
+        const data = await UserSvc.softDeleteUser(ctx.params.id)
+        return response.SuccessResponse(ctx, data)
     }
 };

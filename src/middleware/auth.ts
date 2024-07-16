@@ -48,7 +48,7 @@ export const middleware = {
         if (!profile) {
             ctx.set.status = 401
             throw new Error("Unauthorized")
-        }
+        }        
         return profile.id
     }
 }

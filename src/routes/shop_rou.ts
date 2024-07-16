@@ -1,10 +1,10 @@
-import { Elysia, t } from "elysia";
-import { UserCtrl } from "../controller/user_ctrl";
+import { t } from "elysia";
+import { ShopCtrl } from "../controller/shop_ctrl";
 import { middleware } from "../middleware/auth";
 
-export function UserRoute(app: any) {
+export function ShopRoute(app: any) {
     return app
-        .get("/", UserCtrl.getallUsers, {
+        .get("/", ShopCtrl.getallshop, {
             beforeHandle: middleware.IsAuth,
             headers: t.Object({
                 authorization: t.String()
@@ -15,67 +15,10 @@ export function UserRoute(app: any) {
                 search: t.Optional(t.String())
             }),
             detail: {
-                tags: ['User']
+                tags: ['Shop']
             }
         })
-        .get("/id/:id", UserCtrl.getUserbyID, {
-            beforeHandle: middleware.IsAuth,
-            headers: t.Object({
-                authorization: t.String()
-            }),
-            detail: {
-                tags: ['User']
-            }
-        })
-        .post("/", UserCtrl.createUser, {
-            beforeHandle: middleware.IsAuth,
-            headers: t.Object({
-                authorization: t.String()
-            }),
-            body: t.Object({
-                email: t.String(),
-                fullname: t.String(),
-                password: t.String(),
-                role: t.String(),
-
-            }),
-            detail: {
-                tags: ['User']
-            }
-        })
-        .put("/:id", UserCtrl.updateUser, {
-            body: t.Object({
-                email: t.String(),
-                fullname: t.String(),
-                role: t.String(),
-            }),
-            params: t.Object({
-                id: t.Numeric()
-            }),
-            detail: {
-                tags: ['User']
-            }
-        })
-        .post("/login", UserCtrl.Login, {
-            body: t.Object({
-                email: t.String(),
-                password: t.String()
-            }),
-            detail: {
-                tags: ['User']
-            }
-        })
-        .get("/whoami", UserCtrl.whoami, {
-            beforeHandle: middleware.IsAuth,
-            headers: t.Object({
-                authorization: t.String()
-            }),
-            detail: {
-                tags: ['User']
-            }
-        })
-
-        .delete("/:id", UserCtrl.softDeleteUser, {
+        .get("/:id", ShopCtrl.getshopByID, {
             beforeHandle: middleware.IsAuth,
             headers: t.Object({
                 authorization: t.String()
@@ -84,7 +27,58 @@ export function UserRoute(app: any) {
                 id: t.Numeric()
             }),
             detail: {
-                tags: ['User']
+                tags: ['Shop']
             }
         })
-}
+        .post("/", ShopCtrl.createshop, {
+            beforeHandle: middleware.IsAuth,
+            headers: t.Object({
+                authorization: t.String()
+            }),
+            body: t.Object({
+                shop_name: t.String(),
+                shop_number: t.String(),
+                phone: t.String(),
+                email: t.String(),
+                latitude: t.String(),
+                longitude: t.String(),
+                province_id: t.Numeric()
+            }),
+            detail: {
+                tags: ['Shop']
+            }
+        })
+        .put("/:id", ShopCtrl.updateshop, {
+            beforeHandle: middleware.IsAuth,
+            headers: t.Object({
+                authorization: t.String()
+            }),
+            body: t.Object({
+                shop_name: t.String(),
+                shop_number: t.String(),
+                phone: t.String(),
+                email: t.String(),
+                latitude: t.String(),
+                longitude: t.String(),
+                province_id: t.Numeric()
+            }),
+            params: t.Object({
+                id: t.Numeric()
+            }),
+            detail: {
+                tags: ['Shop']
+            }
+        })
+        .delete("/:id", ShopCtrl.deleteshop, {
+            beforeHandle: middleware.IsAuth,
+            headers: t.Object({
+                authorization: t.String()
+            }),
+            params: t.Object({
+                id: t.Numeric()
+            }),
+            detail: {
+                tags: ['Shop']
+            }
+        })
+    }

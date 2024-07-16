@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["omitApi"]
+  previewFeatures = ["fullTextSearch","omitApi"]
 }
 
 datasource db {
@@ -9,13 +9,45 @@ datasource db {
 }
 
 model users {
+  id          Int         @id @default(autoincrement())
+  deleted_at  DateTime?
+  created_at  DateTime    @default(now())
+  email       String      @unique
+  fullname    String
+  password    String
+  first_login Boolean     @default(false)
+  role        String      @default("User")
+  customers   customers[]
+}
+
+model customers {
+  id         Int       @id @default(autoincrement())
+  fullname   String
+  shortname  String
+  deleted_at DateTime?
+  created_at DateTime  @default(now())
+  created_by Int
+  users      users     @relation(fields: [created_by], references: [id])
+}
+
+model shops {
   id          Int       @id @default(autoincrement())
   deleted_at  DateTime?
   created_at  DateTime  @default(now())
-  email       String    @unique
-  fullname    String
-  password    String
-  first_login Boolean   @default(false)
-  phone       String?
-  role        String    @default("user")
+  created_by  Int
+  shop_number String
+  shop_name   String
+  phone       String
+  email       String
+  latitude    String
+  longitude   String
+  province    provinces  @relation(fields: [province_id], references: [id])
+  province_id  Int
+}
+
+model provinces {
+  id   Int    @id @default(autoincrement())
+  name String
+  code String
+  shop shops[]
 }

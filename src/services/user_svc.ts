@@ -7,7 +7,7 @@ import { Prisma } from "@prisma/client";
 interface userPayload {
     id?: number,
     email: string,
-    phone: string,
+    role: string,
     fullname: string,
     password: string
 }
@@ -15,7 +15,8 @@ export const UserSvc = {
     Login: async (ctx: any, payload: userPayload) => {
         const user = await db.users.findUnique({
             where: {
-                email: payload.email
+                email: payload.email,
+                deleted_at: null
             }
         })
         if (!user) {
@@ -34,19 +35,31 @@ export const UserSvc = {
         let hashpassword = CryptoUtil.encryptData(payload.password)
         // let hashpassword = payload.password
         const user = await db.users.create({
-
             data: {
-                id: payload.id,
                 fullname: payload.fullname,
                 email: payload.email,
                 password: hashpassword,
-                phone: payload.phone
+                role: payload.role
             },
             select: {
                 id: true
             }
         });
         return user.id
+    },
+
+    updateUser: async (id: number, payload: userPayload) => {
+        const user = await db.users.update({
+            where: {
+                id: id
+            },
+            data: {
+                fullname: payload.fullname,
+                email: payload.email,
+                role: payload.role,
+            }
+        });
+        return user
     },
 
     getallUsers: async (limit: number, page: number, search: string) => {
