@@ -1,19 +1,24 @@
 import { t } from "elysia";
-import { ProvinceCtrl } from "../controller/province_ctrl";
+import { BrandCtrl } from "../controller/brand_ctrl";
 import { middleware } from "../middleware/auth";
 
-export function provinceRoute(app: any) {
+export function BrandRoute(app: any) {
     return app
-        .get("/", ProvinceCtrl.getallProvince, {
+        .get("/", BrandCtrl.getallBrand, {
             beforeHandle: middleware.IsAuth,
             headers: t.Object({
                 authorization: t.String()
             }),
+            query: t.Object({
+                limit: t.Numeric(),
+                page: t.Numeric(),
+                search: t.Optional(t.String())
+            }),
             detail: {
-                tags: ['Province']
+                tags: ['Brand']
             }
         })
-        .get("/:id", ProvinceCtrl.getProvinceByID, {
+        .get("/:id", BrandCtrl.getBrandByID, {
             beforeHandle: middleware.IsAuth,
             headers: t.Object({
                 authorization: t.String()
@@ -22,41 +27,37 @@ export function provinceRoute(app: any) {
                 id: t.Numeric()
             }),
             detail: {
-               tags: ['Province'] 
+                tags: ['Brand']
             }
         })
-        .post("/", ProvinceCtrl.createProvince, {
+        .post("/", BrandCtrl.createBrand, {
             beforeHandle: middleware.IsAuth,
             headers: t.Object({
                 authorization: t.String()
             }),
             body: t.Object({
                 name: t.String(),
-                code: t.String(),
-                priority_group_id: t.Numeric()
             }),
             detail: {
-                tags: ['Province']
+                tags: ['Brand']
             }
         })
-        .put("/:id", ProvinceCtrl.updateProvince, {
+        .put("/:id", BrandCtrl.updateBrand, {
             beforeHandle: middleware.IsAuth,
             headers: t.Object({
                 authorization: t.String()
             }),
             body: t.Object({
                 name: t.String(),
-                code: t.String(),
-                priority_group_id: t.Numeric()
             }),
             params: t.Object({
                 id: t.Numeric()
             }),
             detail: {
-                tags: ['Province']
+                tags: ['Brand']
             }
         })
-        .delete("/:id", ProvinceCtrl.deleteProvince, {
+        .delete("/:id", BrandCtrl.deleteBrand, {
             beforeHandle: middleware.IsAuth,
             headers: t.Object({
                 authorization: t.String()
@@ -65,7 +66,7 @@ export function provinceRoute(app: any) {
                 id: t.Numeric()
             }),
             detail: {
-                tags: ['Province']
+                tags: ['Brand']
             }
         })
-}
+    }

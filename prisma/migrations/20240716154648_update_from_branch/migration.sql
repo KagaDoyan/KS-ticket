@@ -1,30 +1,23 @@
--- CreateTable
-CREATE TABLE `shops` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `shop_number` VARCHAR(191) NOT NULL,
-    `shop_name` VARCHAR(191) NOT NULL,
-    `phone` VARCHAR(191) NOT NULL,
-    `email` VARCHAR(191) NOT NULL,
-    `location` VARCHAR(191) NOT NULL,
-    `province_id` INTEGER NOT NULL,
+/*
+  Warnings:
 
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+  - Added the required column `created_by` to the `provinces` table without a default value. This is not possible if the table is not empty.
+  - Added the required column `priority_group_id` to the `provinces` table without a default value. This is not possible if the table is not empty.
 
--- CreateTable
-CREATE TABLE `customers` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `fullname` VARCHAR(191) NOT NULL,
-    `shortname` VARCHAR(191) NOT NULL,
-    `shop_id` INTEGER NOT NULL,
-
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+*/
+-- AlterTable
+ALTER TABLE `provinces` ADD COLUMN `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    ADD COLUMN `created_by` INTEGER NOT NULL,
+    ADD COLUMN `deleted_at` DATETIME(3) NULL,
+    ADD COLUMN `priority_group_id` INTEGER NOT NULL;
 
 -- CreateTable
 CREATE TABLE `brands` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
+    `deleted_at` DATETIME(3) NULL,
+    `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `created_by` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -33,6 +26,9 @@ CREATE TABLE `brands` (
 CREATE TABLE `categories` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
+    `deleted_at` DATETIME(3) NULL,
+    `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `created_by` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -42,6 +38,9 @@ CREATE TABLE `models` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
     `category_id` INTEGER NOT NULL,
+    `deleted_at` DATETIME(3) NULL,
+    `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `created_by` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -54,6 +53,9 @@ CREATE TABLE `items` (
     `insure_exp_date` DATETIME(3) NULL,
     `inc_num` VARCHAR(191) NOT NULL,
     `status` ENUM('return', 'spare', 'repair') NOT NULL,
+    `deleted_at` DATETIME(3) NULL,
+    `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `created_by` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -62,6 +64,9 @@ CREATE TABLE `items` (
 CREATE TABLE `priority_groups` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `group_name` VARCHAR(191) NOT NULL,
+    `deleted_at` DATETIME(3) NULL,
+    `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `created_by` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -71,16 +76,9 @@ CREATE TABLE `priorities` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
     `time_sec` VARCHAR(191) NOT NULL,
-
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `provinces` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `name` VARCHAR(191) NOT NULL,
-    `code` VARCHAR(191) NOT NULL,
-    `priority_group_id` INTEGER NOT NULL,
+    `deleted_at` DATETIME(3) NULL,
+    `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `created_by` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -96,6 +94,9 @@ CREATE TABLE `engineers` (
     `province_id` INTEGER NOT NULL,
     `node` VARCHAR(191) NOT NULL,
     `password` VARCHAR(191) NOT NULL,
+    `deleted_at` DATETIME(3) NULL,
+    `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `created_by` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -136,24 +137,20 @@ CREATE TABLE `tickets` (
     `action` ENUM('repair', 'clean', 'spare', 'replace') NOT NULL,
     `time_in` DATETIME(3) NOT NULL,
     `time_out` DATETIME(3) NOT NULL,
+    `deleted_at` DATETIME(3) NULL,
+    `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
-ALTER TABLE `shops` ADD CONSTRAINT `shops_province_id_fkey` FOREIGN KEY (`province_id`) REFERENCES `provinces`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `customers` ADD CONSTRAINT `customers_shop_id_fkey` FOREIGN KEY (`shop_id`) REFERENCES `shops`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `provinces` ADD CONSTRAINT `provinces_priority_group_id_fkey` FOREIGN KEY (`priority_group_id`) REFERENCES `priority_groups`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `models` ADD CONSTRAINT `models_category_id_fkey` FOREIGN KEY (`category_id`) REFERENCES `categories`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `items` ADD CONSTRAINT `items_model_id_fkey` FOREIGN KEY (`model_id`) REFERENCES `models`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `provinces` ADD CONSTRAINT `provinces_priority_group_id_fkey` FOREIGN KEY (`priority_group_id`) REFERENCES `priority_groups`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `engineers` ADD CONSTRAINT `engineers_province_id_fkey` FOREIGN KEY (`province_id`) REFERENCES `provinces`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

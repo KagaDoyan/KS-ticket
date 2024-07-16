@@ -1,19 +1,24 @@
 import { t } from "elysia";
-import { ProvinceCtrl } from "../controller/province_ctrl";
+import { CategoryCtrl } from "../controller/category_ctrl";
 import { middleware } from "../middleware/auth";
 
-export function provinceRoute(app: any) {
+export function CategoryRoute(app: any) {
     return app
-        .get("/", ProvinceCtrl.getallProvince, {
+        .get("/", CategoryCtrl.getallCategory, {
             beforeHandle: middleware.IsAuth,
             headers: t.Object({
                 authorization: t.String()
             }),
+            query: t.Object({
+                limit: t.Numeric(),
+                page: t.Numeric(),
+                search: t.Optional(t.String())
+            }),
             detail: {
-                tags: ['Province']
+                tags: ['Category']
             }
         })
-        .get("/:id", ProvinceCtrl.getProvinceByID, {
+        .get("/:id", CategoryCtrl.getCategoryByID, {
             beforeHandle: middleware.IsAuth,
             headers: t.Object({
                 authorization: t.String()
@@ -22,41 +27,37 @@ export function provinceRoute(app: any) {
                 id: t.Numeric()
             }),
             detail: {
-               tags: ['Province'] 
+                tags: ['Category']
             }
         })
-        .post("/", ProvinceCtrl.createProvince, {
+        .post("/", CategoryCtrl.createCategory, {
             beforeHandle: middleware.IsAuth,
             headers: t.Object({
                 authorization: t.String()
             }),
             body: t.Object({
                 name: t.String(),
-                code: t.String(),
-                priority_group_id: t.Numeric()
             }),
             detail: {
-                tags: ['Province']
+                tags: ['Category']
             }
         })
-        .put("/:id", ProvinceCtrl.updateProvince, {
+        .put("/:id", CategoryCtrl.updateCategory, {
             beforeHandle: middleware.IsAuth,
             headers: t.Object({
                 authorization: t.String()
             }),
             body: t.Object({
                 name: t.String(),
-                code: t.String(),
-                priority_group_id: t.Numeric()
             }),
             params: t.Object({
                 id: t.Numeric()
             }),
             detail: {
-                tags: ['Province']
+                tags: ['Category']
             }
         })
-        .delete("/:id", ProvinceCtrl.deleteProvince, {
+        .delete("/:id", CategoryCtrl.deleteCategory, {
             beforeHandle: middleware.IsAuth,
             headers: t.Object({
                 authorization: t.String()
@@ -65,7 +66,7 @@ export function provinceRoute(app: any) {
                 id: t.Numeric()
             }),
             detail: {
-                tags: ['Province']
+                tags: ['Category']
             }
         })
-}
+    }
