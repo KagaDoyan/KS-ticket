@@ -11,6 +11,7 @@ interface shopPayload {
     longitude: string
     province_id: number
     created_by: number
+    customer_id: number
 }
 
 export const ShopSvc = {
@@ -34,7 +35,11 @@ export const ShopSvc = {
         const shops = await db.shops.findMany({
             where: whereCondition,
             skip: offset,
-            take: limit
+            take: limit,
+            include: {
+                customer: true,
+                province: true
+            }
         })
         return {
             page: page,
@@ -55,7 +60,8 @@ export const ShopSvc = {
                 latitude: payload.latitude,
                 longitude: payload.longitude,
                 province_id: payload.province_id,
-                created_by: payload.created_by
+                created_by: payload.created_by,
+                customers_id: payload.customer_id
             }
         })
         return shop
@@ -73,7 +79,8 @@ export const ShopSvc = {
                 email: payload.email,
                 latitude: payload.latitude,
                 longitude: payload.longitude,
-                province_id: payload.province_id
+                province_id: payload.province_id,
+                customers_id: payload.customer_id
             }
         })
         return shop

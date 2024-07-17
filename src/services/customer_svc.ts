@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client"
 import db from "../adapter.ts/database"
+import { DataNotFoundError } from "../exception/DataNotFound"
 interface customePayload {
     id?: number,
     fullname: string,
@@ -8,7 +9,7 @@ interface customePayload {
 }
 
 export const CustomerSvc = {
-    getallCustome: async (limit: number, page: number,search: string) => {
+    getallCustomer: async (limit: number, page: number,search: string) => {
         let whereCondition: Prisma.customersWhereInput = {
             deleted_at: null
         }
@@ -42,8 +43,20 @@ export const CustomerSvc = {
         };
     },
 
+    getAllCustomerNoFilter: async () => {
+        const customer = await db.customers.findMany({
+            where: {
+                deleted_at: null
+            }
+        })
+        if (!customer) {
+            throw new DataNotFoundError()
+        }
+        return customer
+    },
+
     createCustome: async (payload: customePayload) => {
-        const custome = await db.customers.create({
+        const customer = await db.customers.create({
             data: {
                 fullname: payload.fullname,
                 shortname: payload.shortname,
@@ -53,11 +66,11 @@ export const CustomerSvc = {
                 id: true
             }
         })
-        return custome.id
+        return customer.id
     },
 
     updateCustome: async (id: number, payload: customePayload) => {
-        const custome = await db.customers.update({
+        const customer = await db.customers.update({
             where: {
                 id: id
             },
@@ -66,11 +79,11 @@ export const CustomerSvc = {
                 shortname: payload.shortname
             }
         })
-        return custome
+        return customer
     },
 
     softDeleteCustome: async (id: number) => {
-        const custome = await db.customers.update({
+        const customer = await db.customers.update({
             where: {
                 id: id
             },
@@ -78,16 +91,16 @@ export const CustomerSvc = {
                 deleted_at: new Date()
             }
         })
-        return custome
+        return customer
     },
 
     getCustomerbyID: async (id: number) => {
-        const custome = await db.customers.findUnique({
+        const customer = await db.customers.findUnique({
             where: {
                 id: id
             }
         })
-        return custome
+        return customer
     }
 
 }

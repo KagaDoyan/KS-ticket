@@ -71,4 +71,14 @@ export function CustomerRoute(app: any) {
                 tags: ['Customer']
             }
         })
+        .get("/all", CustomerCtrl.getAllCustomerNoFilter, {
+            beforeHandle: middleware.IsAuth,
+            headers: t.Object({
+                authorization: t.String()
+            }),
+            detail: {
+                tags: ['Customer']
+            }
+        }
+    )
 }

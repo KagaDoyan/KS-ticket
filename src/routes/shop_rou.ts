@@ -42,7 +42,8 @@ export function ShopRoute(app: any) {
                 email: t.String(),
                 latitude: t.String(),
                 longitude: t.String(),
-                province_id: t.Numeric()
+                province_id: t.Numeric(),
+                customer_id: t.Numeric(),
             }),
             detail: {
                 tags: ['Shop']
@@ -60,7 +61,8 @@ export function ShopRoute(app: any) {
                 email: t.String(),
                 latitude: t.String(),
                 longitude: t.String(),
-                province_id: t.Numeric()
+                province_id: t.Numeric(),
+                customer_id: t.Numeric(),
             }),
             params: t.Object({
                 id: t.Numeric()

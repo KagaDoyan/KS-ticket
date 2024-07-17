@@ -32,7 +32,12 @@ export const CustomerCtrl = {
     },
 
     getAllCustomer: async (ctx: any) => {
-        const data = await CustomerSvc.getallCustome(ctx.query.limit, ctx.query.page, ctx.query.search)
+        const data = await CustomerSvc.getallCustomer(ctx.query.limit, ctx.query.page, ctx.query.search)
+        return response.SuccessResponse(ctx, data)
+    },
+
+    getAllCustomerNoFilter: async (ctx: any) => {
+        const data = await CustomerSvc.getAllCustomerNoFilter()
         return response.SuccessResponse(ctx, data)
     }
 }

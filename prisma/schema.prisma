@@ -48,6 +48,7 @@ model customers {
   created_at DateTime  @default(now())
   created_by Int
   users      users     @relation(fields: [created_by], references: [id])
+  shops      shops[]
 }
 
 model shops {
@@ -63,6 +64,8 @@ model shops {
   longitude   String
   province    provinces @relation(fields: [province_id], references: [id])
   province_id Int
+  customer    customers @relation(fields: [customers_id], references: [id])
+  customers_id Int
 }
 
 model provinces {
@@ -97,12 +100,12 @@ model categories {
 }
 
 model models {
-  id          Int       @id @default(autoincrement())
-  name        String
-  items       items[]
-  deleted_at  DateTime?
-  created_at  DateTime  @default(now())
-  created_by  Int
+  id         Int       @id @default(autoincrement())
+  name       String
+  items      items[]
+  deleted_at DateTime?
+  created_at DateTime  @default(now())
+  created_by Int
 }
 
 model items {
