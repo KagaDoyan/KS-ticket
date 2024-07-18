@@ -38,6 +38,7 @@ model users {
   first_login Boolean     @default(false)
   role        String      @default("User")
   customers   customers[]
+  engineers   engineers[]
 }
 
 model customers {
@@ -149,7 +150,8 @@ model engineers {
   lastname    String
   phone       String
   line_name   String
-  location    String
+  latitude    String
+  longitude   String
   province_id Int
   node        String
   password    String
@@ -157,6 +159,7 @@ model engineers {
   deleted_at  DateTime?
   created_at  DateTime  @default(now())
   created_by  Int
+  users      users     @relation(fields: [created_by], references: [id])
 }
 
 model tickets {

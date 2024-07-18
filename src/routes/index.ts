@@ -4,6 +4,10 @@ import { ShopRoute } from "./shop_rou";
 import { UserRoute } from "./user_rou";
 import { BrandRoute } from "./brand_rou";
 import { CategoryRoute } from "./category_rou";
+import { ItemRoute } from "./item_rou";
+import { EngineerRoute } from "./engineer_rou";
+import { PriorityGroupRoute } from "./priority_group_rou";
+import { PriorityRoute } from "./priority_rou";
 
 export function MainRoute(app: any) {
     return app
@@ -13,4 +17,8 @@ export function MainRoute(app: any) {
         .group("/province", provinceRoute)
         .group("/brand", BrandRoute)
         .group("/category", CategoryRoute)
+        .group("/item", ItemRoute)
+        .group("/engineer", EngineerRoute)
+        .group("/priorityGroup", PriorityGroupRoute)
+        .group("/priority", PriorityRoute)
 }

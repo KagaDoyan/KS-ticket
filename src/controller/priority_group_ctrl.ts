@@ -1,0 +1,36 @@
+import { middleware } from "../middleware/auth"
+import { PriorityGroupSvc } from "../services/priority_groups_svc"
+import { response } from "./reponse"
+
+export const PriorityGroupCtrl = {
+    getallPriorityGroup: async (ctx: any) => {
+        const data = await PriorityGroupSvc.getAllPriorityGroup(ctx.query.limit, ctx.query.page, ctx.query.search)
+        return response.SuccessResponse(ctx, data)
+    },
+
+    getPriorityGroupByID: async (ctx: any) => {
+        const data = await PriorityGroupSvc.getPriorityGroupByID(ctx.params.id)
+        return response.SuccessResponse(ctx, data)
+    },
+
+    createPriorityGroup: async (ctx: any) => {
+        const userID = await middleware.GetUserFromToken(ctx);
+        ctx.body.created_by = userID;
+        const data = await PriorityGroupSvc.createPriorityGroup({ ...ctx.body });
+        return response.SuccessResponse(ctx, data);
+    },
+
+    updatePriorityGroup: async (ctx: any) => {
+        const userID = await middleware.GetUserFromToken(ctx)
+        ctx.body.created_by = userID
+        const data = await PriorityGroupSvc.updatePriorityGroup(ctx.params.id, {...ctx.body})
+        return response.SuccessResponse(ctx, data)
+    },
+
+    deletePriorityGroup: async (ctx: any) => {
+        const userID = middleware.GetUserFromToken(ctx)
+        ctx.body.created_by = userID
+        const data = await PriorityGroupSvc.softDeletePriorityGroup(ctx.params.id)
+        return response.SuccessResponse(ctx, data)
+    }
+}
