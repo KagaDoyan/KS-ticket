@@ -15,7 +15,7 @@ export const BrandCtrl = {
 
     createBrand: async (ctx: any) => {
         const userID = await middleware.GetUserFromToken(ctx);
-        ctx.body.create_by = userID;
+        ctx.body.created_by = userID;
         const data = await BrandSvc.createBrand({ ...ctx.body });
         return response.SuccessResponse(ctx, data);
     },
