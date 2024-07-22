@@ -24,7 +24,6 @@ export const itemSvc = {
 				{
 					OR: [
 						{ serial_number: { contains: search } }
-						{ serial_number: { contains: search } }
 					]
 				}
 			]
