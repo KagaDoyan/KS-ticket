@@ -23,7 +23,7 @@ export const itemSvc = {
 			whereCondition.AND = [
 				{
 					OR: [
-						{ sn: { contains: search } }
+						{ serial_number: { contains: search } }
 					]
 				}
 			]
@@ -57,12 +57,12 @@ export const itemSvc = {
 	createItem: async (payload: itemPayload) => {
 		const item = await db.items.create({
 			data: {
-				sn: payload.sn,
+				serial_number: payload.sn,
                 category_id: payload.category_id,
                 brand_id: payload.brand_id,
                 model_id: payload.model_id,
-                insure_exp_date: payload.insure_exp_date,
-                inc_num: payload.inc_num,
+                warranty_expiry_date: payload.insure_exp_date,
+                inc_number: payload.inc_num,
                 status: payload.status,
 				created_by: payload.created_by
 			}
@@ -76,12 +76,12 @@ export const itemSvc = {
 				id: id
 			},
 			data: {
-				sn: payload.sn,
+				serial_number: payload.sn,
                 category_id: payload.category_id,
                 brand_id: payload.brand_id,
                 model_id: payload.model_id,
-                insure_exp_date: payload.insure_exp_date,
-                inc_num: payload.inc_num,
+                warranty_expiry_date: payload.insure_exp_date,
+                inc_number: payload.inc_num,
                 status: payload.status,
 			}
 		});
