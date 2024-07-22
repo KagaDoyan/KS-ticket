@@ -146,21 +146,20 @@ model priorities {
 }
 
 model engineers {
-  id          Int       @id @default(autoincrement())
-  name        String
-  lastname    String
-  phone       String
-  line_name   String
-  latitude    String
-  longitude   String
-  province_id Int
-  node        String
-  password    String
-  province    provinces @relation(fields: [province_id], references: [id])
-  deleted_at  DateTime?
-  created_at  DateTime  @default(now())
-  created_by  Int
-  users       users     @relation(fields: [created_by], references: [id])
+  id         Int         @id @default(autoincrement())
+  name       String
+  lastname   String
+  phone      String
+  line_name  String
+  latitude   String
+  longitude  String
+  node       String
+  password   String
+  province   provinces[]
+  deleted_at DateTime?
+  created_at DateTime    @default(now())
+  created_by Int
+  users      users       @relation(fields: [created_by], references: [id])
 }
 
 model tickets {
