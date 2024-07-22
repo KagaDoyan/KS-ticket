@@ -15,15 +15,15 @@ export const EngineerCtrl = {
 
     createEngineer: async (ctx: any) => {
         const userID = await middleware.GetUserFromToken(ctx);
-        ctx.body.created_by = userID;
-        const data = await engineerSvc.createEngineer({ ...ctx.body });
+        ctx.body.created_by = userID;        
+        const data = await engineerSvc.createEngineer({ ...ctx.body,province:ctx.body.province_id });
         return response.SuccessResponse(ctx, data);
     },
 
     updateEngineer: async (ctx: any) => {
         const userID = await middleware.GetUserFromToken(ctx)
         ctx.body.created_by = userID
-        const data = await engineerSvc.updateEngineer(ctx.params.id, {...ctx.body})
+        const data = await engineerSvc.updateEngineer(ctx.params.id, {...ctx.body,province:ctx.body.province_id})
         return response.SuccessResponse(ctx, data)
     },
 

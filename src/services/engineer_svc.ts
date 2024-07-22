@@ -61,18 +61,8 @@ export const engineerSvc = {
 	},
 
 	createEngineer: async (payload: engineerPayload) => {
+		console.log(payload.province);
 		let hashpassword = CryptoUtil.encryptData(payload.password);
-		const user = await db.users.create({
-			data: {
-				fullname: payload.name + " " + payload.lastname,
-				email: payload.email,
-				password: hashpassword,
-				role: payload.role
-			},
-			select: {
-				id: true
-			}
-		});
 		const engineer = await db.engineers.create({
 			data: {
 				name: payload.name,
@@ -82,11 +72,22 @@ export const engineerSvc = {
 				latitude: payload.latitude,
 				longitude: payload.longitude,
 				province: {
-					connect: payload.province.map((provinceId) => ({ id: provinceId })),
+					connect: payload.province.map(id => ({ id }))
 				},
 				node: payload.node,
 				password: hashpassword,
-				created_by: user.id
+				created_by: payload.created_by
+			},
+			select: {
+				id: true
+			}
+		});
+		const user = await db.users.create({
+			data: {
+				fullname: payload.name + " " + payload.lastname,
+				email: payload.email,
+				password: hashpassword,
+				role: "Engineer"
 			},
 			select: {
 				id: true
