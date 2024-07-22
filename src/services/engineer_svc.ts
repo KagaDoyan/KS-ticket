@@ -10,7 +10,7 @@ interface engineerPayload {
 	line_name: string,
 	latitude: string,
 	longitude: string,
-	province_id: number,
+	province: number[]
 	node: string,
 	password: string,
 	created_by: number,
@@ -24,7 +24,7 @@ export const engineerSvc = {
 			deleted_at: null
 		}
 
-		if(search){
+		if (search) {
 			whereCondition.AND = [
 				{
 					OR: [
@@ -52,27 +52,27 @@ export const engineerSvc = {
 	},
 
 	getEngineerByID: async (id: number) => {
-        const engineer = await db.engineers.findUnique({
-            where: {
-                id: id
-            }
-        });
-        return engineer;
-    },
+		const engineer = await db.engineers.findUnique({
+			where: {
+				id: id
+			}
+		});
+		return engineer;
+	},
 
 	createEngineer: async (payload: engineerPayload) => {
 		let hashpassword = CryptoUtil.encryptData(payload.password);
 		const user = await db.users.create({
-            data: {
-                fullname: payload.name + " " + payload.lastname,
-                email: payload.email,
-                password: hashpassword,
-                role: payload.role
-            },
-            select: {
-                id: true
-            }
-        });
+			data: {
+				fullname: payload.name + " " + payload.lastname,
+				email: payload.email,
+				password: hashpassword,
+				role: payload.role
+			},
+			select: {
+				id: true
+			}
+		});
 		const engineer = await db.engineers.create({
 			data: {
 				name: payload.name,
@@ -81,7 +81,9 @@ export const engineerSvc = {
 				line_name: payload.line_name,
 				latitude: payload.latitude,
 				longitude: payload.longitude,
-				province_id: payload.province_id,
+				province: {
+					connect: payload.province.map((provinceId) => ({ id: provinceId })),
+				},
 				node: payload.node,
 				password: hashpassword,
 				created_by: user.id
@@ -105,42 +107,44 @@ export const engineerSvc = {
 				line_name: payload.line_name,
 				latitude: payload.latitude,
 				longitude: payload.longitude,
-				province_id: payload.province_id,
+				province: {
+					set: payload.province.map((provinceId) => ({ id: provinceId })),
+				},
 				node: payload.node
 			}
 		});
 		await db.users.update({
-            where: {
-                id: engineer.created_by
-            },
-            data: {
-                fullname: payload.name + " " + payload.lastname,
-                email: payload.email,
-                role: payload.role,
-            }
-        });
+			where: {
+				id: engineer.created_by
+			},
+			data: {
+				fullname: payload.name + " " + payload.lastname,
+				email: payload.email,
+				role: payload.role,
+			}
+		});
 		return engineer;
 	},
 
 	softDeleteEngineer: async (id: number) => {
-        const engineer = await db.engineers.update({
-            where: {
-                id: id,
-            },
-            data: {
-                deleted_at: new Date(),
-            },
+		const engineer = await db.engineers.update({
+			where: {
+				id: id,
+			},
+			data: {
+				deleted_at: new Date(),
+			},
 			select: {
 				id: true,
 				created_by: true
 			}
-        });
+		});
 		await db.users.update({
-            where: { id: engineer.created_by },
-            data: {
-                deleted_at: new Date()
-            }
-        })
-        return engineer;
-    }
+			where: { id: engineer.created_by },
+			data: {
+				deleted_at: new Date()
+			}
+		})
+		return engineer;
+	}
 }

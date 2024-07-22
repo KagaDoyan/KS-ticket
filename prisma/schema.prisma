@@ -71,16 +71,25 @@ model shops {
 }
 
 model provinces {
-  id                Int             @id @default(autoincrement())
-  name              String
-  code              String
-  priority_group_id Int
-  priority_group    priority_groups @relation(fields: [priority_group_id], references: [id])
-  shops             shops[]
-  engineers         engineers[]
-  deleted_at        DateTime?
-  created_at        DateTime        @default(now())
-  created_by        Int
+  id                   Int                    @id @default(autoincrement())
+  name                 String
+  code                 String
+  priority_group_id    Int
+  priority_group       priority_groups        @relation(fields: [priority_group_id], references: [id])
+  shops                shops[]
+  engineers            engineers[]
+  deleted_at           DateTime?
+  created_at           DateTime               @default(now())
+  created_by           Int
+  engineer_on_province engineer_on_province[]
+}
+
+model engineer_on_province {
+  provinces   provinces @relation(fields: [province_id], references: [id])
+  province_id Int // relation scalar field (used in the `@relation` attribute above)
+  engineer    engineers @relation(fields: [engineer_id], references: [id])
+  engineer_id Int // relation scalar field (used in the `@relation` attribute above)
+  @@id([province_id, engineer_id])
 }
 
 model brands {
@@ -146,20 +155,21 @@ model priorities {
 }
 
 model engineers {
-  id         Int         @id @default(autoincrement())
-  name       String
-  lastname   String
-  phone      String
-  line_name  String
-  latitude   String
-  longitude  String
-  node       String
-  password   String
-  province   provinces[]
-  deleted_at DateTime?
-  created_at DateTime    @default(now())
-  created_by Int
-  users      users       @relation(fields: [created_by], references: [id])
+  id                   Int                    @id @default(autoincrement())
+  name                 String
+  lastname             String
+  phone                String
+  line_name            String
+  latitude             String
+  longitude            String
+  node                 String
+  password             String
+  province             provinces[]
+  deleted_at           DateTime?
+  created_at           DateTime               @default(now())
+  created_by           Int
+  users                users                  @relation(fields: [created_by], references: [id])
+  engineer_on_province engineer_on_province[]
 }
 
 model tickets {
