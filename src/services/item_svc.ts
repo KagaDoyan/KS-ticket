@@ -3,12 +3,12 @@ import db from "../adapter.ts/database"
 
 interface itemPayload {
 	id?: number,
-	sn: string,
+	serial_number: string,
 	category_id: number,
 	brand_id: number,
 	model_id: number,
-	insure_exp_date?: any,
-	inc_num: string,
+	warranty_expiry_date?: any,
+	inc_number: string,
 	status: item_status,
 	created_by: number
 }
@@ -23,7 +23,7 @@ export const itemSvc = {
 			whereCondition.AND = [
 				{
 					OR: [
-						{ sn: { contains: search } }
+						{ serial_number: { contains: search } }
 					]
 				}
 			]
@@ -57,12 +57,12 @@ export const itemSvc = {
 	createItem: async (payload: itemPayload) => {
 		const item = await db.items.create({
 			data: {
-				sn: payload.sn,
+				serial_number: payload.serial_number,
                 category_id: payload.category_id,
                 brand_id: payload.brand_id,
                 model_id: payload.model_id,
-                insure_exp_date: payload.insure_exp_date,
-                inc_num: payload.inc_num,
+                warranty_expiry_date: payload.warranty_expiry_date,
+                inc_number: payload.inc_number,
                 status: payload.status,
 				created_by: payload.created_by
 			}
@@ -76,12 +76,12 @@ export const itemSvc = {
 				id: id
 			},
 			data: {
-				sn: payload.sn,
+				serial_number: payload.serial_number,
                 category_id: payload.category_id,
                 brand_id: payload.brand_id,
                 model_id: payload.model_id,
-                insure_exp_date: payload.insure_exp_date,
-                inc_num: payload.inc_num,
+                warranty_expiry_date: payload.warranty_expiry_date,
+                inc_number: payload.inc_number,
                 status: payload.status,
 			}
 		});
@@ -98,5 +98,10 @@ export const itemSvc = {
             }
         });
         return item;
-    }
+    },
+
+	itemStatusOption: async () => {
+		const option = await Object.values(item_status);
+		return option
+	}
 }

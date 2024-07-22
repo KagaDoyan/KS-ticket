@@ -69,4 +69,13 @@ export function CategoryRoute(app: any) {
                 tags: ['Category']
             }
         })
+        .get("/option", CategoryCtrl.getCategoryOption, {
+            beforeHandle: middleware.IsAuth,
+            headers: t.Object({
+                authorization: t.String()
+            }),
+            detail: {
+                tags: ['Category']
+            }
+        })
     }

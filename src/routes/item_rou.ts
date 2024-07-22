@@ -36,12 +36,12 @@ export function ItemRoute(app: any) {
                 authorization: t.String()
             }),
             body: t.Object({
-                sn: t.String(),
+                serial_number: t.String(),
                 category_id: t.Numeric(),
                 brand_id: t.Numeric(),
                 model_id: t.Numeric(),
-                insure_exp_date: t.Date(),
-                inc_num: t.String(),
+                warranty_expiry_date: t.Date(),
+                inc_number: t.String(),
                 status: t.String()
             }),
             detail: {
@@ -54,12 +54,12 @@ export function ItemRoute(app: any) {
                 authorization: t.String()
             }),
             body: t.Object({
-                sn: t.String(),
+                serial_number: t.String(),
                 category_id: t.Numeric(),
                 brand_id: t.Numeric(),
                 model_id: t.Numeric(),
-                insure_exp_date: t.Date(),
-                inc_num: t.String(),
+                warranty_expiry_date: t.Date(),
+                inc_number: t.String(),
                 status: t.String()
             }),
             params: t.Object({
@@ -76,6 +76,15 @@ export function ItemRoute(app: any) {
             }),
             params: t.Object({
                 id: t.Numeric()
+            }),
+            detail: {
+                tags: ['Item']
+            }
+        })
+        .get("/status", ItemCtrl.getItemStatusOption, {
+            // beforeHandle: middleware.IsAuth,
+            headers: t.Object({
+                authorization: t.String()
             }),
             detail: {
                 tags: ['Item']

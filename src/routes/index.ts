@@ -8,6 +8,7 @@ import { ItemRoute } from "./item_rou";
 import { EngineerRoute } from "./engineer_rou";
 import { PriorityGroupRoute } from "./priority_group_rou";
 import { PriorityRoute } from "./priority_rou";
+import { ModelRoute } from "./model_rou";
 
 export function MainRoute(app: any) {
     return app
@@ -21,4 +22,5 @@ export function MainRoute(app: any) {
         .group("/engineer", EngineerRoute)
         .group("/priorityGroup", PriorityGroupRoute)
         .group("/priority", PriorityRoute)
+        .group("/model", ModelRoute)
 }

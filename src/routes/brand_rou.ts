@@ -69,4 +69,13 @@ export function BrandRoute(app: any) {
                 tags: ['Brand']
             }
         })
+        .get("/option", BrandCtrl.getBrandOption, {
+            beforeHandle: middleware.IsAuth,
+            headers: t.Object({
+                authorization: t.String()
+            }),
+            detail: {
+                tags: ['Brand']
+            }
+        })
     }

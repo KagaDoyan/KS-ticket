@@ -69,4 +69,13 @@ export function ModelRoute(app: any) {
                 tags: ['Model']
             }
         })
+        .get("/option", ModelCtrl.getModelOption, {
+            beforeHandle: middleware.IsAuth,
+            headers: t.Object({
+                authorization: t.String()
+            }),
+            detail: {
+                tags: ['Model']
+            }
+        })
     }
