@@ -8,6 +8,11 @@ export const CategoryCtrl = {
         return response.SuccessResponse(ctx, data)
     },
 
+    getCategoryOption: async (ctx: any) => {
+        const data = await CategorySvc.getAllCategoryOption()
+        return response.SuccessResponse(ctx, data)
+    },
+
     getCategoryByID: async (ctx: any) => {
         const data = await CategorySvc.getCategoryByID(ctx.params.id)
         return response.SuccessResponse(ctx, data)

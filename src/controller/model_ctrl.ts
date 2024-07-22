@@ -15,7 +15,7 @@ export const ModelCtrl = {
 
     createModel: async (ctx: any) => {
         const userID = await middleware.GetUserFromToken(ctx);
-        ctx.body.create_by = userID;
+        ctx.body.created_by = userID;
         const data = await ModelSvc.createModel({ ...ctx.body });
         return response.SuccessResponse(ctx, data);
     },
@@ -31,6 +31,11 @@ export const ModelCtrl = {
         const userID = middleware.GetUserFromToken(ctx)
         ctx.body.created_by = userID
         const data = await ModelSvc.softDeleteModel(ctx.params.id)
+        return response.SuccessResponse(ctx, data)
+    },
+
+    getModelOption: async (ctx: any) => {
+        const data = await ModelSvc.getAllModelOption()
         return response.SuccessResponse(ctx, data)
     }
 }

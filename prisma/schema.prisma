@@ -9,6 +9,7 @@ datasource db {
 }
 
 enum item_status {
+  in_stock
   return
   spare
   repair
@@ -53,19 +54,19 @@ model customers {
 }
 
 model shops {
-  id          Int       @id @default(autoincrement())
-  deleted_at  DateTime?
-  created_at  DateTime  @default(now())
-  created_by  Int
-  shop_number String
-  shop_name   String
-  phone       String
-  email       String
-  latitude    String
-  longitude   String
-  province    provinces @relation(fields: [province_id], references: [id])
-  province_id Int
-  customer    customers @relation(fields: [customers_id], references: [id])
+  id           Int       @id @default(autoincrement())
+  deleted_at   DateTime?
+  created_at   DateTime  @default(now())
+  created_by   Int
+  shop_number  String
+  shop_name    String
+  phone        String
+  email        String
+  latitude     String
+  longitude    String
+  province     provinces @relation(fields: [province_id], references: [id])
+  province_id  Int
+  customer     customers @relation(fields: [customers_id], references: [id])
   customers_id Int
 }
 
@@ -110,20 +111,20 @@ model models {
 }
 
 model items {
-  id              Int         @id @default(autoincrement())
-  sn              String
-  category_id     Int
-  brand_id        Int
-  model_id        Int
-  insure_exp_date DateTime?
-  inc_num         String
-  status          item_status
-  category        categories  @relation(fields: [category_id], references: [id])
-  brand           brands      @relation(fields: [brand_id], references: [id])
-  model           models      @relation(fields: [model_id], references: [id])
-  deleted_at      DateTime?
-  created_at      DateTime    @default(now())
-  created_by      Int
+  id                   Int         @id @default(autoincrement())
+  serial_number        String
+  category_id          Int
+  brand_id             Int
+  model_id             Int
+  warranty_expiry_date DateTime?
+  inc_number           String
+  status               item_status
+  category             categories  @relation(fields: [category_id], references: [id])
+  brand                brands      @relation(fields: [brand_id], references: [id])
+  model                models      @relation(fields: [model_id], references: [id])
+  deleted_at           DateTime?
+  created_at           DateTime    @default(now())
+  created_by           Int
 }
 
 model priority_groups {
@@ -159,7 +160,7 @@ model engineers {
   deleted_at  DateTime?
   created_at  DateTime  @default(now())
   created_by  Int
-  users      users     @relation(fields: [created_by], references: [id])
+  users       users     @relation(fields: [created_by], references: [id])
 }
 
 model tickets {

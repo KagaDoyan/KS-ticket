@@ -80,5 +80,14 @@ export const BrandSvc = {
             }
         });
         return brand;
-    }
+    },
+
+	getBrandOption: async () => {
+		const brands = await db.brands.findMany({
+			where: {
+				deleted_at: null
+			}
+		});
+		return brands;
+	}
 }

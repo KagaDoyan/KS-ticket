@@ -32,5 +32,10 @@ export const ItemCtrl = {
         ctx.body.created_by = userID
         const data = await itemSvc.softDeleteItem(ctx.params.id)
         return response.SuccessResponse(ctx, data)
-    }
+    },
+
+    getItemStatusOption: async (ctx: any) => {
+        const data = await itemSvc.itemStatusOption()
+        return response.SuccessResponse(ctx, data)
+    },
 }

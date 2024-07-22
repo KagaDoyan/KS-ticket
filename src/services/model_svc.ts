@@ -39,6 +39,15 @@ export const ModelSvc = {
 		}
 	},
 
+	getAllModelOption: async () => {
+		const models = await db.models.findMany({
+			where: {
+				deleted_at: null
+			}
+		});
+		return models
+	},
+
 	getModelByID: async (id: number) => {
         const model = await db.models.findUnique({
             where: {

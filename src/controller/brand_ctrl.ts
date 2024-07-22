@@ -32,5 +32,10 @@ export const BrandCtrl = {
         ctx.body.created_by = userID
         const data = await BrandSvc.softDeleteBrand(ctx.params.id)
         return response.SuccessResponse(ctx, data)
+    },
+
+    getBrandOption: async (ctx: any) => {
+        const data = await BrandSvc.getBrandOption()
+        return response.SuccessResponse(ctx, data)
     }
 }

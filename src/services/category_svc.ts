@@ -39,6 +39,15 @@ export const CategorySvc = {
 		}
 	},
 
+	getAllCategoryOption: async () => {
+		const categories = await db.categories.findMany({
+			where: {
+				deleted_at: null
+			}
+		});
+		return categories
+	},
+
 	getCategoryByID: async (id: number) => {
         const category = await db.categories.findUnique({
             where: {
