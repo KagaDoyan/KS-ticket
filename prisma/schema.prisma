@@ -178,10 +178,10 @@ model tickets {
   ticket_number      String
   customer_id        Int
   store_id           Int
-  open_date          DateTime      @db.Date
-  open_time          DateTime      @db.Time()
-  close_date         DateTime      @db.Date
-  close_time         DateTime      @db.Time()
+  open_date          String      
+  open_time          String      
+  close_date         String?      
+  close_time         String?     
   title              String
   description        String        @db.LongText
   due_by             String
@@ -189,24 +189,24 @@ model tickets {
   contact_name       String
   contact_tel        String
   assigned_to        String
-  created_by         String
-  updated_by         String
+  created_by         Int
+  updated_by         Int
   ticket_status      ticket_status
-  appointment_date   DateTime      @db.Date
-  appointment_time   DateTime      @db.Time()
+  appointment_date   String      
+  appointment_time   String      
   engineer_id        Int
-  solution           String
-  investigation      String
-  item_brand         String
-  item_category      String
-  item_model         String
-  item_sn            String
-  warranty_exp       DateTime
-  resolve_status     String
-  resolve_remark     String
-  action             action_status
-  time_in            DateTime
-  time_out           DateTime
+  solution           String?
+  investigation      String?
+  item_brand         String?
+  item_category      String?
+  item_model         String?
+  item_sn            String?
+  warranty_exp       DateTime?
+  resolve_status     String?
+  resolve_remark     String?
+  action             action_status?
+  time_in            DateTime?
+  time_out           DateTime?
   deleted_at         DateTime?
   created_at         DateTime      @default(now())
 }
