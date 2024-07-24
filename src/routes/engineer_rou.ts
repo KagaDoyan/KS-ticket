@@ -23,6 +23,9 @@ export function EngineerRoute(app: any) {
             headers: t.Object({
                 authorization: t.String()
             }),
+            params: t.Object({
+                id: t.Numeric()
+            }),
             detail: {
                 tags: ['Engineer']
             }
@@ -43,7 +46,6 @@ export function EngineerRoute(app: any) {
                 node: t.String(),
                 email: t.String(),
                 password: t.String(),
-                role: t.String(),
             }),
             detail: {
                 tags: ['Engineer']
@@ -60,7 +62,6 @@ export function EngineerRoute(app: any) {
                 province_id: t.Array(t.Numeric()),
                 node: t.String(),
                 email: t.String(),
-                role: t.String(),
             }),
             params: t.Object({
                 id: t.Numeric()

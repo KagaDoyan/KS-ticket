@@ -55,6 +55,9 @@ export const engineerSvc = {
 		const engineer = await db.engineers.findUnique({
 			where: {
 				id: id
+			},
+			include: {
+				province:true
 			}
 		});
 		return engineer;
