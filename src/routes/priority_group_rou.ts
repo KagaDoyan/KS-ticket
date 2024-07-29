@@ -18,6 +18,15 @@ export function PriorityGroupRoute(app: any) {
                 tags: ['PriorityGroup']
             }
         })
+        .get("/option", PriorityGroupCtrl.getAllPriorityGroupOption, {
+            beforeHandle: middleware.IsAuth,
+            headers: t.Object({
+                authorization: t.String()
+            }),
+            detail: {
+                tags: ['PriorityGroup']
+            }
+        })
         .get("/:id", PriorityGroupCtrl.getPriorityGroupByID, {
             beforeHandle: middleware.IsAuth,
             headers: t.Object({

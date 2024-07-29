@@ -15,6 +15,42 @@ export const ProvinceSvc = {
         return province;
     },
 
+    getallProvincepaginate: async (limit: number, page: number, search: string) => {
+        let whereCondition: Prisma.provincesWhereInput = {
+            deleted_at: null
+        }
+
+        if (search) {
+            whereCondition.AND = [
+                {
+                    OR: [
+                        { name: { contains: search } },
+                        { code: { contains: search } },
+                        { priority_group: { group_name: { contains: search } } }
+                    ]
+                }
+            ]
+        }
+        const total_item = await db.provinces.count({ where: whereCondition });
+        const totalPages = Math.ceil(total_item / limit);
+        const offset = (page - 1) * limit;
+        const province = await db.provinces.findMany({
+            where: whereCondition,
+            skip: offset,
+            take: limit,
+            include:{
+                priority_group:true
+            }
+        });
+        return {
+            page: page,
+            limit: limit,
+            total_page: totalPages,
+            total_rows: total_item,
+            data: province
+        }
+    },
+
     getProvinceByID: async (id: number) => {
         const province = await db.provinces.findUnique({
             where: {

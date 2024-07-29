@@ -55,6 +55,33 @@ export const CustomerSvc = {
         return customer
     },
 
+    getCustomerOptions: async () => {
+        const customer = await db.customers.findMany({
+            where: {
+                deleted_at: null,
+            },
+            include: {
+                shops: {
+                    include: {
+                        province: {
+                            include: {
+                                priority_group: {
+                                    include: {
+                                        priorities: true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        })
+        if (!customer) {
+            throw new DataNotFoundError()
+        }
+        return customer
+    },
+
     createCustome: async (payload: customePayload) => {
         const customer = await db.customers.create({
             data: {

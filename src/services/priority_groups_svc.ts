@@ -28,7 +28,10 @@ export const PriorityGroupSvc = {
 		const priorityGroups = await db.priority_groups.findMany({
 			where: whereCondition,
 			skip: offset,
-			take: limit
+			take: limit,
+			include:{
+				priorities: true
+			}
 		});
 		return {
 			page: page,
@@ -37,6 +40,15 @@ export const PriorityGroupSvc = {
             total_rows: total_priority_group,
             data: priorityGroups
 		}
+	},
+
+	getAllPriorityGroupOptions: async () => {
+		const priorityGroups = await db.priority_groups.findMany({
+			where: {
+				deleted_at: null
+			}
+		});
+		return priorityGroups
 	},
 
 	getPriorityGroupByID: async (id: number) => {

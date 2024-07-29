@@ -117,16 +117,16 @@ export const engineerSvc = {
 				node: payload.node
 			}
 		});
-		await db.users.update({
-			where: {
-				id: engineer.created_by
-			},
-			data: {
-				fullname: payload.name + " " + payload.lastname,
-				email: payload.email,
-				role: payload.role,
-			}
-		});
+		// await db.users.update({
+		// 	where: {
+		// 		id: engineer.created_by
+		// 	},
+		// 	data: {
+		// 		fullname: payload.name + " " + payload.lastname,
+		// 		email: payload.email,
+		// 		role: payload.role,
+		// 	}
+		// });
 		return engineer;
 	},
 

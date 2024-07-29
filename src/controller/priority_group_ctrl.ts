@@ -8,6 +8,11 @@ export const PriorityGroupCtrl = {
         return response.SuccessResponse(ctx, data)
     },
 
+    getAllPriorityGroupOption: async (ctx: any) => {
+        const data = await PriorityGroupSvc.getAllPriorityGroupOptions()
+        return response.SuccessResponse(ctx, data)
+    },
+
     getPriorityGroupByID: async (ctx: any) => {
         const data = await PriorityGroupSvc.getPriorityGroupByID(ctx.params.id)
         return response.SuccessResponse(ctx, data)

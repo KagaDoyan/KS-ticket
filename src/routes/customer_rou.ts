@@ -80,5 +80,17 @@ export function CustomerRoute(app: any) {
                 tags: ['Customer']
             }
         }
-    )
+        )
+        .get("/option", CustomerCtrl.getCustomerOptions, {
+            beforeHandle: middleware.IsAuth,
+            headers: t.Object({
+                authorization: t.String()
+            }),
+            query: t.Object({
+                shop_id: t.Optional(t.Numeric())
+            }),
+            detail: {
+                tags: ['Customer']
+            }
+        })
 }

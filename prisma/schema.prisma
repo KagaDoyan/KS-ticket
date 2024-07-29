@@ -38,8 +38,8 @@ model users {
   password    String
   first_login Boolean     @default(false)
   role        String      @default("User")
-  customers   customers[]
   engineers   engineers[]
+  tickets     tickets[]
 }
 
 model customers {
@@ -49,8 +49,8 @@ model customers {
   deleted_at DateTime?
   created_at DateTime  @default(now())
   created_by Int
-  users      users     @relation(fields: [created_by], references: [id])
   shops      shops[]
+  tickets    tickets[]
 }
 
 model shops {
@@ -68,6 +68,7 @@ model shops {
   province_id  Int
   customer     customers @relation(fields: [customers_id], references: [id])
   customers_id Int
+  tickets      tickets[]
 }
 
 model provinces {
@@ -89,6 +90,7 @@ model engineer_on_province {
   province_id Int // relation scalar field (used in the `@relation` attribute above)
   engineer    engineers @relation(fields: [engineer_id], references: [id])
   engineer_id Int // relation scalar field (used in the `@relation` attribute above)
+
   @@id([province_id, engineer_id])
 }
 
@@ -126,7 +128,7 @@ model items {
   brand_id             Int
   model_id             Int
   warranty_expiry_date DateTime?
-  inc_number           String
+  inc_number           String?
   status               item_status
   category             categories  @relation(fields: [category_id], references: [id])
   brand                brands      @relation(fields: [brand_id], references: [id])
@@ -134,24 +136,29 @@ model items {
   deleted_at           DateTime?
   created_at           DateTime    @default(now())
   created_by           Int
+  engineer             engineers?  @relation(fields: [engineers_id], references: [id])
+  engineers_id         Int?
 }
 
 model priority_groups {
-  id         Int         @id @default(autoincrement())
+  id         Int          @id @default(autoincrement())
   group_name String
   provinces  provinces[]
   deleted_at DateTime?
-  created_at DateTime    @default(now())
+  created_at DateTime     @default(now())
   created_by Int
+  priorities priorities[]
 }
 
 model priorities {
-  id         Int       @id @default(autoincrement())
-  name       String
-  time_sec   String
-  deleted_at DateTime?
-  created_at DateTime  @default(now())
-  created_by Int
+  id                 Int             @id @default(autoincrement())
+  priority_group     priority_groups @relation(fields: [priority_groups_id], references: [id])
+  name               String
+  time_sec           String
+  deleted_at         DateTime?
+  created_at         DateTime        @default(now())
+  created_by         Int
+  priority_groups_id Int
 }
 
 model engineers {
@@ -170,31 +177,37 @@ model engineers {
   created_by           Int
   users                users                  @relation(fields: [created_by], references: [id])
   engineer_on_province engineer_on_province[]
+  tickets              tickets[]
+  items                items[]
 }
 
 model tickets {
-  id                 Int           @id @default(autoincrement())
+  id                 Int            @id @default(autoincrement())
   inc_number         String
   ticket_number      String
   customer_id        Int
-  store_id           Int
-  open_date          String      
-  open_time          String      
-  close_date         String?      
-  close_time         String?     
+  customer           customers      @relation(fields: [customer_id], references: [id])
+  shop_id            Int           
+  shop               shops          @relation(fields: [shop_id], references: [id])
+  open_date          String
+  open_time          String
+  close_date         String?
+  close_time         String?
   title              String
-  description        String        @db.LongText
+  description        String         @db.LongText
   due_by             String
   sla_priority_level String
   contact_name       String
   contact_tel        String
   assigned_to        String
   created_by         Int
+  created_user       users          @relation(fields: [created_by], references: [id])
   updated_by         Int
   ticket_status      ticket_status
-  appointment_date   String      
-  appointment_time   String      
+  appointment_date   String
+  appointment_time   String
   engineer_id        Int
+  engineer           engineers      @relation(fields: [engineer_id], references: [id])
   solution           String?
   investigation      String?
   item_brand         String?
@@ -208,5 +221,5 @@ model tickets {
   time_in            DateTime?
   time_out           DateTime?
   deleted_at         DateTime?
-  created_at         DateTime      @default(now())
+  created_at         DateTime       @default(now())
 }

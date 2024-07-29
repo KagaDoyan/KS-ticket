@@ -13,6 +13,20 @@ export function provinceRoute(app: any) {
                 tags: ['Province']
             }
         })
+        .get("/paginate", ProvinceCtrl.getallProvincepaginate, {
+            beforeHandle: middleware.IsAuth,
+            headers: t.Object({
+                authorization: t.String()
+            }),
+            query: t.Object({
+                limit: t.Numeric(),
+                page: t.Numeric(),
+                search: t.Optional(t.String())
+            }),
+            detail: {
+                tags: ['Province']
+            }
+        })
         .get("/:id", ProvinceCtrl.getProvinceByID, {
             beforeHandle: middleware.IsAuth,
             headers: t.Object({

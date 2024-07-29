@@ -8,6 +8,11 @@ export const ProvinceCtrl = {
         return province;
     },
 
+    getallProvincepaginate: async (ctx: any) => {
+        const province = await ProvinceSvc.getallProvincepaginate(ctx.query.limit, ctx.query.page, ctx.query.search);
+        return province;
+    },
+
     getProvinceByID: async (ctx: any) => {
         const data = await ProvinceSvc.getProvinceByID(ctx.params.id);
         return response.SuccessResponse(ctx, data);

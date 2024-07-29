@@ -61,7 +61,8 @@ export function EngineerRoute(app: any) {
                 longitude: t.String(),
                 province_id: t.Array(t.Numeric()),
                 node: t.String(),
-                email: t.String(),
+                email: t.Optional(t.String()),
+                password: t.Optional(t.String()),
             }),
             params: t.Object({
                 id: t.Numeric()

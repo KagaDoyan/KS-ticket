@@ -39,5 +39,10 @@ export const CustomerCtrl = {
     getAllCustomerNoFilter: async (ctx: any) => {
         const data = await CustomerSvc.getAllCustomerNoFilter()
         return response.SuccessResponse(ctx, data)
+    },
+
+    getCustomerOptions: async (ctx: any) => {
+        const data = await CustomerSvc.getCustomerOptions()
+        return response.SuccessResponse(ctx, data)
     }
 }

@@ -34,7 +34,13 @@ export const itemSvc = {
 		const items = await db.items.findMany({
 			where: whereCondition,
 			skip: offset,
-			take: limit
+			take: limit,
+			include:{
+				category: true,
+				brand: true,
+				model: true,
+				engineer: true
+			}
 		});
 		return {
 			page: page,
@@ -64,7 +70,7 @@ export const itemSvc = {
                 warranty_expiry_date: payload.warranty_expiry_date,
                 inc_number: payload.inc_number,
                 status: payload.status,
-				created_by: payload.created_by
+				created_by: payload.created_by,
 			}
 		});
 		return item;

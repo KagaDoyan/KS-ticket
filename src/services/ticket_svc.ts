@@ -6,7 +6,7 @@ interface ticketPayload {
     inc_number: string,
     ticket_number?: string,
     customer_id: number,
-    store_id: number,
+    shop_id: number,
     open_date: string,      
     open_time: string,      
     close_date?: string,      
@@ -79,7 +79,11 @@ export const ticketSvc = {
 		const tickets = await db.tickets.findMany({
 			where: whereCondition,
 			skip: offset,
-			take: limit
+			take: limit,
+            include:{
+                created_user: true,
+                engineer:true
+            }
 		});
 		return {
 			page: page,
@@ -97,7 +101,7 @@ export const ticketSvc = {
                 inc_number: payload.inc_number,
                 ticket_number: ticketNumber,
                 customer_id: payload.customer_id,
-                store_id: payload.store_id,
+                shop_id: payload.shop_id,
                 open_date: payload.open_date,
                 open_time: payload.open_time,
                 close_date: payload.close_date,
