@@ -15,6 +15,11 @@ enum item_status {
   repair
 }
 
+enum item_type {
+  inside
+  outside
+}
+
 enum ticket_status {
   open
   pending
@@ -133,6 +138,7 @@ model items {
   category             categories  @relation(fields: [category_id], references: [id])
   brand                brands      @relation(fields: [brand_id], references: [id])
   model                models      @relation(fields: [model_id], references: [id])
+  type                 item_type
   deleted_at           DateTime?
   created_at           DateTime    @default(now())
   created_by           Int
@@ -187,7 +193,7 @@ model tickets {
   ticket_number      String
   customer_id        Int
   customer           customers      @relation(fields: [customer_id], references: [id])
-  shop_id            Int           
+  shop_id            Int
   shop               shops          @relation(fields: [shop_id], references: [id])
   open_date          String
   open_time          String
@@ -208,8 +214,9 @@ model tickets {
   appointment_time   String
   engineer_id        Int
   engineer           engineers      @relation(fields: [engineer_id], references: [id])
-  solution           String?
-  investigation      String?
+  solution           String?        @db.LongText
+  investigation      String?        @db.LongText
+  close_description  String?        @db.LongText
   item_brand         String?
   item_category      String?
   item_model         String?
@@ -222,4 +229,30 @@ model tickets {
   time_out           DateTime?
   deleted_at         DateTime?
   created_at         DateTime       @default(now())
+  store_item         store_items[]
+  spare_item         spare_items[]
+}
+
+model store_items {
+  id            Int         @id @default(autoincrement())
+  ticket_id     Int
+  ticket        tickets     @relation(fields: [ticket_id], references: [id])
+  item_brand    String
+  item_category String
+  item_model    String
+  item_sn       String
+  warranty_exp  DateTime?
+  type          item_status
+}
+
+model spare_items {
+  id            Int         @id @default(autoincrement())
+  ticket_id     Int
+  ticket        tickets     @relation(fields: [ticket_id], references: [id])
+  item_brand    String
+  item_category String
+  item_model    String
+  item_sn       String
+  warranty_exp  DateTime?
+  type          item_status
 }

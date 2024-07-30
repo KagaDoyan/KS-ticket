@@ -15,4 +15,20 @@ export const TicketCtrl = {
         const data = await ticketSvc.openTicket({ ...ctx.body });
         return response.SuccessResponse(ctx, data);
     },
+
+    updateOpenTicket: async (ctx: any) => {
+        const userID = await middleware.GetUserFromToken(ctx);
+        ctx.body.created_by = userID;
+        ctx.body.updated_by = userID;
+        const data = await ticketSvc.updateOpenTicket(ctx.params.id, { ...ctx.body });
+        return response.SuccessResponse(ctx, data);
+    },
+
+    updateCloseTicket: async (ctx: any) => {
+        const userID = await middleware.GetUserFromToken(ctx);
+        ctx.body.created_by = userID;
+        ctx.body.updated_by = userID;
+        const data = await ticketSvc.updateCloseTicket(ctx.params.id, { ...ctx.body });
+        return response.SuccessResponse(ctx, data);
+    },
 }

@@ -42,7 +42,8 @@ export function ItemRoute(app: any) {
                 model_id: t.Numeric(),
                 warranty_expiry_date: t.Date(),
                 inc_number: t.String(),
-                status: t.String()
+                status: t.String(),
+                type: t.String(),
             }),
             detail: {
                 tags: ['Item']
@@ -60,7 +61,8 @@ export function ItemRoute(app: any) {
                 model_id: t.Numeric(),
                 warranty_expiry_date: t.Date(),
                 inc_number: t.String(),
-                status: t.String()
+                status: t.String(),
+                type: t.String(),
             }),
             params: t.Object({
                 id: t.Numeric()

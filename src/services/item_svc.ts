@@ -1,4 +1,4 @@
-import { Prisma, item_status } from "@prisma/client"
+import { Prisma, item_status, item_type } from "@prisma/client"
 import db from "../adapter.ts/database"
 
 interface itemPayload {
@@ -10,6 +10,7 @@ interface itemPayload {
 	warranty_expiry_date?: any,
 	inc_number: string,
 	status: item_status,
+	type: item_type,
 	created_by: number
 }
 
@@ -64,12 +65,13 @@ export const itemSvc = {
 		const item = await db.items.create({
 			data: {
 				serial_number: payload.serial_number,
-                category_id: payload.category_id,
-                brand_id: payload.brand_id,
-                model_id: payload.model_id,
-                warranty_expiry_date: payload.warranty_expiry_date,
-                inc_number: payload.inc_number,
-                status: payload.status,
+				category_id: payload.category_id,
+				brand_id: payload.brand_id,
+				model_id: payload.model_id,
+				warranty_expiry_date: payload.warranty_expiry_date,
+				inc_number: payload.inc_number,
+				status: payload.status,
+				type: payload.type,
 				created_by: payload.created_by,
 			}
 		});
@@ -83,12 +85,13 @@ export const itemSvc = {
 			},
 			data: {
 				serial_number: payload.serial_number,
-                category_id: payload.category_id,
-                brand_id: payload.brand_id,
-                model_id: payload.model_id,
-                warranty_expiry_date: payload.warranty_expiry_date,
-                inc_number: payload.inc_number,
-                status: payload.status,
+				category_id: payload.category_id,
+				brand_id: payload.brand_id,
+				model_id: payload.model_id,
+				warranty_expiry_date: payload.warranty_expiry_date,
+				inc_number: payload.inc_number,
+				status: payload.status,
+				type: payload.type
 			}
 		});
 		return item;
