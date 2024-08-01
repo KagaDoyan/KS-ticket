@@ -32,5 +32,10 @@ export const EngineerCtrl = {
         ctx.body.created_by = userID
         const data = await engineerSvc.softDeleteEngineer(ctx.params.id)
         return response.SuccessResponse(ctx, data)
+    },
+
+    getEngineerOrderByLocation: async (ctx: any) => {
+        const data = await engineerSvc.getengineerOrderByLocation(ctx.query.latitude, ctx.query.longitude)
+        return response.SuccessResponse(ctx, data)
     }
 }

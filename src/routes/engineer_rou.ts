@@ -83,4 +83,17 @@ export function EngineerRoute(app: any) {
                 tags: ['Engineer']
             }
         })
+        .get("/option/location", EngineerCtrl.getEngineerOrderByLocation, {
+            beforeHandle: middleware.IsAuth,
+            headers: t.Object({
+                authorization: t.String()
+            }),
+            query: t.Object({
+                latitude: t.Optional(t.String()),
+                longitude: t.Optional(t.String())
+            }),
+            detail: {
+                tags: ['Engineer']
+            }
+        })
 }

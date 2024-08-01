@@ -31,4 +31,9 @@ export const TicketCtrl = {
         const data = await ticketSvc.updateCloseTicket(ctx.params.id, { ...ctx.body });
         return response.SuccessResponse(ctx, data);
     },
+
+    getTicketByID: async (ctx: any) => {
+        const data = await ticketSvc.getTicketByID(ctx.params.id)
+        return response.SuccessResponse(ctx, data)
+    }
 }

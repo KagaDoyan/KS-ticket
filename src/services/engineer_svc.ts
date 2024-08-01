@@ -57,7 +57,7 @@ export const engineerSvc = {
 				id: id
 			},
 			include: {
-				province:true
+				province: true
 			}
 		});
 		return engineer;
@@ -150,5 +150,15 @@ export const engineerSvc = {
 			}
 		})
 		return engineer;
+	},
+
+	getengineerOrderByLocation: async (lat: string, lng: string) => {
+		const engineers = await db.engineers.findMany({
+			where: {
+				deleted_at: null
+			},
+		})
+		// calculate distance logic here
+		return engineers
 	}
 }

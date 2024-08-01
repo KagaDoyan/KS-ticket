@@ -351,5 +351,14 @@ export const ticketSvc = {
             }
         }
         return ticket;
+    },
+
+    getTicketByID: async (id: number) => {
+        const ticket = await db.tickets.findUnique({
+            where: {
+                id: id
+            }
+        });
+        return ticket;
     }
 }

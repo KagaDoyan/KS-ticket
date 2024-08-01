@@ -28,7 +28,7 @@ export function TicketRoute(app: any) {
             body: t.Object({
                 inc_number: t.String(),
                 customer_id: t.Number(),
-                store_id: t.Number(),
+                shop_id: t.Number(),
                 open_date: t.String(),
                 open_time: t.String(),
                 title: t.String(),
@@ -58,7 +58,7 @@ export function TicketRoute(app: any) {
             body: t.Object({
                 inc_number: t.String(),
                 customer_id: t.Number(),
-                store_id: t.Number(),
+                shop_id: t.Number(),
                 open_date: t.String(),
                 open_time: t.String(),
                 title: t.String(),
@@ -86,8 +86,6 @@ export function TicketRoute(app: any) {
                 id: t.Numeric()
             }),
             body: t.Object({
-                close_date: t.String(),
-                close_time: t.String(),
                 solution: t.String(),
                 investigation: t.String(),
                 close_description: t.String(),
@@ -103,6 +101,18 @@ export function TicketRoute(app: any) {
                 time_out: t.String(),
                 store_item: t.Any(),
                 spare_item: t.Any(),
+            }),
+            detail: {
+                tags: ['Ticket']
+            }
+        })
+        .get("/:id", TicketCtrl.getTicketByID, {
+            beforeHandle: middleware.IsAuth,
+            headers: t.Object({
+                authorization: t.String()
+            }),
+            params: t.Object({
+                id: t.Numeric()
             }),
             detail: {
                 tags: ['Ticket']
