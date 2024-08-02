@@ -50,7 +50,9 @@ interface ticketPayload {
     time_in?: any,
     time_out?: any,
     store_item?: itemList[],
-    spare_item?: itemList[]
+    spare_item?: itemList[],
+    return_item?: itemList[],
+    images?: String[]
 }
 
 async function generateRandomNumber(length: number): Promise<string> {
@@ -98,7 +100,7 @@ export const ticketSvc = {
 			take: limit,
             include:{
                 created_user: true,
-                engineer:true
+                engineer:true,
             }
 		});
 		return {
@@ -202,7 +204,8 @@ export const ticketSvc = {
                 resolve_remark: payload.resolve_remark,
                 action: payload.action,
                 time_in: payload.time_in,
-                time_out: payload.time_out
+                time_out: payload.time_out,
+                updated_by: payload.updated_by
             }
         });
         if(payload.store_item != null && payload.store_item.length != 0) {
@@ -228,7 +231,8 @@ export const ticketSvc = {
                             item_model: checkItem.model.name,
                             item_sn: item_sn,
                             warranty_exp: checkItem.warranty_expiry_date,
-                            type: checkItem.status
+                            status: checkItem.status,
+                            created_by: payload.created_by
                         }
                     });
 
@@ -272,7 +276,8 @@ export const ticketSvc = {
                         item_model: newItem.model.name,
                         item_sn: item_sn,
                         warranty_exp: newItem.warranty_expiry_date,
-                        type: newItem.status
+                        status: newItem.status,
+                        created_by: payload.created_by
                     }
                 });
             }
@@ -301,7 +306,8 @@ export const ticketSvc = {
                             item_model: checkItem.model.name,
                             item_sn: item_sn,
                             warranty_exp: checkItem.warranty_expiry_date,
-                            type: checkItem.status
+                            status: checkItem.status,
+                            created_by: payload.created_by
                         }
                     });
 
@@ -345,18 +351,73 @@ export const ticketSvc = {
                         item_model: newItem.model.name,
                         item_sn: item_sn,
                         warranty_exp: newItem.warranty_expiry_date,
-                        type: newItem.status
+                        status: newItem.status,
+                        created_by: payload.created_by
                     }
                 });
             }
         }
+
+        if(payload.images != null && payload.images.length != 0) {
+            for(const image of payload.images) {
+                await db.ticket_images.create({
+                    data: {
+                        ticket_id: id,
+                        path: image.toString(),
+                        created_by: payload.created_by
+                    }
+                });
+            }
+        }
+
         return ticket;
+    },
+
+    updateReturnItem: async (id: number, payload: ticketPayload) => {
+        if(payload.return_item == null || payload.return_item.length == 0){
+            return { message: "No Return Item list to add" }
+        }    
+        for(const item of payload.return_item) {
+            let selectItem = await db.items.findFirst({
+                where: {
+                    deleted_at: null,
+                    serial_number: item.serial_number
+                },
+                include: {
+                    brand: true,
+                    category: true,
+                    model: true
+                }
+            });
+            if(!selectItem) {
+                return { message: "Can not get item for insert into return item" }
+            }
+            await db.return_items.create({
+                data: {
+                    ticket_id: id,
+                    item_brand: selectItem.brand.name,
+                    item_category: selectItem.category.name,
+                    item_model: selectItem.model.name,
+                    item_sn: item.serial_number,
+                    warranty_exp: item.warranty_expiry_date,
+                    status: item.status,
+                    created_by: payload.created_by
+                }
+            });
+        }
+        return { message: "Add return list complete" }
     },
 
     getTicketByID: async (id: number) => {
         const ticket = await db.tickets.findUnique({
             where: {
                 id: id
+            },
+            include: {
+                store_item: true,
+                spare_item: true,
+                return_item: true,
+                ticket_image: true
             }
         });
         return ticket;

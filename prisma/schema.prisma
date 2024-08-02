@@ -188,35 +188,35 @@ model engineers {
 }
 
 model tickets {
-  id                 Int            @id @default(autoincrement())
+  id                 Int             @id @default(autoincrement())
   inc_number         String
   ticket_number      String
   customer_id        Int
-  customer           customers      @relation(fields: [customer_id], references: [id])
+  customer           customers       @relation(fields: [customer_id], references: [id])
   shop_id            Int
-  shop               shops          @relation(fields: [shop_id], references: [id])
+  shop               shops           @relation(fields: [shop_id], references: [id])
   open_date          String
   open_time          String
   close_date         String?
   close_time         String?
   title              String
-  description        String         @db.LongText
+  description        String          @db.LongText
   due_by             String
   sla_priority_level String
   contact_name       String
   contact_tel        String
   assigned_to        String
   created_by         Int
-  created_user       users          @relation(fields: [created_by], references: [id])
+  created_user       users           @relation(fields: [created_by], references: [id])
   updated_by         Int
   ticket_status      ticket_status
   appointment_date   String
   appointment_time   String
   engineer_id        Int
-  engineer           engineers      @relation(fields: [engineer_id], references: [id])
-  solution           String?        @db.LongText
-  investigation      String?        @db.LongText
-  close_description  String?        @db.LongText
+  engineer           engineers       @relation(fields: [engineer_id], references: [id])
+  solution           String?         @db.LongText
+  investigation      String?         @db.LongText
+  close_description  String?         @db.LongText
   item_brand         String?
   item_category      String?
   item_model         String?
@@ -228,9 +228,11 @@ model tickets {
   time_in            DateTime?
   time_out           DateTime?
   deleted_at         DateTime?
-  created_at         DateTime       @default(now())
+  created_at         DateTime        @default(now())
   store_item         store_items[]
   spare_item         spare_items[]
+  return_item        return_items[]
+  ticket_image       ticket_images[]
 }
 
 model store_items {
@@ -242,7 +244,10 @@ model store_items {
   item_model    String
   item_sn       String
   warranty_exp  DateTime?
-  type          item_status
+  status        item_status
+  deleted_at    DateTime?
+  created_at    DateTime    @default(now())
+  created_by    Int
 }
 
 model spare_items {
@@ -254,5 +259,33 @@ model spare_items {
   item_model    String
   item_sn       String
   warranty_exp  DateTime?
-  type          item_status
+  status        item_status
+  deleted_at    DateTime?
+  created_at    DateTime    @default(now())
+  created_by    Int
+}
+
+model return_items {
+  id            Int         @id @default(autoincrement())
+  ticket_id     Int
+  ticket        tickets     @relation(fields: [ticket_id], references: [id])
+  item_brand    String
+  item_category String
+  item_model    String
+  item_sn       String
+  warranty_exp  DateTime?
+  status        item_status
+  deleted_at    DateTime?
+  created_at    DateTime    @default(now())
+  created_by    Int
+}
+
+model ticket_images {
+  id         Int       @id @default(autoincrement())
+  ticket_id  Int
+  ticket     tickets   @relation(fields: [ticket_id], references: [id])
+  path       String
+  deleted_at DateTime?
+  created_at DateTime  @default(now())
+  created_by Int
 }

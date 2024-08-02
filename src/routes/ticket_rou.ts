@@ -20,6 +20,18 @@ export function TicketRoute(app: any) {
                 tags: ['Ticket']
             }
         })
+        .get("/:id", TicketCtrl.getTicketByID, {
+            beforeHandle: middleware.IsAuth,
+            headers: t.Object({
+                authorization: t.String()
+            }),
+            params: t.Object({
+                id: t.Numeric()
+            }),
+            detail: {
+                tags: ['Ticket']
+            }
+        })
         .post("/open", TicketCtrl.openTicket, {
             beforeHandle: middleware.IsAuth,
             headers: t.Object({
@@ -101,18 +113,22 @@ export function TicketRoute(app: any) {
                 time_out: t.String(),
                 store_item: t.Any(),
                 spare_item: t.Any(),
+                images: t.Any()
             }),
             detail: {
                 tags: ['Ticket']
             }
         })
-        .get("/:id", TicketCtrl.getTicketByID, {
+        .post("/update/returnItem/:id", TicketCtrl.updateCloseTicket, {
             beforeHandle: middleware.IsAuth,
             headers: t.Object({
                 authorization: t.String()
             }),
             params: t.Object({
                 id: t.Numeric()
+            }),
+            body: t.Object({
+                return_item: t.Any()
             }),
             detail: {
                 tags: ['Ticket']

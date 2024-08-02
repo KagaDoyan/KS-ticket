@@ -32,6 +32,13 @@ export const TicketCtrl = {
         return response.SuccessResponse(ctx, data);
     },
 
+    updateReturnItem: async (ctx: any) => {
+        const userID = await middleware.GetUserFromToken(ctx);
+        ctx.body.created_by = userID;
+        const data = await ticketSvc.updateReturnItem(ctx.params.id, { ...ctx.body });
+        return response.SuccessResponse(ctx, data);
+    },
+
     getTicketByID: async (ctx: any) => {
         const data = await ticketSvc.getTicketByID(ctx.params.id)
         return response.SuccessResponse(ctx, data)
