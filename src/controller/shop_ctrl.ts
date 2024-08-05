@@ -32,5 +32,10 @@ export const ShopCtrl = {
     getallshop: async (ctx: any) => {
         const data = await ShopSvc.getallShops(ctx.query.limit, ctx.query.page, ctx.query.search)
         return response.SuccessResponse(ctx, data)
+    },
+
+    getshopoptions: async (ctx: any) => {
+        const data = await ShopSvc.getshopOption()
+        return response.SuccessResponse(ctx, data)
     }
 }

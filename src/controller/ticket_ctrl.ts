@@ -26,7 +26,6 @@ export const TicketCtrl = {
 
     updateCloseTicket: async (ctx: any) => {
         const userID = await middleware.GetUserFromToken(ctx);
-        ctx.body.created_by = userID;
         ctx.body.updated_by = userID;
         const { request } = ctx;
         const formData = await request.formData();

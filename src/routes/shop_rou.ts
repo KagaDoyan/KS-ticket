@@ -83,4 +83,13 @@ export function ShopRoute(app: any) {
                 tags: ['Shop']
             }
         })
+        .get("/option", ShopCtrl.getshopoptions, {
+            beforeHandle: middleware.IsAuth,
+            headers: t.Object({
+                authorization: t.String()
+            }),
+            detail: {
+                tags: ['Shop']
+            }
+        })
     }
