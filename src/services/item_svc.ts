@@ -1,5 +1,6 @@
 import { Prisma, item_status, item_type } from "@prisma/client"
 import db from "../adapter.ts/database"
+import { DataNotFoundError } from "../exception/DataNotFound"
 
 interface itemPayload {
 	id?: number,
@@ -8,9 +9,9 @@ interface itemPayload {
 	brand_id: number,
 	model_id: number,
 	warranty_expiry_date?: any,
-	inc_number: string,
+	inc_number?: string,
 	status: item_status,
-	type: item_type,
+	type?: item_type,
 	created_by: number
 }
 
@@ -69,9 +70,7 @@ export const itemSvc = {
 				brand_id: payload.brand_id,
 				model_id: payload.model_id,
 				warranty_expiry_date: payload.warranty_expiry_date,
-				inc_number: payload.inc_number,
 				status: payload.status,
-				type: payload.type,
 				created_by: payload.created_by,
 			}
 		});
@@ -89,9 +88,7 @@ export const itemSvc = {
 				brand_id: payload.brand_id,
 				model_id: payload.model_id,
 				warranty_expiry_date: payload.warranty_expiry_date,
-				inc_number: payload.inc_number,
 				status: payload.status,
-				type: payload.type
 			}
 		});
 		return item;
@@ -112,5 +109,23 @@ export const itemSvc = {
 	itemStatusOption: async () => {
 		const option = await Object.values(item_status);
 		return option
+	},
+
+	getItemBySerialNumber: async (serial_number: string) => {
+		const item = await db.items.findFirst({
+			where: {
+				serial_number: serial_number,
+				deleted_at: null
+			},
+			include: {
+				brand: true,
+				category: true,
+				model: true
+			}
+		});
+		if (!item) {
+			throw new DataNotFoundError()
+		}
+		return item
 	}
 }

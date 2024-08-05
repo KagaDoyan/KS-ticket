@@ -41,9 +41,8 @@ export function ItemRoute(app: any) {
                 brand_id: t.Numeric(),
                 model_id: t.Numeric(),
                 warranty_expiry_date: t.Date(),
-                inc_number: t.String(),
+                inc_number: t.Optional(t.String()),
                 status: t.String(),
-                type: t.String(),
             }),
             detail: {
                 tags: ['Item']
@@ -60,9 +59,9 @@ export function ItemRoute(app: any) {
                 brand_id: t.Numeric(),
                 model_id: t.Numeric(),
                 warranty_expiry_date: t.Date(),
-                inc_number: t.String(),
+                inc_number: t.Optional(t.String()),
                 status: t.String(),
-                type: t.String(),
+                // type: t.String(),
             }),
             params: t.Object({
                 id: t.Numeric()
@@ -87,6 +86,18 @@ export function ItemRoute(app: any) {
             // beforeHandle: middleware.IsAuth,
             headers: t.Object({
                 authorization: t.String()
+            }),
+            detail: {
+                tags: ['Item']
+            }
+        })
+        .get("/serial/:serial_number", ItemCtrl.getItemBySerialNumber, {
+            beforeHandle: middleware.IsAuth,
+            headers: t.Object({
+                authorization: t.String()
+            }),
+            params: t.Object({
+                serial_number: t.String()
             }),
             detail: {
                 tags: ['Item']

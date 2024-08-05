@@ -138,7 +138,7 @@ model items {
   category             categories  @relation(fields: [category_id], references: [id])
   brand                brands      @relation(fields: [brand_id], references: [id])
   model                models      @relation(fields: [model_id], references: [id])
-  type                 item_type
+  type                 item_type?
   deleted_at           DateTime?
   created_at           DateTime    @default(now())
   created_by           Int
@@ -222,11 +222,11 @@ model tickets {
   item_model         String?
   item_sn            String?
   warranty_exp       DateTime?
-  resolve_status     String?
+  resolve_status     Boolean?
   resolve_remark     String?
   action             action_status?
-  time_in            DateTime?
-  time_out           DateTime?
+  time_in            String?
+  time_out           String?
   deleted_at         DateTime?
   created_at         DateTime       @default(now())
   store_item         store_items[]
