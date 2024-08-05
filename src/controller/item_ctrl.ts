@@ -38,4 +38,9 @@ export const ItemCtrl = {
         const data = await itemSvc.itemStatusOption()
         return response.SuccessResponse(ctx, data)
     },
+
+    getItemBySerialNumber: async (ctx: any) => {
+        const data = await itemSvc.getItemBySerialNumber(ctx.params.serial_number)
+        return response.SuccessResponse(ctx, data)
+    }
 }

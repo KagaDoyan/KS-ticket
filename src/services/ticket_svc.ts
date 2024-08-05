@@ -44,7 +44,7 @@ interface ticketPayload {
     item_model?: string,
     item_sn?: string,
     warranty_exp?: any,
-    resolve_status?: string,
+    resolve_status?: boolean,
     resolve_remark?: string,
     action?: action_status,
     time_in?: any,

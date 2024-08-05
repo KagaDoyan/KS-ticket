@@ -86,6 +86,26 @@ export const ShopSvc = {
         return shop
     },
 
+    getshopOption: async () => {
+        const shop = await db.shops.findMany({
+            where: {
+                deleted_at: null
+            },
+            include: {
+                province: {
+                    include: {
+                        priority_group: {
+                            include: {
+                                priorities: true
+                            }
+                        }
+                    }
+                }
+            }
+        })
+        return shop
+    },
+
     softDeleteShop: async (id: number) => {
         const shop = await db.shops.update({
             where: {
