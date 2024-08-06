@@ -284,6 +284,7 @@ model ticket_images {
   id         Int       @id @default(autoincrement())
   ticket_id  Int
   ticket     tickets   @relation(fields: [ticket_id], references: [id])
+  name       String
   path       String
   deleted_at DateTime?
   created_at DateTime  @default(now())

@@ -1,4 +1,5 @@
 import { Elysia } from "elysia";
+import { staticPlugin } from "@elysiajs/static"
 import { jwt } from "@elysiajs/jwt"
 import { bearer } from '@elysiajs/bearer'
 import { swagger } from '@elysiajs/swagger'
@@ -15,6 +16,10 @@ export const app = new Elysia()
   .use(swagger())
   .use(bearer())
   .use(cors())
+  .use(staticPlugin({
+    assets: 'files',
+    prefix: '/image'
+  }))
   .use(jwt({
     name: 'jwt',
     secret: Bun.env.JWT_SECRET!,
@@ -101,5 +106,10 @@ export const app = new Elysia()
     detail: {
       tags: ['health']
     }
+  })
+  .post('/upload', async (req) => {
+    const { request } = req;
+    const formData = await request.formData();
+    
   })
   .group("/api", MainRoute)

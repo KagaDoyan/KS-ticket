@@ -28,9 +28,19 @@ export const TicketCtrl = {
         const userID = await middleware.GetUserFromToken(ctx);
         ctx.body.created_by = userID;
         ctx.body.updated_by = userID;
-        const data = await ticketSvc.updateCloseTicket(ctx.params.id, { ...ctx.body });
+        const { request } = ctx;
+        const formData = await request.formData();
+        const data = await ticketSvc.updateCloseTicket(ctx.params.id, { ...ctx.body }, formData);
         return response.SuccessResponse(ctx, data);
     },
+
+    // // Test upload image
+    // uploadImage: async (ctx: any) => {
+    //     const { request } = ctx;
+    //     const formData = await request.formData();
+    //     const data = await ticketSvc.uploadImage(formData);
+    //     return response.SuccessResponse(ctx, data);
+    // },
 
     updateReturnItem: async (ctx: any) => {
         const userID = await middleware.GetUserFromToken(ctx);

@@ -113,7 +113,7 @@ export function TicketRoute(app: any) {
                 time_out: t.String(),
                 store_item: t.Any(),
                 spare_item: t.Any(),
-                images: t.Any()
+                delete_images: t.Any()
             }),
             detail: {
                 tags: ['Ticket']
@@ -134,4 +134,10 @@ export function TicketRoute(app: any) {
                 tags: ['Ticket']
             }
         })
+        // // test upload file
+        // .post("test", TicketCtrl.uploadImage, {
+        //     detail: {
+        //         tags: ['Ticket']
+        //     }
+        // })
     }

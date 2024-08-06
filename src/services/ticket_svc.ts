@@ -1,5 +1,7 @@
 import { action_status, ticket_status, Prisma, item_status, item_type } from "@prisma/client";
 import db from "../adapter.ts/database";
+import { unlink } from "node:fs/promises";
+import crypto from 'crypto'
 
 interface itemList {
     id?: number,
@@ -52,10 +54,10 @@ interface ticketPayload {
     store_item?: itemList[],
     spare_item?: itemList[],
     return_item?: itemList[],
-    images?: String[]
+    delete_images?: String[]
 }
 
-async function generateRandomNumber(length: number): Promise<string> {
+async function generateRandomNumber(length: number) {
     const numbers = '0123456789';
     let ticketNumber = '';
     const numbersLength = numbers.length;
@@ -72,6 +74,22 @@ async function generateRandomNumber(length: number): Promise<string> {
         return generateRandomNumber(length);
     }
     return ticketNumber;
+}
+
+async function generateNameForImage(name: string) {
+    let ext = "." + name.split(".")[1];
+    let uuid = crypto.randomUUID();
+    let imageName = uuid + ext;
+    let checkImage = await db.ticket_images.findFirst({
+        where: {
+            deleted_at: null,
+            name: imageName
+        }
+    });
+    if(checkImage){
+        return generateNameForImage(name);
+    }
+    return imageName;
 }
 
 export const ticketSvc = {
@@ -183,7 +201,7 @@ export const ticketSvc = {
         return ticket;
     },
 
-    updateCloseTicket: async (id: number, payload: ticketPayload) => {
+    updateCloseTicket: async (id: number, payload: ticketPayload, files: any) => {
         const ticket = await db.tickets.update({
             where: {
                 id: id
@@ -211,6 +229,14 @@ export const ticketSvc = {
         if(payload.store_item != null && payload.store_item.length != 0) {
             for(const item of payload.store_item) {
                 let item_sn = item.serial_number;
+                let checkExistStore = await db.store_items.findFirst({
+                    where: {
+                        deleted_at: null,
+                        ticket_id:payload.id,
+                        item_sn: item_sn,
+                    }
+                });
+                if(checkExistStore) continue;
                 let checkItem = await db.items.findFirst({
                     where: {
                         deleted_at: null,
@@ -286,6 +312,14 @@ export const ticketSvc = {
         if(payload.spare_item != null && payload.spare_item.length != 0) {
             for(const item of payload.spare_item) {
                 let item_sn = item.serial_number;
+                let checkExistSpare = await db.spare_items.findFirst({
+                    where: {
+                        deleted_at: null,
+                        ticket_id:payload.id,
+                        item_sn: item_sn,
+                    }
+                });
+                if(checkExistSpare) continue;
                 let checkItem = await db.items.findFirst({
                     where: {
                         deleted_at: null,
@@ -358,13 +392,41 @@ export const ticketSvc = {
             }
         }
 
-        if(payload.images != null && payload.images.length != 0) {
-            for(const image of payload.images) {
+        // Upload image
+        const images = files.getAll('file') as File[];
+        if(images != null && images.length != 0) {
+            for(const image of images) {
+                let imageName = await generateNameForImage(image.name);
+                await Bun.write(`files/` + imageName, image);
                 await db.ticket_images.create({
                     data: {
                         ticket_id: id,
-                        path: image.toString(),
+                        name: imageName,
+                        path: "/image/" + imageName,
                         created_by: payload.created_by
+                    }
+                });
+            }
+        }
+
+        // Delete File
+        if(payload.delete_images != null && payload.delete_images.length != 0) {
+            for(const imageName of payload.delete_images) {
+                let checkImage = await db.ticket_images.findFirst({
+                    where: {
+                        name: imageName.toString(),
+                        deleted_at: null
+                    },
+                });
+                if(!checkImage) continue;
+                await unlink(`files/` + imageName);
+                await db.ticket_images.update({
+                    where: {
+                        id: checkImage.id,
+                        deleted_at: null
+                    },
+                    data: {
+                        deleted_at: new Date()
                     }
                 });
             }
@@ -373,11 +435,29 @@ export const ticketSvc = {
         return ticket;
     },
 
+    // uploadImage: async (file: any) => {
+    //     // const formdata = await req.formData();
+    //     const files = file.getAll('file') as File[];
+    //     console.log(files);
+    //     for (const file of files) {
+    //         console.log(file.name);
+    //         await Bun.write(`files/` + crypto.randomUUID() + "." + file.name.split(".")[1], file);
+    //     }
+    // },
+
     updateReturnItem: async (id: number, payload: ticketPayload) => {
         if(payload.return_item == null || payload.return_item.length == 0){
             return { message: "No Return Item list to add" }
         }    
         for(const item of payload.return_item) {
+            let checkExistReturn = await db.return_items.findFirst({
+                where: {
+                    deleted_at: null,
+                    ticket_id:payload.id,
+                    item_sn: item.serial_number,
+                }
+            });
+            if(checkExistReturn) continue;
             let selectItem = await db.items.findFirst({
                 where: {
                     deleted_at: null,
