@@ -255,7 +255,7 @@ export const ticketSvc = {
                             item_brand: checkItem.brand.name,
                             item_category: checkItem.category.name,
                             item_model: checkItem.model.name,
-                            item_sn: item_sn,
+                            item_sn: checkItem.serial_number,
                             warranty_exp: checkItem.warranty_expiry_date,
                             status: checkItem.status,
                             created_by: payload.created_by
