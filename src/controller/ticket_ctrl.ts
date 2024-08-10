@@ -29,7 +29,7 @@ export const TicketCtrl = {
         ctx.body.updated_by = userID;
         const { request } = ctx;
         const formData = await request.formData();
-        const data = await ticketSvc.updateCloseTicket(ctx.params.id, { ...ctx.body }, formData);
+        const data = await ticketSvc.updateCloseTicket(ctx.params.id, { ...ctx.body }, ctx.images);
         return response.SuccessResponse(ctx, data);
     },
 

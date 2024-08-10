@@ -107,14 +107,14 @@ export function TicketRoute(app: any) {
                 item_model: t.String(),
                 item_sn: t.String(),
                 warranty_exp: t.Date(),
-                resolve_status: t.Boolean(),
+                resolve_status: t.BooleanString(),
                 resolve_remark: t.Optional(t.String()),
                 action: t.Enum(action_status),
                 time_in: t.String(),
                 time_out: t.String(),
                 store_item: t.Any(),
                 spare_item: t.Any(),
-                images: t.Optional(t.Any()),
+                images: t.Optional(t.Files()),
                 delete_images: t.Optional(t.Any())
             }),
             detail: {
