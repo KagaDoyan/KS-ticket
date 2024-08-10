@@ -110,12 +110,12 @@ export function TicketRoute(app: any) {
                 resolve_status: t.Boolean(),
                 resolve_remark: t.Optional(t.String()),
                 action: t.Enum(action_status),
-                time_in: t.Date(),
-                time_out: t.Date(),
-                store_item: t.Optional(t.Any()),
-                spare_item: t.Optional(t.Any()),
-                images: t.Any(),
-                delete_images: t.Any()
+                time_in: t.String(),
+                time_out: t.String(),
+                store_item: t.Any(),
+                spare_item: t.Any(),
+                images: t.Optional(t.Any()),
+                delete_images: t.Optional(t.Any())
             }),
             detail: {
                 tags: ['Ticket']
@@ -136,10 +136,10 @@ export function TicketRoute(app: any) {
                 tags: ['Ticket']
             }
         })
-        // // test upload file
-        // .post("test", TicketCtrl.uploadImage, {
-        //     detail: {
-        //         tags: ['Ticket']
-        //     }
-        // })
-    }
+    // // test upload file
+    // .post("test", TicketCtrl.uploadImage, {
+    //     detail: {
+    //         tags: ['Ticket']
+    //     }
+    // })
+}
