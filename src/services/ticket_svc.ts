@@ -46,14 +46,15 @@ interface ticketPayload {
     item_model?: string,
     item_sn?: string,
     warranty_exp?: any,
-    resolve_status?: boolean,
+    resolve_status: boolean,
     resolve_remark?: string,
     action?: action_status,
     time_in?: any,
     time_out?: any,
-    store_item?: itemList[],
-    spare_item?: itemList[],
-    return_item?: itemList[],
+    store_item?: string,
+    spare_item?: string,
+    return_item?: string,
+    images?: File[],
     delete_images?: String[]
 }
 
@@ -202,6 +203,7 @@ export const ticketSvc = {
     },
 
     updateCloseTicket: async (id: number, payload: ticketPayload, files: any) => {
+        console.log(payload);
         const ticket = await db.tickets.update({
             where: {
                 id: id
@@ -226,14 +228,15 @@ export const ticketSvc = {
                 updated_by: payload.updated_by
             }
         });
-        if(payload.store_item != null && payload.store_item.length != 0) {
-            for(const item of payload.store_item) {
+        if(payload.store_item){
+            let storeItem = JSON.parse(payload.store_item);
+            for(const item of storeItem) {
                 let item_sn = item.serial_number;
                 let checkExistStore = await db.store_items.findFirst({
                     where: {
                         deleted_at: null,
                         ticket_id:payload.id,
-                        item_sn: item_sn,
+                        serial_number: item_sn,
                     }
                 });
                 if(checkExistStore) continue;
@@ -252,10 +255,10 @@ export const ticketSvc = {
                     await db.store_items.create({
                         data: {
                             ticket_id: id,
-                            item_brand: checkItem.brand.name,
-                            item_category: checkItem.category.name,
-                            item_model: checkItem.model.name,
-                            item_sn: checkItem.serial_number,
+                            brand: checkItem.brand.name,
+                            category: checkItem.category.name,
+                            model: checkItem.model.name,
+                            serial_number: checkItem.serial_number,
                             warranty_exp: checkItem.warranty_expiry_date,
                             status: checkItem.status,
                             created_by: payload.created_by
@@ -297,10 +300,10 @@ export const ticketSvc = {
                 await db.store_items.create({
                     data: {
                         ticket_id: id,
-                        item_brand: newItem.brand.name,
-                        item_category: newItem.category.name,
-                        item_model: newItem.model.name,
-                        item_sn: item_sn,
+                        brand: newItem.brand.name,
+                        category: newItem.category.name,
+                        model: newItem.model.name,
+                        serial_number: item_sn,
                         warranty_exp: newItem.warranty_expiry_date,
                         status: newItem.status,
                         created_by: payload.created_by
@@ -309,14 +312,15 @@ export const ticketSvc = {
             }
         }
 
-        if(payload.spare_item != null && payload.spare_item.length != 0) {
-            for(const item of payload.spare_item) {
+        if(payload.spare_item) {
+            let spareItem = JSON.parse(payload.spare_item);
+            for(const item of spareItem) {
                 let item_sn = item.serial_number;
                 let checkExistSpare = await db.spare_items.findFirst({
                     where: {
                         deleted_at: null,
                         ticket_id:payload.id,
-                        item_sn: item_sn,
+                        serial_number: item_sn,
                     }
                 });
                 if(checkExistSpare) continue;
@@ -335,10 +339,10 @@ export const ticketSvc = {
                     await db.spare_items.create({
                         data: {
                             ticket_id: id,
-                            item_brand: checkItem.brand.name,
-                            item_category: checkItem.category.name,
-                            item_model: checkItem.model.name,
-                            item_sn: item_sn,
+                            brand: checkItem.brand.name,
+                            category: checkItem.category.name,
+                            model: checkItem.model.name,
+                            serial_number: item_sn,
                             warranty_exp: checkItem.warranty_expiry_date,
                             status: checkItem.status,
                             created_by: payload.created_by
@@ -380,10 +384,10 @@ export const ticketSvc = {
                 await db.spare_items.create({
                     data: {
                         ticket_id: id,
-                        item_brand: newItem.brand.name,
-                        item_category: newItem.category.name,
-                        item_model: newItem.model.name,
-                        item_sn: item_sn,
+                        brand: newItem.brand.name,
+                        category: newItem.category.name,
+                        model: newItem.model.name,
+                        serial_number: item_sn,
                         warranty_exp: newItem.warranty_expiry_date,
                         status: newItem.status,
                         created_by: payload.created_by
@@ -393,7 +397,8 @@ export const ticketSvc = {
         }
 
         // Upload image
-        const images = files.getAll('file') as File[];
+        console.log(payload.images);
+        const images = payload.images as File[];
         if(images != null && images.length != 0) {
             for(const image of images) {
                 let imageName = await generateNameForImage(image.name);
@@ -409,28 +414,28 @@ export const ticketSvc = {
             }
         }
 
-        // Delete File
-        if(payload.delete_images != null && payload.delete_images.length != 0) {
-            for(const imageName of payload.delete_images) {
-                let checkImage = await db.ticket_images.findFirst({
-                    where: {
-                        name: imageName.toString(),
-                        deleted_at: null
-                    },
-                });
-                if(!checkImage) continue;
-                await unlink(`files/` + imageName);
-                await db.ticket_images.update({
-                    where: {
-                        id: checkImage.id,
-                        deleted_at: null
-                    },
-                    data: {
-                        deleted_at: new Date()
-                    }
-                });
-            }
-        }
+        // // Delete File
+        // if(payload.delete_images != null && payload.delete_images.length != 0) {
+        //     for(const imageName of payload.delete_images) {
+        //         let checkImage = await db.ticket_images.findFirst({
+        //             where: {
+        //                 name: imageName.toString(),
+        //                 deleted_at: null
+        //             },
+        //         });
+        //         if(!checkImage) continue;
+        //         await unlink(`files/` + imageName);
+        //         await db.ticket_images.update({
+        //             where: {
+        //                 id: checkImage.id,
+        //                 deleted_at: null
+        //             },
+        //             data: {
+        //                 deleted_at: new Date()
+        //             }
+        //         });
+        //     }
+        // }
 
         return ticket;
     },
@@ -448,13 +453,15 @@ export const ticketSvc = {
     updateReturnItem: async (id: number, payload: ticketPayload) => {
         if(payload.return_item == null || payload.return_item.length == 0){
             return { message: "No Return Item list to add" }
-        }    
-        for(const item of payload.return_item) {
+        }
+        
+        let returnItem = JSON.parse(payload.return_item);
+        for(const item of returnItem) {
             let checkExistReturn = await db.return_items.findFirst({
                 where: {
                     deleted_at: null,
                     ticket_id:payload.id,
-                    item_sn: item.serial_number,
+                    serial_number: item.serial_number,
                 }
             });
             if(checkExistReturn) continue;
@@ -475,16 +482,17 @@ export const ticketSvc = {
             await db.return_items.create({
                 data: {
                     ticket_id: id,
-                    item_brand: selectItem.brand.name,
-                    item_category: selectItem.category.name,
-                    item_model: selectItem.model.name,
-                    item_sn: item.serial_number,
+                    brand: selectItem.brand.name,
+                    category: selectItem.category.name,
+                    model: selectItem.model.name,
+                    serial_number: item.serial_number,
                     warranty_exp: item.warranty_expiry_date,
                     status: item.status,
                     created_by: payload.created_by
                 }
             });
         }
+
         return { message: "Add return list complete" }
     },
 

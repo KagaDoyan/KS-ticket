@@ -5,6 +5,7 @@ interface priorityPayload {
 	id?: number,
 	name: string,
 	time_sec: string,
+	priority_groups_id: number,
 	created_by: number
 }
 
@@ -53,7 +54,8 @@ export const PrioritySvc = {
 		const priority = await db.priorities.create({
 			data: {
 				name: payload.name,
-                time_sec: payload.time_sec,
+				time_sec: payload.time_sec,
+				priority_groups_id: payload.priority_groups_id,
 				created_by: payload.created_by
 			}
 		});
@@ -67,7 +69,8 @@ export const PrioritySvc = {
 			},
 			data: {
 				name: payload.name,
-                time_sec: payload.time_sec,
+				time_sec: payload.time_sec,
+				priority_groups_id: payload.priority_groups_id,
 			}
 		});
 		return priority;

@@ -38,6 +38,7 @@ export function PriorityRoute(app: any) {
             body: t.Object({
                 name: t.String(),
                 time_sec: t.String(),
+                priority_groups_id: t.Numeric()
             }),
             detail: {
                 tags: ['Priority']
@@ -51,6 +52,7 @@ export function PriorityRoute(app: any) {
             body: t.Object({
                 name: t.String(),
                 time_sec: t.String(),
+                priority_groups_id: t.Numeric()
             }),
             params: t.Object({
                 id: t.Numeric()

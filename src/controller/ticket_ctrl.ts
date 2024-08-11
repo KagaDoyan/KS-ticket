@@ -28,7 +28,6 @@ export const TicketCtrl = {
         const userID = await middleware.GetUserFromToken(ctx);
         ctx.body.updated_by = userID;
         ctx.body.created_by = userID;
-        // const formData = await request.formData();
         const data = await ticketSvc.updateCloseTicket(ctx.params.id, { ...ctx.body }, ctx.formData);
         return response.SuccessResponse(ctx, data);
     },
