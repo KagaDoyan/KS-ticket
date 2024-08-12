@@ -13,6 +13,7 @@ enum item_status {
   return
   spare
   repair
+  replace
 }
 
 enum item_type {
