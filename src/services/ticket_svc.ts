@@ -229,8 +229,10 @@ export const ticketSvc = {
         });
         if (payload.store_item) {
             let storeItem = JSON.parse(payload.store_item);
+            let updateItemSN: string[] = [];
             for (const item of storeItem) {
                 let item_sn = item.serial_number;
+                updateItemSN.push(item_sn);
                 let checkExistStore = await db.store_items.findFirst({
                     where: {
                         deleted_at: null,
@@ -309,12 +311,28 @@ export const ticketSvc = {
                     }
                 });
             }
+            if(updateItemSN.length > 0){
+                await db.store_items.updateMany({
+                    where: {
+                        deleted_at: null,
+                        serial_number: {
+                            notIn: updateItemSN
+                        },
+                        ticket_id: payload.id,
+                    },
+                    data: {
+                        deleted_at: new Date(),
+                    },
+                });
+            }
         }
 
         if (payload.spare_item) {
             let spareItem = JSON.parse(payload.spare_item);
+            let updateItemSN: string[] = [];
             for (const item of spareItem) {
                 let item_sn = item.serial_number;
+                updateItemSN.push(item_sn);
                 let checkExistSpare = await db.spare_items.findFirst({
                     where: {
                         deleted_at: null,
@@ -322,7 +340,17 @@ export const ticketSvc = {
                         serial_number: item_sn,
                     }
                 });
-                if (checkExistSpare) continue;
+                if (checkExistSpare) {
+                    await db.spare_items.update({
+                        where: {
+                            id: checkExistSpare.id
+                        },
+                        data: {
+                            status: item.status
+                        },
+                    });
+                    continue;
+                }
                 let checkItem = await db.items.findFirst({
                     where: {
                         deleted_at: null,
@@ -393,6 +421,20 @@ export const ticketSvc = {
                     }
                 });
             }
+            if(updateItemSN.length > 0){
+                await db.spare_items.updateMany({
+                    where: {
+                        deleted_at: null,
+                        serial_number: {
+                            notIn: updateItemSN
+                        },
+                        ticket_id: payload.id,
+                    },
+                    data: {
+                        deleted_at: new Date(),
+                    },
+                });
+            }
         }
 
         // Upload image
@@ -412,7 +454,7 @@ export const ticketSvc = {
             }
         }
 
-        // // Delete File
+        // Delete File
         if (payload.delete_images != null && payload.delete_images.length != 0) {
             for (const imageName of payload.delete_images) {
                 console.log(imageName);
