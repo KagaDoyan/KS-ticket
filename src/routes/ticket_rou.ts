@@ -20,6 +20,19 @@ export function TicketRoute(app: any) {
                 tags: ['Ticket']
             }
         })
+        .get("/dashboard", TicketCtrl.getTicketByDateRange, {
+            beforeHandle: middleware.IsAuth,
+            headers: t.Object({
+                authorization: t.String()
+            }),
+            query: t.Object({
+                start: t.String(),
+                end: t.String(),
+            }),
+            detail: {
+                tags: ['Ticket']
+            }
+        })
         .get("/:id", TicketCtrl.getTicketByID, {
             beforeHandle: middleware.IsAuth,
             headers: t.Object({

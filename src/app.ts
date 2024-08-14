@@ -107,9 +107,4 @@ export const app = new Elysia()
       tags: ['health']
     }
   })
-  .post('/upload', async (req) => {
-    const { request } = req;
-    const formData = await request.formData();
-    
-  })
   .group("/api", MainRoute)

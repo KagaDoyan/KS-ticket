@@ -145,6 +145,8 @@ model items {
   created_by           Int
   engineer             engineers?  @relation(fields: [engineers_id], references: [id])
   engineers_id         Int?
+  ticket_id            Int?
+  ticket               tickets?    @relation(fields: [ticket_id], references: [id])
 }
 
 model priority_groups {
@@ -234,6 +236,7 @@ model tickets {
   spare_item         spare_items[]
   return_item        return_items[]
   ticket_image       ticket_images[]
+  item               items[]
 }
 
 model store_items {

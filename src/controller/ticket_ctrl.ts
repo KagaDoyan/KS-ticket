@@ -8,6 +8,11 @@ export const TicketCtrl = {
         return response.SuccessResponse(ctx, data)
     },
 
+    getTicketByDateRange: async (ctx: any) => {
+        const data = await ticketSvc.getTicketByDateRange(ctx.query.start, ctx.query.end)
+        return response.SuccessResponse(ctx, data)
+    },
+
     openTicket: async (ctx: any) => {
         const userID = await middleware.GetUserFromToken(ctx);
         ctx.body.created_by = userID;

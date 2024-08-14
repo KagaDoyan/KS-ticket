@@ -229,14 +229,12 @@ export const ticketSvc = {
         });
         if (payload.store_item) {
             let storeItem = JSON.parse(payload.store_item);
-            let updateItemSN: string[] = [];
             for (const item of storeItem) {
                 let item_sn = item.serial_number;
-                updateItemSN.push(item_sn);
                 let checkExistStore = await db.store_items.findFirst({
                     where: {
                         deleted_at: null,
-                        ticket_id: payload.id,
+                        ticket_id: id,
                         serial_number: item_sn,
                     }
                 });
@@ -272,7 +270,8 @@ export const ticketSvc = {
                         },
                         data: {
                             status: checkItem.status,
-                            type: item.type
+                            type: item.type,
+                            ticket_id: id
                         }
                     })
 
@@ -290,6 +289,7 @@ export const ticketSvc = {
                         status: item.status,
                         type: item.type,
                         created_by: payload.created_by,
+                        ticket_id: id
                     },
                     include: {
                         brand: true,
@@ -311,32 +311,16 @@ export const ticketSvc = {
                     }
                 });
             }
-            if (updateItemSN.length > 0) {
-                await db.store_items.updateMany({
-                    where: {
-                        deleted_at: null,
-                        serial_number: {
-                            notIn: updateItemSN
-                        },
-                        ticket_id: payload.id,
-                    },
-                    data: {
-                        deleted_at: new Date(),
-                    },
-                });
-            }
         }
 
         if (payload.spare_item) {
             let spareItem = JSON.parse(payload.spare_item);
-            let updateItemSN: string[] = [];
             for (const item of spareItem) {
                 let item_sn = item.serial_number;
-                updateItemSN.push(item_sn);
                 let checkExistSpare = await db.spare_items.findFirst({
                     where: {
                         deleted_at: null,
-                        ticket_id: payload.id,
+                        ticket_id: id,
                         serial_number: item_sn,
                     }
                 });
@@ -382,7 +366,8 @@ export const ticketSvc = {
                         },
                         data: {
                             status: checkItem.status,
-                            type: item.type
+                            type: item.type,
+                            ticket_id: id
                         }
                     })
 
@@ -400,6 +385,7 @@ export const ticketSvc = {
                         status: item.status,
                         type: item.type,
                         created_by: payload.created_by,
+                        ticket_id: id
                     },
                     include: {
                         brand: true,
@@ -419,20 +405,6 @@ export const ticketSvc = {
                         status: newItem.status,
                         created_by: payload.created_by
                     }
-                });
-            }
-            if (updateItemSN.length > 0) {
-                await db.spare_items.updateMany({
-                    where: {
-                        deleted_at: null,
-                        serial_number: {
-                            notIn: updateItemSN
-                        },
-                        ticket_id: payload.id,
-                    },
-                    data: {
-                        deleted_at: new Date(),
-                    },
                 });
             }
         }
@@ -456,7 +428,8 @@ export const ticketSvc = {
 
         // Delete File
         if (payload.delete_images != null && payload.delete_images.length != 0) {
-            for (const imageName of payload.delete_images) {
+            let deleteImages = typeof payload.delete_images === 'string' ? [payload.delete_images] : payload.delete_images;
+            for (const imageName of deleteImages) {
                 console.log(imageName);
                 let checkImage = await db.ticket_images.findFirst({
                     where: {
@@ -481,16 +454,6 @@ export const ticketSvc = {
         return ticket;
     },
 
-    // uploadImage: async (file: any) => {
-    //     // const formdata = await req.formData();
-    //     const files = file.getAll('file') as File[];
-    //     console.log(files);
-    //     for (const file of files) {
-    //         console.log(file.name);
-    //         await Bun.write(`files/` + crypto.randomUUID() + "." + file.name.split(".")[1], file);
-    //     }
-    // },
-
     updateReturnItem: async (id: number, payload: ticketPayload) => {
         if (payload.return_item == null || payload.return_item.length == 0) {
             return { message: "No Return Item list to add" }
@@ -501,7 +464,7 @@ export const ticketSvc = {
             let checkExistReturn = await db.return_items.findFirst({
                 where: {
                     deleted_at: null,
-                    ticket_id: payload.id,
+                    ticket_id: id,
                     serial_number: item.serial_number,
                 }
             });
@@ -520,6 +483,7 @@ export const ticketSvc = {
             if (!selectItem) {
                 return { message: "Can not get item for insert into return item" }
             }
+            let updateItemStatus = (selectItem.type === "inside" && item.status === "return") ? "in_stock" : item.status;
             await db.return_items.create({
                 data: {
                     ticket_id: id,
@@ -530,6 +494,15 @@ export const ticketSvc = {
                     warranty_exp: item.warranty_expiry_date,
                     status: item.status,
                     created_by: payload.created_by
+                }
+            });
+            await db.items.update({
+                where: {
+                    id: selectItem.id,
+                },
+                data: {
+                    status: updateItemStatus,
+                    ...(selectItem.type === "inside" && { ticket_id: null })
                 }
             });
         }
@@ -592,5 +565,22 @@ export const ticketSvc = {
             }
         });
         return ticket;
+    },
+
+    getTicketByDateRange: async (start: string, end: string) => {
+        const tickets = await db.tickets.findMany({
+            where: {
+                open_date: {
+                    gte: start,
+                    lte: end
+                },
+                deleted_at: null
+            },
+            include: {
+                created_user: true,
+                engineer: true,
+            }
+        });
+        return tickets;
     }
 }
