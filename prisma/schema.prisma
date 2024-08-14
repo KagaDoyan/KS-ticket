@@ -240,40 +240,42 @@ model store_items {
   id            Int         @id @default(autoincrement())
   ticket_id     Int
   ticket        tickets     @relation(fields: [ticket_id], references: [id])
-  brand    String
-  category String
-  model    String
-  serial_number       String
+  brand         String
+  category      String
+  model         String
+  serial_number String
   warranty_exp  DateTime?
   status        item_status
   deleted_at    DateTime?
   created_at    DateTime    @default(now())
   created_by    Int
+  deleted_by    Int?
 }
 
 model spare_items {
   id            Int         @id @default(autoincrement())
   ticket_id     Int
   ticket        tickets     @relation(fields: [ticket_id], references: [id])
-  brand    String
-  category String
-  model    String
-  serial_number       String
+  brand         String
+  category      String
+  model         String
+  serial_number String
   warranty_exp  DateTime?
   status        item_status
   deleted_at    DateTime?
   created_at    DateTime    @default(now())
   created_by    Int
+  deleted_by    Int?
 }
 
 model return_items {
   id            Int         @id @default(autoincrement())
   ticket_id     Int
   ticket        tickets     @relation(fields: [ticket_id], references: [id])
-  brand    String
-  category String
-  model    String
-  serial_number       String
+  brand         String
+  category      String
+  model         String
+  serial_number String
   warranty_exp  DateTime?
   status        item_status
   deleted_at    DateTime?

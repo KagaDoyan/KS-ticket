@@ -50,5 +50,17 @@ export const TicketCtrl = {
     getTicketByID: async (ctx: any) => {
         const data = await ticketSvc.getTicketByID(ctx.params.id)
         return response.SuccessResponse(ctx, data)
+    },
+
+    deleteShopItem: async (ctx: any) => {
+        const userID = await middleware.GetUserFromToken(ctx);
+        const data = await ticketSvc.deleteShopitem(ctx.params.id,userID)
+        return response.SuccessResponse(ctx, data)
+    },
+
+    deleteSpareitem: async (ctx: any) => {
+        const userID = await middleware.GetUserFromToken(ctx);
+        const data = await ticketSvc.deleteSpareitem(ctx.params.id,userID)
+        return response.SuccessResponse(ctx, data)
     }
 }

@@ -311,7 +311,7 @@ export const ticketSvc = {
                     }
                 });
             }
-            if(updateItemSN.length > 0){
+            if (updateItemSN.length > 0) {
                 await db.store_items.updateMany({
                     where: {
                         deleted_at: null,
@@ -421,7 +421,7 @@ export const ticketSvc = {
                     }
                 });
             }
-            if(updateItemSN.length > 0){
+            if (updateItemSN.length > 0) {
                 await db.spare_items.updateMany({
                     where: {
                         deleted_at: null,
@@ -563,6 +563,32 @@ export const ticketSvc = {
                         deleted_at: null
                     }
                 }
+            }
+        });
+        return ticket;
+    },
+
+    deleteShopitem: async (id: number, user_id: number) => {
+        const ticket = await db.store_items.update({
+            where: {
+                id: id
+            },
+            data: {
+                deleted_at: new Date(),
+                deleted_by: user_id,
+            }
+        });
+        return ticket;
+    },
+
+    deleteSpareitem: async (id: number, user_id: number) => {
+        const ticket = await db.spare_items.update({
+            where: {
+                id: id
+            },
+            data: {
+                deleted_at: new Date(),
+                deleted_by: user_id,
             }
         });
         return ticket;
