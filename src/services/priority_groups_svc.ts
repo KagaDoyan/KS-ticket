@@ -30,7 +30,11 @@ export const PriorityGroupSvc = {
 			skip: offset,
 			take: limit,
 			include:{
-				priorities: true
+				priorities: {
+					where: {
+						deleted_at: null
+					}
+				}
 			}
 		});
 		return {

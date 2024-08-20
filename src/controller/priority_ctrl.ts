@@ -29,7 +29,7 @@ export const PriorityCtrl = {
 
     deletePriority: async (ctx: any) => {
         const userID = middleware.GetUserFromToken(ctx)
-        ctx.body.created_by = userID
+        // ctx.body.created_by = userID
         const data = await PrioritySvc.softDeletePriority(ctx.params.id)
         return response.SuccessResponse(ctx, data)
     }
