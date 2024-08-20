@@ -173,6 +173,18 @@ export function TicketRoute(app: any) {
                 tags: ['Ticket']
             }
         })
+        .delete("/:id" , TicketCtrl.deleteTicket, {
+            beforeHandle : middleware.IsAuth,
+            headers: t.Object({
+                authorization: t.String()
+            }),
+            params: t.Object({
+                id: t.Numeric()
+            }),
+            detail: {
+                tags: ['Ticket']
+            }
+        })
     // // test upload file
     // .post("test", TicketCtrl.uploadImage, {
     //     detail: {

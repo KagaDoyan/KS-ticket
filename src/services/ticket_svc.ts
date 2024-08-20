@@ -516,6 +516,8 @@ export const ticketSvc = {
                 id: id
             },
             include: {
+                shop: true,
+                customer: true,
                 store_item: {
                     where: {
                         deleted_at: null
@@ -579,8 +581,22 @@ export const ticketSvc = {
             include: {
                 created_user: true,
                 engineer: true,
+                customer: true
             }
         });
         return tickets;
+    },
+
+    softDeleteTicket: async (id: number,user_id: number) => {
+        const ticket = await db.tickets.update({
+            where: {
+                id: id
+            },
+            data: {
+                deleted_at: new Date(),
+                updated_by: user_id,
+            }
+        });
+        return ticket;
     }
 }

@@ -59,13 +59,19 @@ export const TicketCtrl = {
 
     deleteShopItem: async (ctx: any) => {
         const userID = await middleware.GetUserFromToken(ctx);
-        const data = await ticketSvc.deleteShopitem(ctx.params.id,userID)
+        const data = await ticketSvc.deleteShopitem(ctx.params.id, userID)
         return response.SuccessResponse(ctx, data)
     },
 
     deleteSpareitem: async (ctx: any) => {
         const userID = await middleware.GetUserFromToken(ctx);
-        const data = await ticketSvc.deleteSpareitem(ctx.params.id,userID)
+        const data = await ticketSvc.deleteSpareitem(ctx.params.id, userID)
+        return response.SuccessResponse(ctx, data)
+    },
+
+    deleteTicket: async (ctx: any) => {
+        const userID = await middleware.GetUserFromToken(ctx);
+        const data = await ticketSvc.softDeleteTicket(ctx.params.id, userID)
         return response.SuccessResponse(ctx, data)
     }
 }
