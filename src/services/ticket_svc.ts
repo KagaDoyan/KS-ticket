@@ -12,7 +12,14 @@ interface itemList {
     warranty_expiry_date?: any,
     inc_number: string,
     status: item_status,
-    type: item_type
+    type: item_type,
+    ticket_type: string,
+    created_by: number
+}
+
+interface returnItem {
+    items: itemList[],
+    created_by: number,
 }
 
 interface ticketPayload {
@@ -454,13 +461,12 @@ export const ticketSvc = {
         return ticket;
     },
 
-    updateReturnItem: async (id: number, payload: ticketPayload) => {
-        if (payload.return_item == null || payload.return_item.length == 0) {
+    updateReturnItem: async (id: number, payload: returnItem) => {
+        if (payload.items == null || payload.items.length == 0) {
             return { message: "No Return Item list to add" }
         }
 
-        let returnItem = JSON.parse(payload.return_item);
-        for (const item of returnItem) {
+        for (const item of payload.items) {
             let checkExistReturn = await db.return_items.findFirst({
                 where: {
                     deleted_at: null,
@@ -480,31 +486,64 @@ export const ticketSvc = {
                     model: true
                 }
             });
-            if (!selectItem) {
-                return { message: "Can not get item for insert into return item" }
+            if (selectItem) {
+                let updateItemStatus = (selectItem.type === "inside" && item.status === "return") ? "in_stock" : item.status;
+                await db.return_items.create({
+                    data: {
+                        ticket_id: id,
+                        brand: selectItem.brand.name,
+                        category: selectItem.category.name,
+                        model: selectItem.model.name,
+                        serial_number: item.serial_number,
+                        warranty_exp: item.warranty_expiry_date,
+                        status: item.status,
+                        created_by: payload.created_by
+                    }
+                });
+                await db.items.update({
+                    where: {
+                        id: selectItem.id,
+                    },
+                    data: {
+                        status: updateItemStatus,
+                        ...(selectItem.type === "inside" && { ticket_id: null })
+                    }
+                });
+                continue;
             }
-            let updateItemStatus = (selectItem.type === "inside" && item.status === "return") ? "in_stock" : item.status;
-            await db.return_items.create({
-                data: {
-                    ticket_id: id,
-                    brand: selectItem.brand.name,
-                    category: selectItem.category.name,
-                    model: selectItem.model.name,
-                    serial_number: item.serial_number,
-                    warranty_exp: item.warranty_expiry_date,
-                    status: item.status,
-                    created_by: payload.created_by
-                }
-            });
-            await db.items.update({
-                where: {
-                    id: selectItem.id,
-                },
-                data: {
-                    status: updateItemStatus,
-                    ...(selectItem.type === "inside" && { ticket_id: null })
-                }
-            });
+            if(item.ticket_type === "store"){
+                let newItem = await db.items.create({
+                    data: {
+                        serial_number: item.serial_number,
+                        category_id: item.category_id,
+                        brand_id: item.brand_id,
+                        model_id: item.model_id,
+                        warranty_expiry_date: item.warranty_expiry_date,
+                        inc_number: item.inc_number,
+                        status: item.status,
+                        type: item.type,
+                        created_by: payload.created_by
+                    },
+                    include: {
+                        brand: true,
+                        category: true,
+                        model: true
+                    }
+                });
+
+                await db.spare_items.create({
+                    data: {
+                        ticket_id: id,
+                        brand: newItem.brand.name,
+                        category: newItem.category.name,
+                        model: newItem.model.name,
+                        serial_number: item.serial_number,
+                        warranty_exp: newItem.warranty_expiry_date,
+                        status: newItem.status,
+                        created_by: payload.created_by
+                    }
+                });
+            }
         }
 
         return { message: "Add return list complete" }

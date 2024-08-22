@@ -12,7 +12,8 @@ interface itemPayload {
 	inc_number?: string,
 	status: item_status,
 	type?: item_type,
-	created_by: number
+	created_by: number,
+	engineer_id: number,
 }
 
 export const itemSvc = {
@@ -89,6 +90,18 @@ export const itemSvc = {
 				model_id: payload.model_id,
 				warranty_expiry_date: payload.warranty_expiry_date,
 				status: payload.status,
+			}
+		});
+		return item;
+	},
+
+	updateEngineerItem: async (id: number, payload: itemPayload) => {
+		const item = await db.items.update({
+			where: {
+				id: id
+			},
+			data: {
+				engineers_id: payload.engineer_id,
 			}
 		});
 		return item;

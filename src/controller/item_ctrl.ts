@@ -27,6 +27,13 @@ export const ItemCtrl = {
         return response.SuccessResponse(ctx, data)
     },
 
+    updateEngineerItem: async (ctx: any) => {
+        const userID = await middleware.GetUserFromToken(ctx)
+        ctx.body.created_by = userID
+        const data = await itemSvc.updateEngineerItem(ctx.params.id, {...ctx.body})
+        return response.SuccessResponse(ctx, data)
+    },
+
     deleteItem: async (ctx: any) => {
         const userID = middleware.GetUserFromToken(ctx)
         ctx.body.created_by = userID

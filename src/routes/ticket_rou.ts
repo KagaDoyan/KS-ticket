@@ -144,6 +144,22 @@ export function TicketRoute(app: any) {
             }),
             body: t.Object({
                 return_item: t.Any()
+                // request
+                // "return_item": [
+                //     {
+                //         id?: number,
+                //         serial_number: string,
+                //         category_id: number,
+                //         brand_id: number,
+                //         model_id: number,
+                //         warranty_expiry_date?: any,
+                //         inc_number: string,
+                //         status: item_status,
+                //         type: item_type,
+                //         ticket_type: string, // store & spare
+                //         created_by: number
+                //     }
+                // ]
             }),
             detail: {
                 tags: ['Ticket']

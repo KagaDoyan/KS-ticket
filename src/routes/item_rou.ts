@@ -70,6 +70,21 @@ export function ItemRoute(app: any) {
                 tags: ['Item']
             }
         })
+        .put("/engineer/:id", ItemCtrl.updateEngineerItem, {
+            beforeHandle: middleware.IsAuth,
+            headers: t.Object({
+                authorization: t.String()
+            }),
+            body: t.Object({
+                engineer_id: t.Any(), // when remove engineer send null
+            }),
+            params: t.Object({
+                id: t.Numeric()
+            }),
+            detail: {
+                tags: ['Item']
+            }
+        })
         .delete("/:id", ItemCtrl.deleteItem, {
             beforeHandle: middleware.IsAuth,
             headers: t.Object({
