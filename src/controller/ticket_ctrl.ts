@@ -73,5 +73,10 @@ export const TicketCtrl = {
         const userID = await middleware.GetUserFromToken(ctx);
         const data = await ticketSvc.softDeleteTicket(ctx.params.id, userID)
         return response.SuccessResponse(ctx, data)
+    },
+
+    getNearestEngineer: async (ctx: any) => {
+        const data = await ticketSvc.getEngineerThatNearShop(ctx.params.shop_id)
+        return response.SuccessResponse(ctx, data)
     }
 }

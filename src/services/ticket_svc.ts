@@ -2,6 +2,7 @@ import { action_status, ticket_status, Prisma, item_status, item_type } from "@p
 import db from "../adapter.ts/database";
 import { unlink } from "node:fs/promises";
 import crypto from 'crypto'
+import * as turf from '@turf/turf'
 
 interface itemList {
     id?: number,
@@ -637,5 +638,46 @@ export const ticketSvc = {
             }
         });
         return ticket;
+    },
+
+    getEngineerThatNearShop: async (shop_id: number) => {
+        const shop = await db.shops.findFirst({
+            where: {
+                id: shop_id,
+                AND: [
+                    { longitude: { not: '' } },
+                    { latitude: { not: '' } }
+                ],
+            }
+        });
+        if(!shop) return { message: "Shop data not exist" }
+        const engineers = await db.engineers.findMany({
+            where: {
+                AND: [
+                    { longitude: { not: '' } },
+                    { latitude: { not: '' } }
+                ],
+                deleted_at: null,
+            }
+        });
+        const engineerPoints:any = [];
+        for(const item of engineers) {
+            engineerPoints.push({
+                point: turf.point([Number(item.longitude), Number(item.latitude)]),
+                id: item.id,
+                name: item.name,
+                lastname: item.lastname
+            });
+        }
+        const shopPoint = turf.point([Number(shop.longitude), Number(shop.latitude)]);
+        // Calculate the distance from the shop point to each engineer
+        const engineerWithDistance = engineerPoints.map(shop => {
+            const distance = turf.distance(shopPoint, shop.point, { units: 'kilometers' });
+            return { ...shop, distance };
+        });
+        // Sort engineer by distance (ascending)
+        engineerWithDistance.sort((a, b) => a.distance - b.distance);
+        const engineerList = engineerWithDistance.slice(0, 5).map(({ point, ...engineer }) => engineer);
+        return engineerList;
     }
 }

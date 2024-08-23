@@ -134,7 +134,7 @@ export function TicketRoute(app: any) {
                 tags: ['Ticket']
             }
         })
-        .post("/update/returnItem/:id", TicketCtrl.updateCloseTicket, {
+        .post("/update/returnItem/:id", TicketCtrl.updateReturnItem, {
             beforeHandle: middleware.IsAuth,
             headers: t.Object({
                 authorization: t.String()
@@ -196,6 +196,18 @@ export function TicketRoute(app: any) {
             }),
             params: t.Object({
                 id: t.Numeric()
+            }),
+            detail: {
+                tags: ['Ticket']
+            }
+        })
+        .get("/enigeer/:shop_id", TicketCtrl.getNearestEngineer, {
+            beforeHandle: middleware.IsAuth,
+            headers: t.Object({
+                authorization: t.String()
+            }),
+            params: t.Object({
+                shop_id: t.Numeric()
             }),
             detail: {
                 tags: ['Ticket']
