@@ -13,7 +13,7 @@ interface itemPayload {
 	status: item_status,
 	type?: item_type,
 	created_by: number,
-	engineer_id: number,
+	engineer_id: number | null,
 }
 
 export const itemSvc = {
@@ -22,7 +22,7 @@ export const itemSvc = {
 			deleted_at: null
 		}
 
-		if(search){
+		if (search) {
 			whereCondition.AND = [
 				{
 					OR: [
@@ -38,7 +38,7 @@ export const itemSvc = {
 			where: whereCondition,
 			skip: offset,
 			take: limit,
-			include:{
+			include: {
 				category: true,
 				brand: true,
 				model: true,
@@ -55,13 +55,13 @@ export const itemSvc = {
 	},
 
 	getItemByID: async (id: number) => {
-        const item = await db.items.findUnique({
-            where: {
-                id: id
-            }
-        });
-        return item;
-    },
+		const item = await db.items.findUnique({
+			where: {
+				id: id
+			}
+		});
+		return item;
+	},
 
 	createItem: async (payload: itemPayload) => {
 		const item = await db.items.create({
@@ -96,6 +96,8 @@ export const itemSvc = {
 	},
 
 	updateEngineerItem: async (id: number, payload: itemPayload) => {
+		console.log(payload.engineer_id);
+
 		const item = await db.items.update({
 			where: {
 				id: id
@@ -108,16 +110,16 @@ export const itemSvc = {
 	},
 
 	softDeleteItem: async (id: number) => {
-        const item = await db.items.update({
-            where: {
-                id: id,
-            },
-            data: {
-                deleted_at: new Date(),
-            }
-        });
-        return item;
-    },
+		const item = await db.items.update({
+			where: {
+				id: id,
+			},
+			data: {
+				deleted_at: new Date(),
+			}
+		});
+		return item;
+	},
 
 	itemStatusOption: async () => {
 		const option = await Object.values(item_status);

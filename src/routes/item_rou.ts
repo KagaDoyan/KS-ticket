@@ -76,7 +76,7 @@ export function ItemRoute(app: any) {
                 authorization: t.String()
             }),
             body: t.Object({
-                engineer_id: t.Any(), // when remove engineer send null
+                engineer_id: t.Nullable(t.Number()), // when remove engineer send null
             }),
             params: t.Object({
                 id: t.Numeric()

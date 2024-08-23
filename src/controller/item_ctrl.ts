@@ -28,8 +28,6 @@ export const ItemCtrl = {
     },
 
     updateEngineerItem: async (ctx: any) => {
-        const userID = await middleware.GetUserFromToken(ctx)
-        ctx.body.created_by = userID
         const data = await itemSvc.updateEngineerItem(ctx.params.id, {...ctx.body})
         return response.SuccessResponse(ctx, data)
     },
