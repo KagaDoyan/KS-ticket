@@ -557,6 +557,7 @@ export const ticketSvc = {
             },
             include: {
                 shop: true,
+                engineer: true,
                 customer: true,
                 store_item: {
                     where: {
