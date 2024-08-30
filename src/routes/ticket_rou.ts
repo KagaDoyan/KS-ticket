@@ -213,10 +213,4 @@ export function TicketRoute(app: any) {
                 tags: ['Ticket']
             }
         })
-    // // test upload file
-    // .post("test", TicketCtrl.uploadImage, {
-    //     detail: {
-    //         tags: ['Ticket']
-    //     }
-    // })
 }

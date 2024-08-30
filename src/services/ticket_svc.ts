@@ -1,8 +1,9 @@
 import { action_status, ticket_status, Prisma, item_status, item_type } from "@prisma/client";
 import db from "../adapter.ts/database";
 import { unlink } from "node:fs/promises";
-import crypto from 'crypto'
-import * as turf from '@turf/turf'
+import crypto from 'crypto';
+import * as turf from '@turf/turf';
+import sharp from 'sharp';
 
 interface itemList {
     id?: number,
@@ -422,7 +423,20 @@ export const ticketSvc = {
         if (images != null && images.length != 0) {
             for (const image of images) {
                 let imageName = await generateNameForImage(image.name);
-                await Bun.write(`files/` + imageName, image);
+                let imageType = imageName.split('.')[1].toLowerCase();
+                // Process the image to reduce file
+                const buffer = await image.arrayBuffer();
+                let resizedImageBuffer;
+                if(imageType === 'jpg' || imageType === 'jpeg') {
+                    resizedImageBuffer = await sharp(Buffer.from(buffer)).jpeg({ quality: 30 }).toBuffer();
+                }
+                else if(imageType === 'png') {
+                    resizedImageBuffer = await sharp(Buffer.from(buffer)).png({ quality: 30 }).toBuffer();
+                }
+                else if(imageType === 'webp') {
+                    resizedImageBuffer = await sharp(Buffer.from(buffer)).webp({ quality: 30 }).toBuffer();
+                }
+                await Bun.write(`files/` + imageName, resizedImageBuffer);
                 await db.ticket_images.create({
                     data: {
                         ticket_id: id,
