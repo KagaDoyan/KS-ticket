@@ -668,21 +668,29 @@ export const ticketSvc = {
         if(!shop) return { message: "Shop data not exist" }
         const engineers = await db.engineers.findMany({
             where: {
-                AND: [
-                    { longitude: { not: '' } },
-                    { latitude: { not: '' } }
-                ],
                 deleted_at: null,
             }
         });
         const engineerPoints:any = [];
+        const engineerNoPoints:any = [];
         for(const item of engineers) {
-            engineerPoints.push({
-                point: turf.point([Number(item.longitude), Number(item.latitude)]),
+            if(item.latitude && item.longitude){
+                engineerPoints.push({
+                    point: turf.point([Number(item.longitude), Number(item.latitude)]),
+                    id: item.id,
+                    name: item.name,
+                    lastname: item.lastname
+                });
+                continue;
+            }
+            engineerNoPoints.push({
                 id: item.id,
                 name: item.name,
                 lastname: item.lastname
             });
+        }
+        if(engineerPoints.length < 0){
+            return engineerNoPoints;
         }
         const shopPoint = turf.point([Number(shop.longitude), Number(shop.latitude)]);
         // Calculate the distance from the shop point to each engineer
@@ -692,7 +700,10 @@ export const ticketSvc = {
         });
         // Sort engineer by distance (ascending)
         engineerWithDistance.sort((a, b) => a.distance - b.distance);
-        const engineerList = engineerWithDistance.slice(0, 5).map(({ point, ...engineer }) => engineer);
+        let engineerList = engineerWithDistance.map(({ point, ...engineer }) => engineer);
+        if(engineerNoPoints.length > 0){
+            engineerList = [...engineerList, ...engineerNoPoints]
+        }
         return engineerList;
     }
 }
