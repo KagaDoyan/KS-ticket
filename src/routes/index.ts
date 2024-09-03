@@ -10,6 +10,7 @@ import { PriorityGroupRoute } from "./priority_group_rou";
 import { PriorityRoute } from "./priority_rou";
 import { ModelRoute } from "./model_rou";
 import { TicketRoute } from "./ticket_rou";
+import { ReportRoute } from "./report_rou";
 
 export function MainRoute(app: any) {
     return app
@@ -25,4 +26,5 @@ export function MainRoute(app: any) {
         .group("/priority", PriorityRoute)
         .group("/model", ModelRoute)
         .group("/ticket", TicketRoute)
+        .group("/report", ReportRoute)
 }
