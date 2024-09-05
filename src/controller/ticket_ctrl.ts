@@ -1,3 +1,4 @@
+import { log } from "node:console"
 import { middleware } from "../middleware/auth"
 import { ticketSvc } from "../services/ticket_svc"
 import { response } from "./reponse"
@@ -47,7 +48,7 @@ export const TicketCtrl = {
 
     updateReturnItem: async (ctx: any) => {
         const userID = await middleware.GetUserFromToken(ctx);
-        ctx.body.created_by = userID;
+        ctx.body.created_by = userID;        
         const data = await ticketSvc.updateReturnItem(ctx.params.id, { ...ctx.body });
         return response.SuccessResponse(ctx, data);
     },

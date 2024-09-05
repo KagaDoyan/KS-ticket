@@ -1,7 +1,7 @@
 import { t } from "elysia";
 import { TicketCtrl } from "../controller/ticket_ctrl";
 import { middleware } from "../middleware/auth";
-import { action_status, ticket_status } from "@prisma/client";
+import { action_status, item_status, item_type, ticket_status } from "@prisma/client";
 
 export function TicketRoute(app: any) {
     return app
@@ -142,25 +142,7 @@ export function TicketRoute(app: any) {
             params: t.Object({
                 id: t.Numeric()
             }),
-            body: t.Object({
-                return_item: t.Any()
-                // request
-                // "return_item": [
-                //     {
-                //         id?: number,
-                //         serial_number: string,
-                //         category_id: number,
-                //         brand_id: number,
-                //         model_id: number,
-                //         warranty_expiry_date?: any,
-                //         inc_number: string,
-                //         status: item_status,
-                //         type: item_type,
-                //         ticket_type: string, // store & spare
-                //         created_by: number
-                //     }
-                // ]
-            }),
+            body: t.Any(),
             detail: {
                 tags: ['Ticket']
             }

@@ -546,7 +546,7 @@ export const ticketSvc = {
                     }
                 });
 
-                await db.spare_items.create({
+                await db.return_items.create({
                     data: {
                         ticket_id: id,
                         brand: newItem.brand.name,
