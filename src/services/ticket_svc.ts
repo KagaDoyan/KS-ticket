@@ -4,6 +4,7 @@ import { unlink } from "node:fs/promises";
 import crypto from 'crypto';
 import * as turf from '@turf/turf';
 import sharp from 'sharp';
+import nodemailer from 'nodemailer';
 
 interface itemList {
     id?: number,
@@ -489,7 +490,6 @@ export const ticketSvc = {
                     serial_number: item.serial_number,
                 }
             });
-            if (checkExistReturn) continue;
             let selectItem = await db.items.findFirst({
                 where: {
                     deleted_at: null,
@@ -503,6 +503,26 @@ export const ticketSvc = {
             });
             if (selectItem) {
                 let updateItemStatus = (selectItem.type === "inside" && item.status === "return") ? "in_stock" : item.status;
+                if (checkExistReturn) {
+                    await db.return_items.update({
+                        where: {
+                            id: checkExistReturn.id,
+                        },
+                        data: {
+                            status: item.status
+                        }
+                    });
+                    let item_ticket_id = (selectItem.type === "inside" && item.status === "return") ? null : checkExistReturn.id
+                    await db.items.update({
+                        where: {
+                            id: selectItem.id,
+                        },
+                        data: {
+                            status: updateItemStatus,
+                            ticket_id: item_ticket_id
+                        }
+                    });
+                };
                 await db.return_items.create({
                     data: {
                         ticket_id: id,
@@ -546,7 +566,7 @@ export const ticketSvc = {
                     }
                 });
 
-                await db.spare_items.create({
+                await db.return_items.create({
                     data: {
                         ticket_id: id,
                         brand: newItem.brand.name,
@@ -705,5 +725,77 @@ export const ticketSvc = {
             engineerList = [...engineerList, ...engineerNoPoints]
         }
         return engineerList;
+    },
+
+    sendMail: async (id: number) => {
+        const ticket = await db.tickets.findFirst({
+            where: {
+                id: id
+            },
+            include: {
+                shop: true,
+                engineer: true,
+                customer: true,
+                ticket_image: {
+                    where: {
+                        deleted_at: null
+                    }
+                }
+            }
+        });
+
+        if(!ticket) return { message: "No Ticket Data" }
+
+        // Set email content
+        let status_title = ""
+        if (ticket.ticket_status == "close") {
+            status_title = "Resolved Case";
+        } else if (ticket.ticket_status == "spare") {
+            status_title = "Install Spare";
+        }
+        let incNumber = ticket.inc_number || ticket.ticket_number;
+        let mailSubject = `${status_title} : [${ticket.sla_priority_level} :Assigned ] | ${incNumber}  | ${ticket.shop_id}-${ticket.shop.shop_name} | ${ticket.title}`;
+        let mailHeader = `แจ้งปิดงาน | ${incNumber}`;
+        let htmlString = '<h3>' + mailHeader + '</h3><br>' +
+                         '<h3>Service Detail</h3><br>' +
+                         '<table style="width:100%;text-align:left;">'+
+                         '<tr><th style="vertical-align:top">Service Number</th><td style="vertical-align:top">' + ticket.ticket_number + '</td></tr>'+
+                         '<tr><th style="vertical-align:top">Engineer</th><td style="vertical-align:top">' + ticket.engineer.name + " " + ticket.engineer.name + '</td></tr>'+
+                         '<tr><th style="vertical-align:top">Equipment</th><td style="vertical-align:top">' + ticket.item_category + " " + ticket.item_brand + " " + ticket.item_model + '</td></tr>'+
+                         '<tr><th style="vertical-align:top">Investigation</th><td style="vertical-align:top">' + ticket.investigation + '</td></tr>'+
+                         '<tr><th style="vertical-align:top">Solution</th><td style="vertical-align:top">' + ticket.solution + '</td></tr>'+
+                         '<tr><th style="vertical-align:top">Appointment Time</th><td style="vertical-align:top">' + ticket.appointment_date + " " + ticket.appointment_time + '</td></tr>'+
+                         '<tr><th style="vertical-align:top">Time Start</th><td style="vertical-align:top">' + ticket.open_date + " " + ticket.open_time + '</td></tr>'+
+                         '<tr><th style="vertical-align:top">Time Finish</th><td style="vertical-align:top">' + ticket.close_date + " " + ticket.close_time + '</td></tr>'+
+                         '</table>';
+        let attachments: any = [];
+        for(const image of ticket.ticket_image){
+            attachments.push({
+                filename: image.name,
+                path: 'files/' + image.name
+            });
+        }
+        
+        const transporter = nodemailer.createTransport({
+            host: process.env.MAIL_HOST,
+            auth: {
+                user: process.env.MAIL_USERNAME,
+                pass: process.env.MAIL_PASSWORD
+            },
+        });
+    
+        const mailOptions = {
+            from: process.env.MAIL_SENDER,
+            to: ticket.shop.email,
+            subject: mailSubject,
+            html: htmlString,
+            attachments: attachments
+        };
+    
+        await transporter.sendMail(mailOptions);
+
+        return {
+            message: "Send Mail Complete"
+        };
     }
 }
