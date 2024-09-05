@@ -3,6 +3,7 @@
 # dependencies
 /node_modules
 /.pnp
+*.lockb
 .pnp.js
 
 # testing
