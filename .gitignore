@@ -5,6 +5,7 @@
 /.pnp
 *.lockb
 .pnp.js
+.env.docker
 
 # testing
 /coverage

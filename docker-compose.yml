@@ -14,6 +14,7 @@ services:
       - .:/usr/src/app # Optional: bind mount for live code updates
     networks:
       - app-network
+    restart: always
 
 networks:
   app-network:
