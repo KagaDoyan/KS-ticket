@@ -798,5 +798,16 @@ export const ticketSvc = {
         return {
             message: "Send Mail Complete"
         };
+    },
+
+    deleteReturnItem: async (id: number) => {
+        return await db.return_items.update({
+            where: {
+                id: id
+            },
+            data: {
+                deleted_at: new Date()
+            }
+        });
     }
 }

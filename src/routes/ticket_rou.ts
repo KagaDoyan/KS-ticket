@@ -207,4 +207,16 @@ export function TicketRoute(app: any) {
                 tags: ['Ticket']
             }
         })
+        .delete("/returnItem/:id", TicketCtrl.deletereturnitem, {
+            beforeHandle: middleware.IsAuth,
+            headers: t.Object({
+                authorization: t.String()
+            }),
+            params: t.Object({
+                id: t.Numeric()
+            }),
+            detail: {
+                tags: ['Ticket']
+            }
+        })
 }
