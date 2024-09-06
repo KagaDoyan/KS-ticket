@@ -707,7 +707,8 @@ export const ticketSvc = {
             engineerNoPoints.push({
                 id: item.id,
                 name: item.name,
-                lastname: item.lastname
+                lastname: item.lastname,
+                distance: 0
             });
         }
         if(engineerPoints.length < 0){
@@ -716,7 +717,7 @@ export const ticketSvc = {
         const shopPoint = turf.point([Number(shop.longitude), Number(shop.latitude)]);
         // Calculate the distance from the shop point to each engineer
         const engineerWithDistance = engineerPoints.map(shop => {
-            const distance = turf.distance(shopPoint, shop.point, { units: 'kilometers' });
+            const distance = turf.distance(shopPoint, shop.point, { units: 'meters' });
             return { ...shop, distance };
         });
         // Sort engineer by distance (ascending)

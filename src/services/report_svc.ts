@@ -2,10 +2,14 @@ import { Prisma } from "@prisma/client";
 import db from "../adapter.ts/database";
 
 export const reportSvc = {
-    reportMA: async () => {
+    reportMA: async (from: string, to: string) => {
         let allTicket = await db.tickets.findMany({
             where: {
-                deleted_at: null
+                deleted_at: null,
+                appointment_date: {
+                    gte: from,
+                    lte: to,
+                }
             },
             include: {
                 shop: true,
@@ -50,10 +54,17 @@ export const reportSvc = {
         }
     },
 
-    reportStoreBrokenPart: async () => {
+    reportStoreBrokenPart: async (from: string, to: string) => {
         let storeItem = await db.store_items.findMany({
             where: {
-                deleted_at: null
+                deleted_at: null,
+                ticket: {
+                    deleted_at: null,
+                    appointment_date: {
+                        gte: from,
+                        lte: to,
+                    },
+                }
             },
             include: {
                 ticket: true
