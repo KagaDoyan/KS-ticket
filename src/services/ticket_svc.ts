@@ -426,18 +426,18 @@ export const ticketSvc = {
                 let imageName = await generateNameForImage(image.name);
                 let imageType = imageName.split('.')[1].toLowerCase();
                 // Process the image to reduce file
-                const buffer = await image.arrayBuffer();
-                let resizedImageBuffer;
-                if(imageType === 'jpg' || imageType === 'jpeg') {
-                    resizedImageBuffer = await sharp(Buffer.from(buffer)).jpeg({ quality: 30 }).toBuffer();
-                }
-                else if(imageType === 'png') {
-                    resizedImageBuffer = await sharp(Buffer.from(buffer)).png({ quality: 30 }).toBuffer();
-                }
-                else if(imageType === 'webp') {
-                    resizedImageBuffer = await sharp(Buffer.from(buffer)).webp({ quality: 30 }).toBuffer();
-                }
-                await Bun.write(`files/` + imageName, resizedImageBuffer);
+                // const buffer = await image.arrayBuffer();
+                // let resizedImageBuffer;
+                // if(imageType === 'jpg' || imageType === 'jpeg') {
+                //     resizedImageBuffer = await sharp(Buffer.from(buffer)).jpeg({ quality: 30 }).toBuffer();
+                // }
+                // else if(imageType === 'png') {
+                //     resizedImageBuffer = await sharp(Buffer.from(buffer)).png({ quality: 30 }).toBuffer();
+                // }
+                // else if(imageType === 'webp') {
+                //     resizedImageBuffer = await sharp(Buffer.from(buffer)).webp({ quality: 30 }).toBuffer();
+                // }
+                await Bun.write(`files/` + imageName, image);
                 await db.ticket_images.create({
                     data: {
                         ticket_id: id,

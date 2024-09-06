@@ -1,0 +1,21 @@
+version: '3.9'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile # Ensure the Dockerfile is named correctly and in the root directory
+    ports:
+      - "3000:3000" # Expose the app on port 3000; adjust as necessary for your app's port
+    environment:
+      NODE_ENV: production
+    command: ["bun", "src/server.ts"]
+    volumes:
+      - .:/usr/src/app # Optional: bind mount for live code updates
+    networks:
+      - app-network
+    restart: always
+
+networks:
+  app-network:
+    driver: bridge
