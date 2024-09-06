@@ -686,12 +686,12 @@ export const ticketSvc = {
                 ],
             }
         });
-        if(!shop) return { message: "Shop data not exist" }
         const engineers = await db.engineers.findMany({
             where: {
                 deleted_at: null,
             }
         });
+        if(!shop) return engineers;
         const engineerPoints:any = [];
         const engineerNoPoints:any = [];
         for(const item of engineers) {
