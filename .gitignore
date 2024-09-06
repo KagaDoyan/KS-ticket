@@ -33,7 +33,7 @@ yarn-error.log*
 # vercel
 .vercel
 # bun.lockb
-bun.lockb
+*.lockb
 
 **/*.trace
 **/*.zip
