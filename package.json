@@ -17,9 +17,11 @@
     "@grotto/logysia": "^0.1.4",
     "@prisma/client": "^5.15.0",
     "@turf/turf": "^7.1.0",
+    "@types/nodemailer": "^6.4.15",
     "crypto-js": "^4.2.0",
     "elysia": "latest",
     "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^6.9.15",
     "prisma": "^5.15.0",
     "sharp": "^0.33.5"
   },

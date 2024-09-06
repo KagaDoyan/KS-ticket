@@ -79,5 +79,10 @@ export const TicketCtrl = {
     getNearestEngineer: async (ctx: any) => {
         const data = await ticketSvc.getEngineerThatNearShop(ctx.params.shop_id)
         return response.SuccessResponse(ctx, data)
+    },
+
+    sendMail: async (ctx: any) => {
+        const data = await ticketSvc.sendMail(ctx.params.id)
+        return response.SuccessResponse(ctx, data)
     }
 }
