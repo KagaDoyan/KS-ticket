@@ -522,6 +522,7 @@ export const ticketSvc = {
                             ticket_id: item_ticket_id
                         }
                     });
+                    continue;
                 };
                 await db.return_items.create({
                     data: {
