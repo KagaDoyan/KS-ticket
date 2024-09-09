@@ -4,7 +4,7 @@ import { response } from "./reponse";
 
 export const ReportCtrl = {
     getReportMA: async (ctx: any) => {
-        const data = await reportSvc.reportMA();
+        const data = await reportSvc.reportMA(ctx.query.from, ctx.query.to);
         return response.SuccessResponse(ctx, data); 
     },
 
@@ -14,7 +14,7 @@ export const ReportCtrl = {
     },
 
     getReportStoreBrokenPart: async (ctx: any) => {
-        const data = await reportSvc.reportStoreBrokenPart();
+        const data = await reportSvc.reportStoreBrokenPart(ctx.query.from, ctx.query.to);
         return response.SuccessResponse(ctx, data); 
     }
 }

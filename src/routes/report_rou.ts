@@ -9,6 +9,10 @@ export function ReportRoute(app: any) {
             headers: t.Object({
                 authorization: t.String()
             }),
+            query: t.Object({
+                from: t.String(),
+                to: t.String()
+            }),
             detail: {
                 tags: ['Report']
             }
@@ -18,6 +22,10 @@ export function ReportRoute(app: any) {
             headers: t.Object({
                 authorization: t.String()
             }),
+            query: t.Object({
+                from: t.String(),
+                to: t.String()
+            }),
             detail: {
                 tags: ['Report']
             }
@@ -26,6 +34,10 @@ export function ReportRoute(app: any) {
             beforeHandle: middleware.IsAuth,
             headers: t.Object({
                 authorization: t.String()
+            }),
+            query: t.Object({
+                from: t.String(),
+                to: t.String()
             }),
             detail: {
                 tags: ['Report']
