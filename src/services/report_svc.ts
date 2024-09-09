@@ -13,9 +13,7 @@ export const reportSvc = {
             },
             include: {
                 shop: true,
-                engineer: true,
-                store_item: true,
-                spare_item: true
+                engineer: true
             }
         });
         let ticketReport: any = [];
@@ -29,7 +27,12 @@ export const reportSvc = {
                 const timeNow = new Date();
                 SLA_overdue = timeNow > timeSLA ? "No" : "Yes";
             }
-            ticketReport.push({...ticket, SLA_overdue});
+            let { shop, engineer, ...ticketOnly } = ticket;
+            ticketOnly["engineer"] = ticket.engineer.name + " " + ticket.engineer.lastname;
+            ticketOnly["engineer_node"] = ticket.engineer.node;
+            ticketOnly["shop"] = ticket.shop.shop_name;
+            ticketOnly["SLA_overdue"] = SLA_overdue;
+            ticketReport.push(ticketOnly);
         }
         return {
             report: ticketReport
@@ -46,11 +49,29 @@ export const reportSvc = {
                 category: true,
                 brand: true,
                 model: true,
-                ticket: true
+                ticket: {
+                    include: {
+                        shop: true,
+                        customer: true,
+                    }
+                }
             }
         });
+        let invetory: any = []
+        for (const item of allItem) {
+            let {engineer, category, brand, model, ticket , ...itemOnly} = item;
+            itemOnly["engineer"] = item.engineer?.name + " " + item.engineer?.lastname;
+            itemOnly["category"] = item.category.name;
+            itemOnly["brand"] = item.brand.name;
+            itemOnly["model"] = item.model.name;
+            itemOnly["owner"] = item.ticket?.customer.fullname;
+            itemOnly["shop"] = item.ticket?.shop.shop_name;
+            itemOnly["inc_number"] = item.ticket?.inc_number || "";
+            itemOnly["remark"] = item.ticket?.resolve_remark;
+            invetory.push(itemOnly);
+        }
         return {
-            report: allItem
+            report: invetory
         }
     },
 
@@ -81,7 +102,13 @@ export const reportSvc = {
             if(!brokenItem) continue;
             console.log(brokenItem.engineers_id);
             let store_location = brokenItem.engineers_id ? "Node" : "Warehouse"; 
-            storeReport.push({ ...item, location: store_location});
+            let {ticket , ...itemOnly} = item;
+            itemOnly["ticket_date"] = item.ticket.appointment_date;
+            itemOnly["ticket_time"] = item.ticket.appointment_time;
+            itemOnly["location"] = store_location;
+            itemOnly["inc_number"] = item.ticket.inc_number;
+            itemOnly["ticket_title"] = item.ticket.title;
+            storeReport.push(itemOnly);
         }
         return {
             report: storeReport
