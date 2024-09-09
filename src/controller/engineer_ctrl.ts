@@ -28,8 +28,8 @@ export const EngineerCtrl = {
     },
 
     deleteEngineer: async (ctx: any) => {
-        const userID = middleware.GetUserFromToken(ctx)
-        ctx.body.created_by = userID
+        // const userID = await middleware.GetUserFromToken(ctx)
+        // ctx.body.created_by = userID
         const data = await engineerSvc.softDeleteEngineer(ctx.params.id)
         return response.SuccessResponse(ctx, data)
     },

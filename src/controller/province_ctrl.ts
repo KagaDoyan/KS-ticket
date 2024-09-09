@@ -33,8 +33,8 @@ export const ProvinceCtrl = {
     },
 
     deleteProvince: async (ctx: any) => {
-        const userID = await middleware.GetUserFromToken(ctx);
-        ctx.body.created_by = userID;
+        // const userID = await middleware.GetUserFromToken(ctx);
+        // ctx.body.created_by = userID;
         const data = await ProvinceSvc.softDeleteProvince(ctx.params.id);
         return response.SuccessResponse(ctx, data);
     }

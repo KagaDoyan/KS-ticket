@@ -33,7 +33,7 @@ export const PriorityGroupCtrl = {
     },
 
     deletePriorityGroup: async (ctx: any) => {
-        const userID = middleware.GetUserFromToken(ctx)
+        // const userID = await middleware.GetUserFromToken(ctx)
         // ctx.body.created_by = userID
         const data = await PriorityGroupSvc.softDeletePriorityGroup(ctx.params.id)
         return response.SuccessResponse(ctx, data)
