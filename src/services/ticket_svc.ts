@@ -130,6 +130,7 @@ export const ticketSvc = {
             include: {
                 created_user: true,
                 engineer: true,
+                shop: true
             }
         });
         return {

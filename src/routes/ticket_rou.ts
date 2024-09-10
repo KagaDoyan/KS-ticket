@@ -119,7 +119,7 @@ export function TicketRoute(app: any) {
                 item_category: t.String(),
                 item_model: t.String(),
                 item_sn: t.String(),
-                warranty_exp: t.Date(),
+                warranty_exp: t.Optional(t.Date()),
                 resolve_status: t.BooleanString(),
                 resolve_remark: t.Optional(t.String()),
                 action: t.Enum(action_status),
