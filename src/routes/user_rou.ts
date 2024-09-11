@@ -74,11 +74,25 @@ export function UserRoute(app: any) {
                 tags: ['User']
             }
         })
-
         .delete("/:id", UserCtrl.softDeleteUser, {
             beforeHandle: middleware.IsAuth,
             headers: t.Object({
                 authorization: t.String()
+            }),
+            params: t.Object({
+                id: t.Numeric()
+            }),
+            detail: {
+                tags: ['User']
+            }
+        })
+        .post("/password/:id", UserCtrl.updatePassword, {
+            beforeHandle: middleware.IsAuth,
+            headers: t.Object({
+                authorization: t.String()
+            }),
+            body: t.Object({
+                password: t.String()
             }),
             params: t.Object({
                 id: t.Numeric()

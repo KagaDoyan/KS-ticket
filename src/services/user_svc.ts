@@ -140,5 +140,23 @@ export const UserSvc = {
             }
         })
         return user
+    },
+
+    updatePassword: async (id: number, payload: userPayload) => {
+        const user = await db.users.findUnique({
+            where: {
+                id: id,
+                deleted_at: null
+            }
+        })
+        if(!user) return { message: "User not found" }
+        let hashpassword = CryptoUtil.encryptData(payload.password);
+        await db.users.update({
+            where: { id },
+            data: {
+                password: hashpassword
+            },
+        })
+        return { message: "Update password complete" }
     }
 }

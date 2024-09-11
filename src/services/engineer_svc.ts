@@ -11,7 +11,7 @@ interface engineerPayload {
 	latitude: string,
 	longitude: string,
 	province: number[]
-	node: string,
+	node_id: number,
 	password: string,
 	created_by: number,
 	email: string,
@@ -57,7 +57,8 @@ export const engineerSvc = {
 				id: id
 			},
 			include: {
-				province: true
+				province: true,
+				node: true
 			}
 		});
 		return engineer;
@@ -77,7 +78,7 @@ export const engineerSvc = {
 				province: {
 					connect: payload.province.map(id => ({ id }))
 				},
-				node: payload.node,
+				node_id: payload.node_id,
 				password: hashpassword,
 				created_by: payload.created_by
 			},
@@ -85,7 +86,7 @@ export const engineerSvc = {
 				id: true
 			}
 		});
-		const user = await db.users.create({
+		await db.users.create({
 			data: {
 				fullname: payload.name + " " + payload.lastname,
 				email: payload.email,
@@ -114,7 +115,7 @@ export const engineerSvc = {
 				province: {
 					set: payload.province.map((provinceId) => ({ id: provinceId })),
 				},
-				node: payload.node
+				node_id: payload.node_id
 			}
 		});
 		// await db.users.update({

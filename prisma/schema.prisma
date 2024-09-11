@@ -86,10 +86,12 @@ model provinces {
   priority_group       priority_groups        @relation(fields: [priority_group_id], references: [id])
   shops                shops[]
   engineers            engineers[]
+  node                 nodes[]
   deleted_at           DateTime?
   created_at           DateTime               @default(now())
   created_by           Int
   engineer_on_province engineer_on_province[]
+  node_on_province     node_on_province[]
 }
 
 model engineer_on_province {
@@ -99,6 +101,26 @@ model engineer_on_province {
   engineer_id Int // relation scalar field (used in the `@relation` attribute above)
 
   @@id([province_id, engineer_id])
+}
+
+model nodes {
+  id                   Int                    @id @default(autoincrement())
+  name                 String
+  deleted_at DateTime?
+  created_at DateTime  @default(now())
+  created_by Int
+  province             provinces[]
+  engineers            engineers[]
+  node_on_province     node_on_province[]
+}
+
+model node_on_province {
+  provinces   provinces @relation(fields: [province_id], references: [id])
+  province_id Int // relation scalar field (used in the `@relation` attribute above)
+  node    nodes @relation(fields: [node_id], references: [id])
+  node_id Int // relation scalar field (used in the `@relation` attribute above)
+
+  @@id([province_id, node_id])
 }
 
 model brands {
@@ -179,7 +201,7 @@ model engineers {
   line_name            String
   latitude             String
   longitude            String
-  node                 String
+  node_id              Int?
   password             String
   province             provinces[]
   deleted_at           DateTime?
@@ -189,6 +211,7 @@ model engineers {
   engineer_on_province engineer_on_province[]
   tickets              tickets[]
   items                items[]
+  node                 nodes?                  @relation(fields: [node_id], references: [id])
 }
 
 model tickets {

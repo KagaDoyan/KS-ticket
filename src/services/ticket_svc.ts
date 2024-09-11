@@ -425,7 +425,7 @@ export const ticketSvc = {
         if (images != null && images.length != 0) {
             for (const image of images) {
                 let imageName = await generateNameForImage(image.name);
-                let imageType = imageName.split('.')[1].toLowerCase();
+                // let imageType = imageName.split('.')[1].toLowerCase();
                 // Process the image to reduce file
                 // const buffer = await image.arrayBuffer();
                 // let resizedImageBuffer;
@@ -593,7 +593,11 @@ export const ticketSvc = {
             },
             include: {
                 shop: true,
-                engineer: true,
+                engineer: {
+                    include: {
+                        node: true
+                    }
+                },
                 customer: true,
                 store_item: {
                     where: {
@@ -718,8 +722,8 @@ export const ticketSvc = {
         const shopPoint = turf.point([Number(shop.longitude), Number(shop.latitude)]);
         // Calculate the distance from the shop point to each engineer
         const engineerWithDistance = engineerPoints.map(shop => {
-            const distance = turf.distance(shopPoint, shop.point, { units: 'meters' });
-            return { ...shop, distance };
+            const distance = turf.distance(shopPoint, shop.point, { units: 'kilometers' });
+            return { ...shop, distance: parseFloat(distance.toFixed(2)) };
         });
         // Sort engineer by distance (ascending)
         engineerWithDistance.sort((a, b) => a.distance - b.distance);

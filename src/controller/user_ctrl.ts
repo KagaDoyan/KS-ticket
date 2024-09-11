@@ -57,5 +57,10 @@ export const UserCtrl = {
     softDeleteUser: async (ctx: any) => {
         const data = await UserSvc.softDeleteUser(ctx.params.id)
         return response.SuccessResponse(ctx, data)
+    },
+
+    updatePassword: async (ctx: any) => {
+        const data = await UserSvc.updatePassword(ctx.params.id, {...ctx.body})
+        return response.SuccessResponse(ctx, data)
     }
 };

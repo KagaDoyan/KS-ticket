@@ -13,7 +13,11 @@ export const reportSvc = {
             },
             include: {
                 shop: true,
-                engineer: true
+                engineer: {
+                    include: {
+                        node: true,
+                    }
+                }
             }
         });
         let ticketReport: any = [];
@@ -29,7 +33,7 @@ export const reportSvc = {
             }
             let { shop, engineer, ...ticketOnly } = ticket;
             ticketOnly["engineer"] = ticket.engineer.name + " " + ticket.engineer.lastname;
-            ticketOnly["engineer_node"] = ticket.engineer.node;
+            ticketOnly["engineer_node"] = ticket.engineer.node?.name;
             ticketOnly["shop"] = ticket.shop.shop_name;
             ticketOnly["SLA_overdue"] = SLA_overdue;
             ticketReport.push(ticketOnly);
