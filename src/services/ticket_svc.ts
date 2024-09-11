@@ -1,4 +1,4 @@
-import { action_status, ticket_status, Prisma, item_status, item_type } from "@prisma/client";
+import { ticket_status, Prisma, item_status, item_type } from "@prisma/client";
 import db from "../adapter.ts/database";
 import { unlink } from "node:fs/promises";
 import crypto from 'crypto';
@@ -58,7 +58,7 @@ interface ticketPayload {
     warranty_exp?: any,
     resolve_status: boolean,
     resolve_remark?: string,
-    action?: action_status,
+    action?: string,
     time_in?: any,
     time_out?: any,
     store_item?: string,
@@ -548,7 +548,7 @@ export const ticketSvc = {
                 });
                 continue;
             }
-            if(item.ticket_type === "store"){
+            if (item.ticket_type === "store") {
                 let newItem = await db.items.create({
                     data: {
                         serial_number: item.serial_number,
@@ -664,7 +664,7 @@ export const ticketSvc = {
         return tickets;
     },
 
-    softDeleteTicket: async (id: number,user_id: number) => {
+    softDeleteTicket: async (id: number, user_id: number) => {
         const ticket = await db.tickets.update({
             where: {
                 id: id
@@ -692,11 +692,11 @@ export const ticketSvc = {
                 deleted_at: null,
             }
         });
-        if(!shop) return engineers;
-        const engineerPoints:any = [];
-        const engineerNoPoints:any = [];
-        for(const item of engineers) {
-            if(item.latitude && item.longitude){
+        if (!shop) return engineers;
+        const engineerPoints: any = [];
+        const engineerNoPoints: any = [];
+        for (const item of engineers) {
+            if (item.latitude && item.longitude) {
                 engineerPoints.push({
                     point: turf.point([Number(item.longitude), Number(item.latitude)]),
                     id: item.id,
@@ -712,7 +712,7 @@ export const ticketSvc = {
                 distance: 0
             });
         }
-        if(engineerPoints.length < 0){
+        if (engineerPoints.length < 0) {
             return engineerNoPoints;
         }
         const shopPoint = turf.point([Number(shop.longitude), Number(shop.latitude)]);
@@ -724,7 +724,7 @@ export const ticketSvc = {
         // Sort engineer by distance (ascending)
         engineerWithDistance.sort((a, b) => a.distance - b.distance);
         let engineerList = engineerWithDistance.map(({ point, ...engineer }) => engineer);
-        if(engineerNoPoints.length > 0){
+        if (engineerNoPoints.length > 0) {
             engineerList = [...engineerList, ...engineerNoPoints]
         }
         return engineerList;
@@ -747,7 +747,7 @@ export const ticketSvc = {
             }
         });
 
-        if(!ticket) return { message: "No Ticket Data" }
+        if (!ticket) return { message: "No Ticket Data" }
 
         // Set email content
         let status_title = ""
@@ -760,25 +760,25 @@ export const ticketSvc = {
         let mailSubject = `${status_title} : [${ticket.sla_priority_level} :Assigned ] | ${incNumber}  | ${ticket.shop_id}-${ticket.shop.shop_name} | ${ticket.title}`;
         let mailHeader = `แจ้งปิดงาน | ${incNumber}`;
         let htmlString = '<h3>' + mailHeader + '</h3><br>' +
-                         '<h3>Service Detail</h3><br>' +
-                         '<table style="width:100%;text-align:left;">'+
-                         '<tr><th style="vertical-align:top">Service Number</th><td style="vertical-align:top">' + ticket.ticket_number + '</td></tr>'+
-                         '<tr><th style="vertical-align:top">Engineer</th><td style="vertical-align:top">' + ticket.engineer.name + " " + ticket.engineer.name + '</td></tr>'+
-                         '<tr><th style="vertical-align:top">Equipment</th><td style="vertical-align:top">' + ticket.item_category + " " + ticket.item_brand + " " + ticket.item_model + '</td></tr>'+
-                         '<tr><th style="vertical-align:top">Investigation</th><td style="vertical-align:top">' + ticket.investigation + '</td></tr>'+
-                         '<tr><th style="vertical-align:top">Solution</th><td style="vertical-align:top">' + ticket.solution + '</td></tr>'+
-                         '<tr><th style="vertical-align:top">Appointment Time</th><td style="vertical-align:top">' + ticket.appointment_date + " " + ticket.appointment_time + '</td></tr>'+
-                         '<tr><th style="vertical-align:top">Time Start</th><td style="vertical-align:top">' + ticket.open_date + " " + ticket.open_time + '</td></tr>'+
-                         '<tr><th style="vertical-align:top">Time Finish</th><td style="vertical-align:top">' + ticket.close_date + " " + ticket.close_time + '</td></tr>'+
-                         '</table>';
+            '<h3>Service Detail</h3><br>' +
+            '<table style="width:100%;text-align:left;">' +
+            '<tr><th style="vertical-align:top">Service Number</th><td style="vertical-align:top">' + ticket.ticket_number + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Engineer</th><td style="vertical-align:top">' + ticket.engineer.name + " " + ticket.engineer.name + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Equipment</th><td style="vertical-align:top">' + ticket.item_category + " " + ticket.item_brand + " " + ticket.item_model + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Investigation</th><td style="vertical-align:top">' + ticket.investigation + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Solution</th><td style="vertical-align:top">' + ticket.solution + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Appointment Time</th><td style="vertical-align:top">' + ticket.appointment_date + " " + ticket.appointment_time + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Time Start</th><td style="vertical-align:top">' + ticket.open_date + " " + ticket.open_time + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Time Finish</th><td style="vertical-align:top">' + ticket.close_date + " " + ticket.close_time + '</td></tr>' +
+            '</table>';
         let attachments: any = [];
-        for(const image of ticket.ticket_image){
+        for (const image of ticket.ticket_image) {
             attachments.push({
                 filename: image.name,
                 path: 'files/' + image.name
             });
         }
-        
+
         const transporter = nodemailer.createTransport({
             host: process.env.MAIL_HOST,
             auth: {
@@ -786,7 +786,7 @@ export const ticketSvc = {
                 pass: process.env.MAIL_PASSWORD
             },
         });
-    
+
         const mailOptions = {
             from: process.env.MAIL_SENDER,
             to: ticket.shop.email,
@@ -794,7 +794,7 @@ export const ticketSvc = {
             html: htmlString,
             attachments: attachments
         };
-    
+
         await transporter.sendMail(mailOptions);
 
         return {

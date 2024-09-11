@@ -1,7 +1,7 @@
 import { t } from "elysia";
 import { TicketCtrl } from "../controller/ticket_ctrl";
 import { middleware } from "../middleware/auth";
-import { action_status, item_status, item_type, ticket_status } from "@prisma/client";
+import { item_status, item_type, ticket_status } from "@prisma/client";
 
 export function TicketRoute(app: any) {
     return app
@@ -122,7 +122,7 @@ export function TicketRoute(app: any) {
                 warranty_exp: t.Optional(t.Date()),
                 resolve_status: t.BooleanString(),
                 resolve_remark: t.Optional(t.String()),
-                action: t.Enum(action_status),
+                action: t.String(),
                 time_in: t.String(),
                 time_out: t.String(),
                 store_item: t.Any(),

@@ -228,7 +228,7 @@ model tickets {
   warranty_exp       DateTime?
   resolve_status     Boolean?
   resolve_remark     String?
-  action             action_status?
+  action             String?
   time_in            String?
   time_out           String?
   deleted_at         DateTime?
