@@ -37,7 +37,10 @@ export const StorageSvc = {
         const storage = await db.storages.findMany({
             where: whereCondition,
             skip: offset,
-            take: limit
+            take: limit,
+			orderBy: {
+				id: "desc"
+			}
         });
         return {
             page: page,

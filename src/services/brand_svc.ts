@@ -28,7 +28,10 @@ export const BrandSvc = {
 		const brands = await db.brands.findMany({
 			where: whereCondition,
 			skip: offset,
-			take: limit
+			take: limit,
+			orderBy: {
+				id: "desc"
+			}
 		});
 		return {
 			page: page,

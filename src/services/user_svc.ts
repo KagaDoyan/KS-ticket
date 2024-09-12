@@ -91,7 +91,10 @@ export const UserSvc = {
             },
             where: whereCondition,
             skip: offset,
-            take: limit
+            take: limit,
+			orderBy: {
+				id: "desc"
+			}
         });
 
         return {

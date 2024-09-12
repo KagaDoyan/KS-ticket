@@ -29,6 +29,9 @@ export const NodeSvc = {
             where: whereCondition,
             skip: offset,
             take: limit,
+			orderBy: {
+				id: "desc"
+			},
             include: {
                 province: true
             }

@@ -37,6 +37,9 @@ export const ProvinceSvc = {
             where: whereCondition,
             skip: offset,
             take: limit,
+			orderBy: {
+				id: "desc"
+			}
         });
         return {
             page: page,

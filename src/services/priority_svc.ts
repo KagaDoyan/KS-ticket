@@ -30,7 +30,10 @@ export const PrioritySvc = {
 		const priorities = await db.priorities.findMany({
 			where: whereCondition,
 			skip: offset,
-			take: limit
+			take: limit,
+			orderBy: {
+				id: "desc"
+			}
 		});
 		return {
 			page: page,

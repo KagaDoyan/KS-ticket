@@ -31,6 +31,9 @@ export const PriorityGroupSvc = {
 			where: whereCondition,
 			skip: offset,
 			take: limit,
+			orderBy: {
+				id: "desc"
+			},
 			include: {
 				priorities: {
 					where: {

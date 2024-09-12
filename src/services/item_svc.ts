@@ -40,6 +40,9 @@ export const itemSvc = {
 			where: whereCondition,
 			skip: offset,
 			take: limit,
+			orderBy: {
+				id: "desc"
+			},
 			include: {
 				category: true,
 				brand: true,

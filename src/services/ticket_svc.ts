@@ -128,6 +128,9 @@ export const ticketSvc = {
             where: whereCondition,
             skip: offset,
             take: limit,
+			orderBy: {
+				id: "desc"
+			},
             include: {
                 created_user: true,
                 engineer: true,
@@ -728,7 +731,7 @@ export const ticketSvc = {
         // Calculate the distance from the shop point to each engineer
         const engineerWithDistance = engineerPoints.map(shop => {
             const distance = turf.distance(shopPoint, shop.point, { units: 'kilometers' });
-            return { ...shop, distance: parseFloat(distance.toFixed(2)) };
+            return { ...shop, distance: Math.ceil(parseFloat(distance.toFixed(2))) };
         });
         // Sort engineer by distance (ascending)
         engineerWithDistance.sort((a, b) => a.distance - b.distance);

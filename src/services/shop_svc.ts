@@ -36,6 +36,9 @@ export const ShopSvc = {
             where: whereCondition,
             skip: offset,
             take: limit,
+			orderBy: {
+				id: "desc"
+			},
             include: {
                 customer: true,
                 province: true

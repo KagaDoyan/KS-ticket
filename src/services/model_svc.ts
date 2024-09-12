@@ -28,7 +28,10 @@ export const ModelSvc = {
 		const models = await db.models.findMany({
 			where: whereCondition,
 			skip: offset,
-			take: limit
+			take: limit,
+			orderBy: {
+				id: "desc"
+			}
 		});
 		return {
 			page: page,
