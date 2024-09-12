@@ -86,7 +86,7 @@ export function UserRoute(app: any) {
                 tags: ['User']
             }
         })
-        .post("/password/:id", UserCtrl.updatePassword, {
+        .put("/password/:id", UserCtrl.updatePassword, {
             beforeHandle: middleware.IsAuth,
             headers: t.Object({
                 authorization: t.String()

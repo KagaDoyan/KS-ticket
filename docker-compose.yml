@@ -12,6 +12,7 @@ services:
     command: ["bun", "src/server.ts"]
     volumes:
       - .:/usr/src/app # Optional: bind mount for live code updates
+      - ./files:/usr/src/app/files # Mount the local `files` folder to `/usr/src/app/files` in the container
     networks:
       - app-network
     restart: always
