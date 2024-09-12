@@ -18,6 +18,15 @@ export function NodeRoute(app: any) {
                 tags: ['Node']
             }
         })
+        .get("/option", NodeCtrl.getnodeoption, {
+            beforeHandle: middleware.IsAuth,
+            headers: t.Object({
+                authorization: t.String()
+            }),
+            detail: {
+                tags: ['Node']
+            }
+        })
         .get("/:id", NodeCtrl.getnodeByID, {
             beforeHandle: middleware.IsAuth,
             headers: t.Object({

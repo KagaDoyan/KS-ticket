@@ -4,6 +4,8 @@ import db from "../adapter.ts/database"
 interface priorityGroupPayload {
 	id?: number,
 	group_name: string,
+	customer_id: number,
+	province_id: number[],
 	created_by: number
 }
 
@@ -13,7 +15,7 @@ export const PriorityGroupSvc = {
 			deleted_at: null
 		}
 
-		if(search){
+		if (search) {
 			whereCondition.AND = [
 				{
 					OR: [
@@ -29,20 +31,22 @@ export const PriorityGroupSvc = {
 			where: whereCondition,
 			skip: offset,
 			take: limit,
-			include:{
+			include: {
 				priorities: {
 					where: {
 						deleted_at: null
 					}
-				}
+				},
+				customer: true,
+				provinces: true
 			}
 		});
 		return {
 			page: page,
-            limit: limit,
-            total_page: totalPages,
-            total_rows: total_priority_group,
-            data: priorityGroups
+			limit: limit,
+			total_page: totalPages,
+			total_rows: total_priority_group,
+			data: priorityGroups
 		}
 	},
 
@@ -50,24 +54,37 @@ export const PriorityGroupSvc = {
 		const priorityGroups = await db.priority_groups.findMany({
 			where: {
 				deleted_at: null
-			}
+			},
 		});
 		return priorityGroups
 	},
 
 	getPriorityGroupByID: async (id: number) => {
-        const priorityGroup = await db.priority_groups.findUnique({
-            where: {
-                id: id
-            }
-        });
-        return priorityGroup;
-    },
+		const priorityGroup = await db.priority_groups.findUnique({
+			where: {
+				id: id
+			},
+			include: {
+				priorities: {
+					where: {
+						deleted_at: null
+					}
+				},
+				customer: true,
+				provinces: true
+			}
+		});
+		return priorityGroup;
+	},
 
 	createPriorityGroup: async (payload: priorityGroupPayload) => {
 		const priorityGroup = await db.priority_groups.create({
 			data: {
 				group_name: payload.group_name,
+				customers_id: payload.customer_id,
+				provinces: {
+					connect: payload.province_id.map(id => ({ id }))
+				},
 				created_by: payload.created_by
 			}
 		});
@@ -81,20 +98,52 @@ export const PriorityGroupSvc = {
 			},
 			data: {
 				group_name: payload.group_name,
+				customers_id: payload.customer_id,
+				provinces: {
+					set: payload.province_id.map(id => ({ id }))
+				},
 			}
 		});
 		return priorityGroup;
 	},
 
 	softDeletePriorityGroup: async (id: number) => {
-        const priorityGroup = await db.priority_groups.update({
-            where: {
-                id: id,
-            },
-            data: {
-                deleted_at: new Date(),
-            }
-        });
-        return priorityGroup;
-    }
+		const priorityGroup = await db.priority_groups.update({
+			where: {
+				id: id,
+			},
+			data: {
+				deleted_at: new Date(),
+			}
+		});
+		return priorityGroup;
+	},
+
+	findPriorityGroupByCustomerAndProvince: async (customer_id: number, province_id: number) => {
+		const priority_groups = await db.priority_groups.findMany({
+			where: {
+				customers_id: customer_id,
+				provinces: {
+					some: {
+						id: province_id
+					}
+				}
+			},
+			include: {
+				priorities: true
+			}
+		})
+		var priorities: {
+			id: number
+			group_name: string
+			name: string
+			time_sec: number
+		}[] = []
+		priority_groups.forEach((priority_group) => {
+			priority_group.priorities.forEach((priority) => {
+				priorities.push({ id: priority.id, group_name: priority_group.group_name, name: priority.name, time_sec: parseInt(priority.time_sec) })
+			})
+		})
+		return priorities
+	}
 }

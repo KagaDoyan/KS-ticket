@@ -40,9 +40,11 @@ export function ItemRoute(app: any) {
                 category_id: t.Numeric(),
                 brand_id: t.Numeric(),
                 model_id: t.Numeric(),
+                customer_id: t.Optional(t.Number()),
                 warranty_expiry_date: t.Date(),
                 inc_number: t.Optional(t.String()),
                 status: t.String(),
+                storage_id: t.Number(),
             }),
             detail: {
                 tags: ['Item']
@@ -57,11 +59,12 @@ export function ItemRoute(app: any) {
                 serial_number: t.String(),
                 category_id: t.Numeric(),
                 brand_id: t.Numeric(),
+                customer_id: t.Optional(t.Number()),
                 model_id: t.Numeric(),
                 warranty_expiry_date: t.Date(),
                 inc_number: t.Optional(t.String()),
                 status: t.String(),
-                // type: t.String(),
+                storage_id: t.Number(),
             }),
             params: t.Object({
                 id: t.Numeric()
@@ -118,4 +121,4 @@ export function ItemRoute(app: any) {
                 tags: ['Item']
             }
         })
-    }
+}

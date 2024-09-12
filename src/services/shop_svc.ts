@@ -92,15 +92,7 @@ export const ShopSvc = {
                 deleted_at: null
             },
             include: {
-                province: {
-                    include: {
-                        priority_group: {
-                            include: {
-                                priorities: true
-                            }
-                        }
-                    }
-                }
+                province: true
             }
         })
         return shop

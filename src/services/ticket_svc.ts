@@ -27,6 +27,7 @@ interface returnItem {
 
 interface ticketPayload {
     id?: number,
+    priority_id?: number,
     inc_number: string,
     ticket_number?: string,
     customer_id: number,
@@ -152,6 +153,7 @@ export const ticketSvc = {
                 shop_id: payload.shop_id,
                 open_date: payload.open_date,
                 open_time: payload.open_time,
+                priority_id: payload.priority_id,
                 close_date: payload.close_date,
                 close_time: payload.close_time,
                 title: payload.title,
@@ -197,6 +199,7 @@ export const ticketSvc = {
                 open_date: payload.open_date,
                 open_time: payload.open_time,
                 title: payload.title,
+                priority_id: payload.priority_id,
                 description: payload.description,
                 due_by: payload.due_by,
                 sla_priority_level: payload.sla_priority_level,
@@ -291,6 +294,7 @@ export const ticketSvc = {
 
                 let newItem = await db.items.create({
                     data: {
+                        customer_id: payload.customer_id,
                         serial_number: item.serial_number,
                         category_id: item.category_id,
                         brand_id: item.brand_id,
@@ -387,6 +391,7 @@ export const ticketSvc = {
 
                 let newItem = await db.items.create({
                     data: {
+                        customer_id: payload.customer_id,
                         serial_number: item.serial_number,
                         category_id: item.category_id,
                         brand_id: item.brand_id,
@@ -752,7 +757,6 @@ export const ticketSvc = {
         });
 
         if (!ticket) return { message: "No Ticket Data" }
-
         // Set email content
         let status_title = ""
         if (ticket.ticket_status == "close") {

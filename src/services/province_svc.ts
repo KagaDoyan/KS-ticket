@@ -26,7 +26,6 @@ export const ProvinceSvc = {
                     OR: [
                         { name: { contains: search } },
                         { code: { contains: search } },
-                        { priority_group: { group_name: { contains: search } } }
                     ]
                 }
             ]
@@ -38,9 +37,6 @@ export const ProvinceSvc = {
             where: whereCondition,
             skip: offset,
             take: limit,
-            include:{
-                priority_group:true
-            }
         });
         return {
             page: page,
@@ -65,7 +61,6 @@ export const ProvinceSvc = {
             data: {
                 name: payload.name,
                 code: payload.code,
-                priority_group_id: payload.priority_group_id,
                 created_by: payload.created_by
             }
         });
@@ -80,7 +75,6 @@ export const ProvinceSvc = {
             data: {
                 name: payload.name,
                 code: payload.code,
-                priority_group_id: payload.priority_group_id,
             }
         });
         return province;

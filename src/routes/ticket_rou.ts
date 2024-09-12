@@ -67,6 +67,7 @@ export function TicketRoute(app: any) {
                 appointment_date: t.String(),
                 appointment_time: t.String(),
                 engineer_id: t.Number(),
+                priority_id: t.Number(),
             }),
             detail: {
                 tags: ['Ticket']
@@ -99,6 +100,7 @@ export function TicketRoute(app: any) {
                 appointment_date: t.String(),
                 appointment_time: t.String(),
                 engineer_id: t.Number(),
+                priority_id: t.Number(),
             }),
             detail: {
                 tags: ['Ticket']
@@ -152,7 +154,7 @@ export function TicketRoute(app: any) {
             }
         })
         .delete("/spare/:id", TicketCtrl.deleteSpareitem, {
-            beforeHandle : middleware.IsAuth,
+            beforeHandle: middleware.IsAuth,
             headers: t.Object({
                 authorization: t.String()
             }),
@@ -164,7 +166,7 @@ export function TicketRoute(app: any) {
             }
         })
         .delete("/store/:id", TicketCtrl.deleteShopItem, {
-            beforeHandle : middleware.IsAuth,
+            beforeHandle: middleware.IsAuth,
             headers: t.Object({
                 authorization: t.String()
             }),
@@ -175,8 +177,8 @@ export function TicketRoute(app: any) {
                 tags: ['Ticket']
             }
         })
-        .delete("/:id" , TicketCtrl.deleteTicket, {
-            beforeHandle : middleware.IsAuth,
+        .delete("/:id", TicketCtrl.deleteTicket, {
+            beforeHandle: middleware.IsAuth,
             headers: t.Object({
                 authorization: t.String()
             }),

@@ -63,15 +63,7 @@ export const CustomerSvc = {
             include: {
                 shops: {
                     include: {
-                        province: {
-                            include: {
-                                priority_group: {
-                                    include: {
-                                        priorities: true
-                                    }
-                                }
-                            }
-                        }
+                        province: true
                     }
                 }
             }

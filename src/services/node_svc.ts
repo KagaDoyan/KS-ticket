@@ -92,6 +92,19 @@ export const NodeSvc = {
             }
         })
         return node
+    },
+
+    getNodeOption: async () => {
+        const nodes = await db.nodes.findMany({
+            where: {
+                deleted_at: null
+            },
+            select: {
+                id: true,
+                name: true
+            }
+        })
+        return nodes
     }
 
 }

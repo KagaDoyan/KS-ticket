@@ -1,7 +1,7 @@
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["fullTextSearch", "omitApi"]
-  binaryTargets = ["native", "linux-arm64-openssl-3.0.x", "debian-openssl-3.0.x"]
+  binaryTargets   = ["native", "linux-arm64-openssl-3.0.x", "debian-openssl-3.0.x"]
 }
 
 datasource db {
@@ -50,14 +50,16 @@ model users {
 }
 
 model customers {
-  id         Int       @id @default(autoincrement())
-  fullname   String
-  shortname  String
-  deleted_at DateTime?
-  created_at DateTime  @default(now())
-  created_by Int
-  shops      shops[]
-  tickets    tickets[]
+  id              Int               @id @default(autoincrement())
+  fullname        String
+  shortname       String
+  deleted_at      DateTime?
+  created_at      DateTime          @default(now())
+  created_by      Int
+  shops           shops[]
+  tickets         tickets[]
+  priority_groups priority_groups[]
+  items           items[]
 }
 
 model shops {
@@ -79,19 +81,19 @@ model shops {
 }
 
 model provinces {
-  id                   Int                    @id @default(autoincrement())
-  name                 String
-  code                 String
-  priority_group_id    Int
-  priority_group       priority_groups        @relation(fields: [priority_group_id], references: [id])
-  shops                shops[]
-  engineers            engineers[]
-  node                 nodes[]
-  deleted_at           DateTime?
-  created_at           DateTime               @default(now())
-  created_by           Int
-  engineer_on_province engineer_on_province[]
-  node_on_province     node_on_province[]
+  id                      Int                       @id @default(autoincrement())
+  name                    String
+  code                    String
+  shops                   shops[]
+  engineers               engineers[]
+  node                    nodes[]
+  deleted_at              DateTime?
+  created_at              DateTime                  @default(now())
+  created_by              Int
+  engineer_on_province    engineer_on_province[]
+  node_on_province        node_on_province[]
+  priority_groups         priority_groups[]         @relation("PriorityGroupProvince") // Add this line
+  priority_group_province priority_group_province[]
 }
 
 model engineer_on_province {
@@ -104,21 +106,21 @@ model engineer_on_province {
 }
 
 model nodes {
-  id                   Int                    @id @default(autoincrement())
-  name                 String
-  deleted_at DateTime?
-  created_at DateTime  @default(now())
-  created_by Int
-  province             provinces[]
-  engineers            engineers[]
-  node_on_province     node_on_province[]
+  id               Int                @id @default(autoincrement())
+  name             String
+  deleted_at       DateTime?
+  created_at       DateTime           @default(now())
+  created_by       Int
+  province         provinces[]
+  engineers        engineers[]
+  node_on_province node_on_province[]
 }
 
 model node_on_province {
   provinces   provinces @relation(fields: [province_id], references: [id])
   province_id Int // relation scalar field (used in the `@relation` attribute above)
-  node    nodes @relation(fields: [node_id], references: [id])
-  node_id Int // relation scalar field (used in the `@relation` attribute above)
+  node        nodes     @relation(fields: [node_id], references: [id])
+  node_id     Int // relation scalar field (used in the `@relation` attribute above)
 
   @@id([province_id, node_id])
 }
@@ -153,6 +155,8 @@ model models {
 model items {
   id                   Int         @id @default(autoincrement())
   serial_number        String
+  customer_id          Int?
+  customer             customers?  @relation(fields: [customer_id], references: [id])
   category_id          Int
   brand_id             Int
   model_id             Int
@@ -170,16 +174,30 @@ model items {
   engineers_id         Int?
   ticket_id            Int?
   ticket               tickets?    @relation(fields: [ticket_id], references: [id])
+  storage              storages?    @relation(fields: [storage_id], references: [id])
+  storage_id           Int?
 }
 
 model priority_groups {
-  id         Int          @id @default(autoincrement())
-  group_name String
-  provinces  provinces[]
-  deleted_at DateTime?
-  created_at DateTime     @default(now())
-  created_by Int
-  priorities priorities[]
+  id                      Int                       @id @default(autoincrement())
+  group_name              String
+  customer                customers                 @relation(fields: [customers_id], references: [id])
+  deleted_at              DateTime?
+  created_at              DateTime                  @default(now())
+  created_by              Int
+  priorities              priorities[]
+  customers_id            Int
+  provinces               provinces[]               @relation("PriorityGroupProvince") // Add this line
+  priority_group_province priority_group_province[]
+}
+
+model priority_group_province {
+  priority_group    priority_groups @relation(fields: [priority_group_id], references: [id])
+  priority_group_id Int
+  province          provinces       @relation(fields: [province_id], references: [id])
+  province_id       Int
+
+  @@id([priority_group_id, province_id]) // Composite primary key
 }
 
 model priorities {
@@ -211,7 +229,7 @@ model engineers {
   engineer_on_province engineer_on_province[]
   tickets              tickets[]
   items                items[]
-  node                 nodes?                  @relation(fields: [node_id], references: [id])
+  node                 nodes?                 @relation(fields: [node_id], references: [id])
 }
 
 model tickets {
@@ -229,6 +247,7 @@ model tickets {
   title              String
   description        String          @db.LongText
   due_by             String
+  priority_id        Int?
   sla_priority_level String
   contact_name       String
   contact_tel        String
@@ -319,4 +338,15 @@ model ticket_images {
   deleted_at DateTime?
   created_at DateTime  @default(now())
   created_by Int
+}
+
+model storages {
+  id         Int       @id @default(autoincrement())
+  name       String
+  location   String
+  latitude   String?
+  longitude  String?
+  craeted_by Int
+  deleted_at DateTime?
+  items      items[]
 }

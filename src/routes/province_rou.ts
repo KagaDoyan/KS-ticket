@@ -47,7 +47,6 @@ export function provinceRoute(app: any) {
             body: t.Object({
                 name: t.String(),
                 code: t.String(),
-                priority_group_id: t.Numeric()
             }),
             detail: {
                 tags: ['Province']
@@ -61,7 +60,6 @@ export function provinceRoute(app: any) {
             body: t.Object({
                 name: t.String(),
                 code: t.String(),
-                priority_group_id: t.Numeric()
             }),
             params: t.Object({
                 id: t.Numeric()

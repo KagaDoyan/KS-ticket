@@ -32,4 +32,9 @@ export const NodeCtrl = {
         return response.SuccessResponse(ctx, data)
     },
 
+    getnodeoption: async (ctx: any) => {
+        const data = await NodeSvc.getNodeOption()
+        return response.SuccessResponse(ctx, data)
+    }
+
 }

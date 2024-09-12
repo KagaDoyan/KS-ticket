@@ -37,5 +37,10 @@ export const PriorityGroupCtrl = {
         // ctx.body.created_by = userID
         const data = await PriorityGroupSvc.softDeletePriorityGroup(ctx.params.id)
         return response.SuccessResponse(ctx, data)
+    },
+
+    findPriorityGroupByCustomerAndProvince: async (ctx: any) => {
+        const data = await PriorityGroupSvc.findPriorityGroupByCustomerAndProvince(ctx.params.customer_id, ctx.params.province_id)
+        return response.SuccessResponse(ctx, data)
     }
 }

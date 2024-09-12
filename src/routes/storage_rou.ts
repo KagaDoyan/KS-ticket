@@ -1,10 +1,10 @@
 import { t } from "elysia";
-import { PriorityGroupCtrl } from "../controller/priority_group_ctrl";
+import { StorageCtrl } from "../controller/storage_ctrl";
 import { middleware } from "../middleware/auth";
 
-export function PriorityGroupRoute(app: any) {
+export function StorageRoute(app: any) {
     return app
-        .get("/", PriorityGroupCtrl.getallPriorityGroup, {
+        .get("/", StorageCtrl.getallStorage, {
             beforeHandle: middleware.IsAuth,
             headers: t.Object({
                 authorization: t.String()
@@ -15,62 +15,55 @@ export function PriorityGroupRoute(app: any) {
                 search: t.Optional(t.String())
             }),
             detail: {
-                tags: ['PriorityGroup']
+                tags: ['Storage']
             }
         })
-        .get("/option", PriorityGroupCtrl.getAllPriorityGroupOption, {
-            beforeHandle: middleware.IsAuth,
-            headers: t.Object({
-                authorization: t.String()
-            }),
-            detail: {
-                tags: ['PriorityGroup']
-            }
-        })
-        .get("/:id", PriorityGroupCtrl.getPriorityGroupByID, {
+        .get("/:id", StorageCtrl.getStorageByID, {
             beforeHandle: middleware.IsAuth,
             headers: t.Object({
                 authorization: t.String()
             }),
             params: t.Object({
-                id: t.Numeric()
+                id: t.Numeric() 
             }),
             detail: {
-                tags: ['PriorityGroup']
+                tags: ['Storage']
             }
         })
-        .post("/", PriorityGroupCtrl.createPriorityGroup, {
+        .post("/", StorageCtrl.createStorage, {
             beforeHandle: middleware.IsAuth,
             headers: t.Object({
                 authorization: t.String()
             }),
             body: t.Object({
-                group_name: t.String(),
-                customer_id: t.Numeric(),
-                province_id: t.Array(t.Numeric()),
+                name: t.String(),
+                location: t.String(),
+                latitude: t.Optional(t.String()),
+                longitude: t.Optional(t.String()),
             }),
             detail: {
-                tags: ['PriorityGroup']
+                tags: ['Storage']
             }
         })
-        .put("/:id", PriorityGroupCtrl.updatePriorityGroup, {
+        .put("/:id", StorageCtrl.updateStorage, {
             beforeHandle: middleware.IsAuth,
             headers: t.Object({
                 authorization: t.String()
             }),
             body: t.Object({
-                group_name: t.String(),
-                customer_id: t.Numeric(),
-                province_id: t.Array(t.Numeric()),
+                name: t.String(),
+                location: t.String(),
+                latitude: t.Optional(t.String()),
+                longitude: t.Optional(t.String()),
             }),
             params: t.Object({
                 id: t.Numeric()
             }),
             detail: {
-                tags: ['PriorityGroup']
+                tags: ['Storage']
             }
         })
-        .delete("/:id", PriorityGroupCtrl.deletePriorityGroup, {
+        .delete("/:id", StorageCtrl.deleteStorage, {
             beforeHandle: middleware.IsAuth,
             headers: t.Object({
                 authorization: t.String()
@@ -79,20 +72,16 @@ export function PriorityGroupRoute(app: any) {
                 id: t.Numeric()
             }),
             detail: {
-                tags: ['PriorityGroup']
+                tags: ['Storage']
             }
         })
-        .get("/find/:customer_id/:province_id", PriorityGroupCtrl.findPriorityGroupByCustomerAndProvince, {
+        .get("/option", StorageCtrl.getStorageOption, {
             beforeHandle: middleware.IsAuth,
             headers: t.Object({
                 authorization: t.String()
             }),
-            params: t.Object({
-                customer_id: t.Numeric(),
-                province_id: t.Numeric()
-            }),
             detail: {
-                tags: ['PriorityGroup']
+                tags: ['Storage']
             }
         })
-    }
+}

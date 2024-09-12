@@ -6,6 +6,7 @@ interface itemPayload {
 	id?: number,
 	serial_number: string,
 	category_id: number,
+	customer_id?: number,
 	brand_id: number,
 	model_id: number,
 	warranty_expiry_date?: any,
@@ -14,6 +15,7 @@ interface itemPayload {
 	type?: item_type,
 	created_by: number,
 	engineer_id: number | null,
+	storage_id: number
 }
 
 export const itemSvc = {
@@ -42,7 +44,8 @@ export const itemSvc = {
 				category: true,
 				brand: true,
 				model: true,
-				engineer: true
+				engineer: true,
+				storage: true
 			}
 		});
 		return {
@@ -70,9 +73,11 @@ export const itemSvc = {
 				category_id: payload.category_id,
 				brand_id: payload.brand_id,
 				model_id: payload.model_id,
+				customer_id: payload.customer_id || null,
 				warranty_expiry_date: payload.warranty_expiry_date,
 				status: payload.status,
 				created_by: payload.created_by,
+				storage_id: payload.storage_id,
 			}
 		});
 		return item;
@@ -87,9 +92,11 @@ export const itemSvc = {
 				serial_number: payload.serial_number,
 				category_id: payload.category_id,
 				brand_id: payload.brand_id,
+				customer_id: payload.customer_id || null,
 				model_id: payload.model_id,
 				warranty_expiry_date: payload.warranty_expiry_date,
 				status: payload.status,
+				storage_id: payload.storage_id,
 			}
 		});
 		return item;
