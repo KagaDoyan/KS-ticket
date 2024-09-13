@@ -86,6 +86,11 @@ export const TicketCtrl = {
         return response.SuccessResponse(ctx, data)
     },
 
+    sendAppointmentMail: async (ctx: any) => {
+        const data = await ticketSvc.sendAppointmentMail(ctx.params.id, {...ctx.body})
+        return response.SuccessResponse(ctx, data)
+    },
+
     deletereturnitem: async (ctx: any) => {
         // const userID = await middleware.GetUserFromToken(ctx);
         const data = await ticketSvc.deleteReturnItem(ctx.params.id)

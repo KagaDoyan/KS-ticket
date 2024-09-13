@@ -10,7 +10,7 @@ interface engineerPayload {
 	line_name: string,
 	latitude: string,
 	longitude: string,
-	province: number[]
+	province_id: number[]
 	node_id: number,
 	password: string,
 	created_by: number,
@@ -39,6 +39,9 @@ export const engineerSvc = {
 		const offset = (page - 1) * limit;
 		const engineers = await db.engineers.findMany({
 			where: whereCondition,
+			include: {
+				node: true
+			},
 			skip: offset,
 			take: limit,
 			orderBy: {
@@ -68,7 +71,6 @@ export const engineerSvc = {
 	},
 
 	createEngineer: async (payload: engineerPayload) => {
-		console.log(payload.province);
 		let hashpassword = CryptoUtil.encryptData(payload.password);
 		const engineer = await db.engineers.create({
 			data: {
@@ -79,7 +81,7 @@ export const engineerSvc = {
 				latitude: payload.latitude,
 				longitude: payload.longitude,
 				province: {
-					connect: payload.province.map(id => ({ id }))
+					connect: payload.province_id.map(id => ({ id }))
 				},
 				node_id: payload.node_id,
 				password: hashpassword,
@@ -116,7 +118,7 @@ export const engineerSvc = {
 				latitude: payload.latitude,
 				longitude: payload.longitude,
 				province: {
-					set: payload.province.map((provinceId) => ({ id: provinceId })),
+					set: payload.province_id.map((provinceId) => ({ id: provinceId })),
 				},
 				node_id: payload.node_id
 			}

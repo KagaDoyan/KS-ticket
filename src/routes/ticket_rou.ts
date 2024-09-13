@@ -213,6 +213,21 @@ export function TicketRoute(app: any) {
                 tags: ['Ticket']
             }
         })
+        .post("/appointmentMail/:id", TicketCtrl.sendAppointmentMail, {
+            beforeHandle: middleware.IsAuth,
+            headers: t.Object({
+                authorization: t.String()
+            }),
+            params: t.Object({
+                id: t.Numeric()
+            }),
+            body: t.Object({
+                remark: t.String()
+            }),
+            detail: {
+                tags: ['Ticket']
+            }
+        })
         .delete("/returnItem/:id", TicketCtrl.deletereturnitem, {
             beforeHandle: middleware.IsAuth,
             headers: t.Object({

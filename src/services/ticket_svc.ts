@@ -69,6 +69,10 @@ interface ticketPayload {
     delete_images?: string[]
 }
 
+interface mailRemark {
+    remark?: string,
+}
+
 async function generateRandomNumber(length: number) {
     const numbers = '0123456789';
     let ticketNumber = '';
@@ -804,6 +808,68 @@ export const ticketSvc = {
             subject: mailSubject,
             html: htmlString,
             attachments: attachments
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        return {
+            message: "Send Mail Complete"
+        };
+    },
+
+    sendAppointmentMail: async (id: number, payload: mailRemark) => {
+        const ticket = await db.tickets.findFirst({
+            where: {
+                id: id
+            },
+            include: {
+                shop: {
+                    include: {
+                        province: true
+                    }
+                },
+                engineer: true,
+                customer: true,
+                ticket_image: {
+                    where: {
+                        deleted_at: null
+                    }
+                }
+            }
+        });
+
+        if (!ticket) return { message: "No Ticket Data" }
+        // Set email content
+        let mailSubject = `Appointment | P2 | Assigned | ${ticket.inc_number}  | ${ticket.shop.shop_number}-${ticket.shop.shop_name} | 1400 VA | ${ticket.title}`;
+        let htmlString = `
+            <p>Open Case ${ticket.inc_number}</p>
+            <p>Title : ${ticket.title}</p>
+            <p>Cases Number : ${ticket.ticket_number}</p>
+            <p>Store ID : ${ticket.shop.shop_number}</p>
+            <p>Store Name : ${ticket.shop.shop_name}</p>
+            <p>Province : ${ticket.shop.province.name}</p>
+            <p>Contact Name : ${ticket.contact_name}</p>
+            <p>Contact Phone : ${ticket.contact_tel}</p>
+            <p>Priority : ${ticket.sla_priority_level}</p>
+            <p>Engineer : ${ticket.engineer.name} ${ticket.engineer.lastname}</p>
+            <p>Appointment : ${ticket.appointment_date} ${ticket.appointment_time}</p>
+            <br>
+            <p>ช่างนัดหมายสาขาวันที่ ${ticket.appointment_date} ${ticket.appointment_time} ${payload.remark || ""}</p>
+        `;
+
+        const transporter = nodemailer.createTransport({
+            host: process.env.MAIL_HOST,
+            auth: {
+                user: process.env.MAIL_USERNAME,
+                pass: process.env.MAIL_PASSWORD
+            },
+        });
+
+        const mailOptions = {
+            from: process.env.MAIL_SENDER,
+            to: ticket.shop.email,
+            subject: mailSubject,
+            html: htmlString,
         };
 
         await transporter.sendMail(mailOptions);

@@ -37,7 +37,6 @@ export function UserRoute(app: any) {
                 fullname: t.String(),
                 password: t.String(),
                 role: t.String(),
-
             }),
             detail: {
                 tags: ['User']
