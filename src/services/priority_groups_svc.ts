@@ -130,10 +130,15 @@ export const PriorityGroupSvc = {
 					some: {
 						id: province_id
 					}
-				}
+				},
+				deleted_at: null,
 			},
 			include: {
-				priorities: true
+				priorities: {
+					where: {
+						deleted_at: null,
+					}
+				}
 			}
 		})
 		var priorities: {

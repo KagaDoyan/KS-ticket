@@ -24,6 +24,7 @@ enum item_type {
 
 enum ticket_status {
   open
+  onCall
   pending
   spare
   close
@@ -152,6 +153,17 @@ model models {
   created_by Int
 }
 
+model inventory {
+  id         Int       @id @default(autoincrement())
+  model      String?
+  serial     String?
+  warranty   String?
+  sell_date  String?
+  buyer_name String?
+  deleted_at DateTime?
+  created_by Int
+}
+
 model items {
   id                   Int         @id @default(autoincrement())
   serial_number        String
@@ -174,7 +186,7 @@ model items {
   engineers_id         Int?
   ticket_id            Int?
   ticket               tickets?    @relation(fields: [ticket_id], references: [id])
-  storage              storages?    @relation(fields: [storage_id], references: [id])
+  storage              storages?   @relation(fields: [storage_id], references: [id])
   storage_id           Int?
 }
 
@@ -230,56 +242,59 @@ model engineers {
   tickets              tickets[]
   items                items[]
   node                 nodes?                 @relation(fields: [node_id], references: [id])
+  return_items         return_items[]
 }
 
 model tickets {
-  id                 Int             @id @default(autoincrement())
-  inc_number         String
-  ticket_number      String
-  customer_id        Int
-  customer           customers       @relation(fields: [customer_id], references: [id])
-  shop_id            Int
-  shop               shops           @relation(fields: [shop_id], references: [id])
-  open_date          String
-  open_time          String
-  close_date         String?
-  close_time         String?
-  title              String
-  description        String          @db.LongText
-  due_by             String
-  priority_id        Int?
-  sla_priority_level String
-  contact_name       String
-  contact_tel        String
-  assigned_to        String
-  created_by         Int
-  created_user       users           @relation(fields: [created_by], references: [id])
-  updated_by         Int
-  ticket_status      ticket_status
-  appointment_date   String
-  appointment_time   String
-  engineer_id        Int
-  engineer           engineers       @relation(fields: [engineer_id], references: [id])
-  solution           String?         @db.LongText
-  investigation      String?         @db.LongText
-  close_description  String?         @db.LongText
-  item_brand         String?
-  item_category      String?
-  item_model         String?
-  item_sn            String?
-  warranty_exp       DateTime?
-  resolve_status     Boolean?
-  resolve_remark     String?
-  action             String?
-  time_in            String?
-  time_out           String?
-  deleted_at         DateTime?
-  created_at         DateTime        @default(now())
-  store_item         store_items[]
-  spare_item         spare_items[]
-  return_item        return_items[]
-  ticket_image       ticket_images[]
-  item               items[]
+  id                   Int                    @id @default(autoincrement())
+  inc_number           String
+  ticket_number        String
+  customer_id          Int
+  customer             customers              @relation(fields: [customer_id], references: [id])
+  shop_id              Int
+  shop                 shops                  @relation(fields: [shop_id], references: [id])
+  open_date            String
+  open_time            String
+  close_date           String?
+  close_time           String?
+  title                String
+  description          String                 @db.LongText
+  due_by               String
+  priority_id          Int?
+  sla_priority_level   String
+  contact_name         String
+  contact_tel          String
+  assigned_to          String
+  created_by           Int
+  created_user         users                  @relation(fields: [created_by], references: [id])
+  updated_by           Int
+  ticket_status        ticket_status
+  appointment_date     String
+  appointment_time     String
+  engineer_id          Int
+  engineer             engineers              @relation(fields: [engineer_id], references: [id])
+  solution             String?                @db.LongText
+  investigation        String?                @db.LongText
+  close_description    String?                @db.LongText
+  item_brand           String?
+  item_category        String?
+  item_model           String?
+  item_sn              String?
+  warranty_exp         DateTime?
+  resolve_status       Boolean?
+  resolve_remark       String?
+  action               String?
+  time_in              String?
+  time_out             String?
+  deleted_at           DateTime?
+  created_at           DateTime               @default(now())
+  store_item           store_items[]
+  spare_item           spare_items[]
+  return_item          return_items[]
+  ticket_image         ticket_images[]
+  item                 items[]
+  return_ticket        return_ticket[]
+  return_ticket_images return_ticket_images[]
 }
 
 model store_items {
@@ -314,6 +329,37 @@ model spare_items {
   deleted_by    Int?
 }
 
+model return_ticket {
+  id             Int       @id @default(autoincrement())
+  ticket_id      Int
+  ticket         tickets   @relation(fields: [ticket_id], references: [id])
+  investigation  String?
+  solution       String?
+  item_brand     String?
+  item_category  String?
+  item_model     String?
+  item_sn        String?
+  warranty_exp   DateTime?
+  resolve_status Boolean?
+  resolve_remark String?
+  action         String?
+  time_in        String?
+  time_out       String?
+  deleted_at     DateTime?
+  created_at     DateTime  @default(now())
+}
+
+model return_ticket_images {
+  id         Int       @id @default(autoincrement())
+  ticket_id  Int
+  ticket     tickets   @relation(fields: [ticket_id], references: [id])
+  name       String
+  path       String
+  deleted_at DateTime?
+  created_at DateTime  @default(now())
+  created_by Int
+}
+
 model return_items {
   id            Int         @id @default(autoincrement())
   ticket_id     Int
@@ -327,6 +373,8 @@ model return_items {
   deleted_at    DateTime?
   created_at    DateTime    @default(now())
   created_by    Int
+  engineer_id   Int
+  engineer      engineers   @relation(fields: [engineer_id], references: [id])
 }
 
 model ticket_images {

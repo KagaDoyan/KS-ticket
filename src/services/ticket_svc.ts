@@ -21,6 +21,18 @@ interface itemList {
 }
 
 interface returnItem {
+    investigation?: string,
+    solution?: string,
+    item_brand?: string,
+    item_category?: string,
+    item_model?: string,
+    item_sn?: string,
+    warranty_exp?: any,
+    resolve_status: boolean,
+    resolve_remark?: string,
+    action?: string,
+    time_in?: any,
+    time_out?: any,
     items: itemList[],
     created_by: number,
 }
@@ -495,6 +507,14 @@ export const ticketSvc = {
             return { message: "No Return Item list to add" }
         }
 
+        let ticket = await db.tickets.findFirst({
+            where: {
+                id: id,
+                deleted_at: null
+            }
+        });
+        if(!ticket) return { message: "No Ticket data" }
+
         for (const item of payload.items) {
             let checkExistReturn = await db.return_items.findFirst({
                 where: {
@@ -546,7 +566,8 @@ export const ticketSvc = {
                         serial_number: item.serial_number,
                         warranty_exp: item.warranty_expiry_date,
                         status: item.status,
-                        created_by: payload.created_by
+                        created_by: payload.created_by,
+                        engineer_id: ticket.engineer_id
                     }
                 });
                 await db.items.update({
@@ -589,11 +610,22 @@ export const ticketSvc = {
                         serial_number: item.serial_number,
                         warranty_exp: newItem.warranty_expiry_date,
                         status: newItem.status,
-                        created_by: payload.created_by
+                        created_by: payload.created_by,
+                        engineer_id: ticket.engineer_id
                     }
                 });
             }
         }
+
+        await db.tickets.update({
+            data: {
+                ticket_status: 'close'
+            },  
+            where: {
+                id: id,
+                deleted_at: null
+            }
+        });
 
         return { message: "Add return list complete" }
     },
@@ -784,7 +816,7 @@ export const ticketSvc = {
             '<tr><th style="vertical-align:top">Solution</th><td style="vertical-align:top">' + ticket.solution + '</td></tr>' +
             '<tr><th style="vertical-align:top">Appointment Time</th><td style="vertical-align:top">' + ticket.appointment_date + " " + ticket.appointment_time + '</td></tr>' +
             '<tr><th style="vertical-align:top">Time Start</th><td style="vertical-align:top">' + ticket.open_date + " " + ticket.open_time + '</td></tr>' +
-            '<tr><th style="vertical-align:top">Time Finish</th><td style="vertical-align:top">' + ticket.close_date + " " + ticket.close_time + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Time Finish</th><td style="vertical-align:top">' + (ticket.close_date || "") + " " + (ticket.close_time || "") + '</td></tr>' +
             '</table>';
         let attachments: any = [];
         for (const image of ticket.ticket_image) {
@@ -840,7 +872,7 @@ export const ticketSvc = {
 
         if (!ticket) return { message: "No Ticket Data" }
         // Set email content
-        let mailSubject = `Appointment | P2 | Assigned | ${ticket.inc_number}  | ${ticket.shop.shop_number}-${ticket.shop.shop_name} | 1400 VA | ${ticket.title}`;
+        let mailSubject = `Appointment | ${ticket.sla_priority_level} | Assigned | ${ticket.inc_number} | ${ticket.shop.shop_number}-${ticket.shop.shop_name} | ${ticket.item_category} ${ticket.item_brand} ${ticket.item_model} | ${ticket.title}`;
         let htmlString = `
             <p>Open Case ${ticket.inc_number}</p>
             <p>Title : ${ticket.title}</p>
@@ -854,7 +886,7 @@ export const ticketSvc = {
             <p>Engineer : ${ticket.engineer.name} ${ticket.engineer.lastname}</p>
             <p>Appointment : ${ticket.appointment_date} ${ticket.appointment_time}</p>
             <br>
-            <p>ช่างนัดหมายสาขาวันที่ ${ticket.appointment_date} ${ticket.appointment_time} ${payload.remark || ""}</p>
+            <p>ช่างนัดหมายสาขาวันที่ ${ticket.appointment_date} ${ticket.appointment_time} ${payload.remark || "เนื่องจากสาขาสะดวกให้เข้าเวลาดังกล่าว"}</p>
         `;
 
         const transporter = nodemailer.createTransport({
