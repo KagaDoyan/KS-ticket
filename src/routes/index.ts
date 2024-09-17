@@ -13,6 +13,7 @@ import { TicketRoute } from "./ticket_rou";
 import { ReportRoute } from "./report_rou";
 import { NodeRoute } from "./node_rou";
 import { StorageRoute } from "./storage_rou";
+import { InventoryRoute } from "./inventory_rou";
 
 export function MainRoute(app: any) {
     return app
@@ -31,4 +32,5 @@ export function MainRoute(app: any) {
         .group("/report", ReportRoute)
         .group("/node", NodeRoute)
         .group("/storage", StorageRoute)
+        .group("/inventory", InventoryRoute)
 }
