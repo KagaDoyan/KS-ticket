@@ -71,38 +71,51 @@ export const engineerSvc = {
 	},
 
 	createEngineer: async (payload: engineerPayload) => {
-		let hashpassword = CryptoUtil.encryptData(payload.password);
-		await db.users.create({
-			data: {
-				fullname: payload.name + " " + payload.lastname,
-				email: payload.email,
-				password: hashpassword,
-				role: "Engineer"
-			},
-			select: {
-				id: true
-			}
-		});
-		const engineer = await db.engineers.create({
-			data: {
-				name: payload.name,
-				lastname: payload.lastname,
-				phone: payload.phone,
-				line_name: payload.line_name,
-				latitude: payload.latitude,
-				longitude: payload.longitude,
-				province: {
-					connect: payload.province_id.map(id => ({ id }))
-				},
-				node_id: payload.node_id,
-				password: hashpassword,
-				created_by: payload.created_by
-			},
-			select: {
-				id: true
-			}
-		});
-		return engineer.id;
+		const hashpassword = CryptoUtil.encryptData(payload.password);
+		try {
+			const result = await db.$transaction(async (tx) => {
+				// Create the user
+				const user = await tx.users.create({
+					data: {
+						fullname: payload.name + " " + payload.lastname,
+						email: payload.email,
+						password: hashpassword,
+						role: "Engineer",
+					},
+					select: {
+						id: true,
+					},
+				});
+
+				// Create the engineer
+				const engineer = await tx.engineers.create({
+					data: {
+						name: payload.name,
+						lastname: payload.lastname,
+						phone: payload.phone,
+						line_name: payload.line_name,
+						latitude: payload.latitude,
+						longitude: payload.longitude,
+						province: {
+							connect: payload.province_id.map(id => ({ id })),
+						},
+						node_id: payload.node_id,
+						password: hashpassword,
+						created_by: payload.created_by,
+					},
+					select: {
+						id: true,
+					},
+				});
+
+				// Return the engineer id
+				return engineer.id;
+			});
+			return result; // Successfully committed
+		} catch (error) {
+			console.error("Transaction failed:", error);
+			throw new Error("Transaction failed. Changes have been rolled back.");
+		}
 	},
 
 	updateEngineer: async (id: number, payload: engineerPayload) => {
