@@ -41,7 +41,7 @@ export function ItemRoute(app: any) {
                 brand_id: t.Numeric(),
                 model_id: t.Numeric(),
                 customer_id: t.Optional(t.Number()),
-                warranty_expiry_date: t.Date(),
+                warranty_expiry_date: t.Optional(t.Date()),
                 inc_number: t.Optional(t.String()),
                 status: t.String(),
                 storage_id: t.Number(),
