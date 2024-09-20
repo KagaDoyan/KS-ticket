@@ -311,6 +311,7 @@ export const ticketSvc = {
                         },
                         data: {
                             status: checkItem.status,
+                            engineers_id: ticket.engineer_id,
                             type: item.type,
                             ticket_id: id
                         }
@@ -326,6 +327,7 @@ export const ticketSvc = {
                         category_id: item.category_id,
                         brand_id: item.brand_id,
                         model_id: item.model_id,
+                        engineers_id: ticket.engineer_id,
                         warranty_expiry_date: item.warranty_expiry_date,
                         inc_number: item.inc_number,
                         status: item.status,
@@ -372,7 +374,7 @@ export const ticketSvc = {
                             id: checkExistSpare.id
                         },
                         data: {
-                            status: item.status
+                            status: item.status,
                         },
                     });
                     continue;
@@ -408,6 +410,7 @@ export const ticketSvc = {
                         },
                         data: {
                             status: checkItem.status,
+                            engineers_id: ticket.engineer_id,
                             type: item.type,
                             ticket_id: id
                         }
@@ -423,6 +426,7 @@ export const ticketSvc = {
                         category_id: item.category_id,
                         brand_id: item.brand_id,
                         model_id: item.model_id,
+                        engineers_id: ticket.engineer_id,
                         warranty_expiry_date: item.warranty_expiry_date,
                         inc_number: item.inc_number,
                         status: item.status,
@@ -603,6 +607,7 @@ export const ticketSvc = {
                             category_id: item.category_id,
                             brand_id: item.brand_id,
                             model_id: item.model_id,
+                            engineers_id:ticket.engineer_id,
                             warranty_expiry_date: item.warranty_expiry_date,
                             inc_number: item.inc_number,
                             status: item.status,
