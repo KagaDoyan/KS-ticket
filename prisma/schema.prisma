@@ -295,7 +295,7 @@ model tickets {
   return_item          return_items[]
   ticket_image         ticket_images[]
   item                 items[]
-  return_ticket        return_ticket[]
+  return_ticket        return_ticket?
   return_ticket_images return_ticket_images[]
 }
 
@@ -333,7 +333,7 @@ model spare_items {
 
 model return_ticket {
   id             Int       @id @default(autoincrement())
-  ticket_id      Int
+  ticket_id      Int       @unique
   ticket         tickets   @relation(fields: [ticket_id], references: [id])
   investigation  String?
   solution       String?

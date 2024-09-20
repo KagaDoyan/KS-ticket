@@ -35,6 +35,8 @@ interface returnItem {
     time_out?: any,
     items: itemList[],
     created_by: number,
+    close_date: string,
+    close_time: string,
 }
 
 interface ticketPayload {
@@ -509,96 +511,31 @@ export const ticketSvc = {
     },
 
     updateReturnItem: async (id: number, payload: returnItem) => {
-        if (payload.items == null || payload.items.length == 0) {
-            return { message: "No Return Item list to add" }
+        if (payload.items == null || payload.items.length === 0) {
+            return { message: "No Return Item list to add" };
         }
 
-        let ticket = await db.tickets.findFirst({
-            where: {
-                id: id,
-                deleted_at: null
-            }
-        });
-        if (!ticket) return { message: "No Ticket data" }
+        return await db.$transaction(async (prisma) => {
+            let ticket = await prisma.tickets.findFirst({
+                where: {
+                    id: id,
+                    deleted_at: null
+                }
+            });
+            if (!ticket) return { message: "No Ticket data" };
 
-        for (const item of payload.items) {
-            let checkExistReturn = await db.return_items.findFirst({
-                where: {
-                    deleted_at: null,
-                    ticket_id: id,
-                    serial_number: item.serial_number,
-                }
-            });
-            let selectItem = await db.items.findFirst({
-                where: {
-                    deleted_at: null,
-                    serial_number: item.serial_number
-                },
-                include: {
-                    brand: true,
-                    category: true,
-                    model: true
-                }
-            });
-            if (selectItem) {
-                let updateItemStatus = (selectItem.type === "inside" && item.status === "return") ? "in_stock" : item.status;
-                if (checkExistReturn) {
-                    await db.return_items.update({
-                        where: {
-                            id: checkExistReturn.id,
-                        },
-                        data: {
-                            status: item.status
-                        }
-                    });
-                    let item_ticket_id = (selectItem.type === "inside" && item.status === "return") ? null : checkExistReturn.id
-                    await db.items.update({
-                        where: {
-                            id: selectItem.id,
-                        },
-                        data: {
-                            status: updateItemStatus,
-                            ticket_id: item_ticket_id
-                        }
-                    });
-                    continue;
-                };
-                await db.return_items.create({
-                    data: {
-                        ticket_id: id,
-                        brand: selectItem.brand.name,
-                        category: selectItem.category.name,
-                        model: selectItem.model.name,
-                        serial_number: item.serial_number,
-                        warranty_exp: item.warranty_expiry_date,
-                        status: item.status,
-                        created_by: payload.created_by,
-                        engineer_id: ticket.engineer_id
-                    }
-                });
-                await db.items.update({
+            for (const item of payload.items) {
+                let checkExistReturn = await prisma.return_items.findFirst({
                     where: {
-                        id: selectItem.id,
-                    },
-                    data: {
-                        status: updateItemStatus,
-                        ...(selectItem.type === "inside" && { ticket_id: null })
+                        deleted_at: null,
+                        ticket_id: id,
+                        serial_number: item.serial_number,
                     }
                 });
-                continue;
-            }
-            if (item.ticket_type === "store") {
-                let newItem = await db.items.create({
-                    data: {
-                        serial_number: item.serial_number,
-                        category_id: item.category_id,
-                        brand_id: item.brand_id,
-                        model_id: item.model_id,
-                        warranty_expiry_date: item.warranty_expiry_date,
-                        inc_number: item.inc_number,
-                        status: item.status,
-                        type: item.type,
-                        created_by: payload.created_by
+                let selectItem = await prisma.items.findFirst({
+                    where: {
+                        deleted_at: null,
+                        serial_number: item.serial_number
                     },
                     include: {
                         brand: true,
@@ -607,33 +544,154 @@ export const ticketSvc = {
                     }
                 });
 
-                await db.return_items.create({
+                if (selectItem) {
+                    let updateItemStatus = (selectItem.type === "inside" && item.status === "return") ? "in_stock" : item.status;
+
+                    if (checkExistReturn) {
+                        await prisma.return_items.update({
+                            where: {
+                                id: checkExistReturn.id,
+                            },
+                            data: {
+                                status: item.status
+                            }
+                        });
+
+                        let item_ticket_id = (selectItem.type === "inside" && item.status === "return") ? null : checkExistReturn.id;
+                        await prisma.items.update({
+                            where: {
+                                id: selectItem.id,
+                            },
+                            data: {
+                                status: updateItemStatus,
+                                ticket_id: item_ticket_id
+                            }
+                        });
+                        continue;
+                    }
+
+                    await prisma.return_items.create({
+                        data: {
+                            ticket_id: id,
+                            brand: selectItem.brand.name,
+                            category: selectItem.category.name,
+                            model: selectItem.model.name,
+                            serial_number: item.serial_number,
+                            warranty_exp: item.warranty_expiry_date,
+                            status: item.status,
+                            created_by: payload.created_by,
+                            engineer_id: ticket.engineer_id
+                        }
+                    });
+
+                    await prisma.items.update({
+                        where: {
+                            id: selectItem.id,
+                        },
+                        data: {
+                            status: updateItemStatus,
+                            ...(selectItem.type === "inside" && { ticket_id: null })
+                        }
+                    });
+                    continue;
+                }
+
+                if (item.ticket_type === "store") {
+                    let newItem = await prisma.items.create({
+                        data: {
+                            serial_number: item.serial_number,
+                            category_id: item.category_id,
+                            brand_id: item.brand_id,
+                            model_id: item.model_id,
+                            warranty_expiry_date: item.warranty_expiry_date,
+                            inc_number: item.inc_number,
+                            status: item.status,
+                            type: item.type,
+                            created_by: payload.created_by
+                        },
+                        include: {
+                            brand: true,
+                            category: true,
+                            model: true
+                        }
+                    });
+
+                    await prisma.return_items.create({
+                        data: {
+                            ticket_id: id,
+                            brand: newItem.brand.name,
+                            category: newItem.category.name,
+                            model: newItem.model.name,
+                            serial_number: item.serial_number,
+                            warranty_exp: newItem.warranty_expiry_date,
+                            status: newItem.status,
+                            created_by: payload.created_by,
+                            engineer_id: ticket.engineer_id
+                        }
+                    });
+                }
+            }
+
+            const return_ticket_data = await prisma.return_ticket.findFirst({
+                where: {
+                    ticket_id: id
+                }
+            });
+
+            if (!return_ticket_data) {
+                await prisma.return_ticket.create({
                     data: {
                         ticket_id: id,
-                        brand: newItem.brand.name,
-                        category: newItem.category.name,
-                        model: newItem.model.name,
-                        serial_number: item.serial_number,
-                        warranty_exp: newItem.warranty_expiry_date,
-                        status: newItem.status,
-                        created_by: payload.created_by,
-                        engineer_id: ticket.engineer_id
+                        investigation: payload.investigation,
+                        solution: payload.solution,
+                        item_brand: payload.item_brand,
+                        item_category: payload.item_category,
+                        item_model: payload.item_model,
+                        item_sn: payload.item_sn,
+                        warranty_exp: payload.warranty_exp,
+                        resolve_status: payload.resolve_status,
+                        resolve_remark: payload.resolve_remark,
+                        action: payload.action,
+                        time_in: payload.time_in,
+                        time_out: payload.time_out,
+                    }
+                });
+            } else {
+                await prisma.return_ticket.update({
+                    where: {
+                        id: return_ticket_data.id
+                    },
+                    data: {
+                        investigation: payload.investigation,
+                        solution: payload.solution,
+                        item_brand: payload.item_brand,
+                        item_category: payload.item_category,
+                        item_model: payload.item_model,
+                        item_sn: payload.item_sn,
+                        warranty_exp: payload.warranty_exp,
+                        resolve_status: payload.resolve_status,
+                        resolve_remark: payload.resolve_remark,
+                        action: payload.action,
+                        time_in: payload.time_in,
+                        time_out: payload.time_out,
                     }
                 });
             }
-        }
 
-        await db.tickets.update({
-            data: {
-                ticket_status: 'close'
-            },
-            where: {
-                id: id,
-                deleted_at: null
-            }
+            await prisma.tickets.update({
+                data: {
+                    ticket_status: 'close',
+                    close_date: payload.close_date,
+                    close_time: payload.close_time
+                },
+                where: {
+                    id: id,
+                    deleted_at: null
+                }
+            });
+
+            return { message: "Add return list complete" };
         });
-
-        return { message: "Add return list complete" }
     },
 
     getTicketByID: async (id: number) => {
@@ -642,6 +700,7 @@ export const ticketSvc = {
                 id: id
             },
             include: {
+                return_ticket: true,
                 shop: true,
                 engineer: {
                     include: {

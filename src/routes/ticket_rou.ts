@@ -148,7 +148,24 @@ export function TicketRoute(app: any) {
             params: t.Object({
                 id: t.Numeric()
             }),
-            body: t.Any(),
+            body: t.Object({
+                items: t.Any(),
+                solution: t.String(),
+                investigation: t.String(),
+                close_description: t.String(),
+                close_date: t.Optional(t.String()),
+                close_time: t.Optional(t.String()),
+                item_brand: t.String(),
+                item_category: t.String(),
+                item_model: t.String(),
+                item_sn: t.String(),
+                warranty_exp: t.Optional(t.Date()),
+                resolve_status: t.BooleanString(),
+                resolve_remark: t.Optional(t.String()),
+                action: t.String(),
+                time_in: t.String(),
+                time_out: t.String(),
+            }),
             detail: {
                 tags: ['Ticket']
             }
