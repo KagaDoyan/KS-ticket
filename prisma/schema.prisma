@@ -24,7 +24,7 @@ enum item_type {
 
 enum ticket_status {
   open
-  onCall
+  oncall
   pending
   spare
   close
