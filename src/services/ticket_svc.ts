@@ -144,9 +144,9 @@ export const ticketSvc = {
             where: whereCondition,
             skip: offset,
             take: limit,
-			orderBy: {
-				id: "desc"
-			},
+            orderBy: {
+                id: "desc"
+            },
             include: {
                 created_user: true,
                 engineer: true,
@@ -163,7 +163,13 @@ export const ticketSvc = {
     },
 
     openTicket: async (payload: ticketPayload) => {
-        let ticketNumber: string = await generateRandomNumber(10);
+        const customer = await db.customers.findUnique({
+            where: {
+                id: payload.customer_id
+            }
+        })
+        let ticketNumber: string = await generateRandomNumber(5);
+        ticketNumber = customer?.shortname + ticketNumber
         const ticket = await db.tickets.create({
             data: {
                 inc_number: payload.inc_number,
@@ -513,7 +519,7 @@ export const ticketSvc = {
                 deleted_at: null
             }
         });
-        if(!ticket) return { message: "No Ticket data" }
+        if (!ticket) return { message: "No Ticket data" }
 
         for (const item of payload.items) {
             let checkExistReturn = await db.return_items.findFirst({
@@ -620,7 +626,7 @@ export const ticketSvc = {
         await db.tickets.update({
             data: {
                 ticket_status: 'close'
-            },  
+            },
             where: {
                 id: id,
                 deleted_at: null
@@ -803,7 +809,7 @@ export const ticketSvc = {
         } else if (ticket.ticket_status == "spare") {
             status_title = "Install Spare";
         }
-        let incNumber = ticket.inc_number || ticket.ticket_number;
+        let incNumber = ticket.inc_number == "n/a" ? ticket.ticket_number : ticket.inc_number;
         let mailSubject = `${status_title} : [${ticket.sla_priority_level} :Assigned ] | ${incNumber}  | ${ticket.shop_id}-${ticket.shop.shop_name} | ${ticket.title}`;
         let mailHeader = `แจ้งปิดงาน | ${incNumber}`;
         let htmlString = '<h3>' + mailHeader + '</h3><br>' +
@@ -830,7 +836,7 @@ export const ticketSvc = {
             host: process.env.MAIL_HOST,
             port: 587, // port for secure SMTP
             tls: {
-               ciphers:'SSLv3'
+                ciphers: 'SSLv3'
             },
             secure: false,
             auth: {
@@ -877,9 +883,9 @@ export const ticketSvc = {
 
         if (!ticket) return { message: "No Ticket Data" }
         // Set email content
-        let mailSubject = `Appointment | ${ticket.sla_priority_level} | Assigned | ${ticket.inc_number} | ${ticket.shop.shop_number}-${ticket.shop.shop_name} | ${ticket.item_category} ${ticket.item_brand} ${ticket.item_model} | ${ticket.title}`;
+        let mailSubject = `Appointment | ${ticket.sla_priority_level} | Assigned | ${ticket.inc_number == "n/a" ? ticket.ticket_number : ticket.inc_number}| ${ticket.shop.shop_number}-${ticket.shop.shop_name} | ${ticket.item_category} ${ticket.item_brand} ${ticket.item_model} | ${ticket.title}`;
         let htmlString = `
-            <p>Open Case ${ticket.inc_number}</p>
+            <p>Open Case ${ticket.inc_number == "n/a" ? ticket.ticket_number : ticket.inc_number}</p>
             <p>Title : ${ticket.title}</p>
             <p>Cases Number : ${ticket.ticket_number}</p>
             <p>Store ID : ${ticket.shop.shop_number}</p>
@@ -898,7 +904,7 @@ export const ticketSvc = {
             host: process.env.MAIL_HOST,
             port: 587, // port for secure SMTP
             tls: {
-               ciphers:'SSLv3'
+                ciphers: 'SSLv3'
             },
             secure: false,
             auth: {

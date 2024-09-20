@@ -214,7 +214,7 @@ export function TicketRoute(app: any) {
             }
         })
         .post("/appointmentMail/:id", TicketCtrl.sendAppointmentMail, {
-            beforeHandle: middleware.IsAuth,
+            // beforeHandle: middleware.IsAuth,
             headers: t.Object({
                 authorization: t.String()
             }),
@@ -222,7 +222,7 @@ export function TicketRoute(app: any) {
                 id: t.Numeric()
             }),
             body: t.Object({
-                remark: t.String()
+                remark: t.Optional(t.String())
             }),
             detail: {
                 tags: ['Ticket']

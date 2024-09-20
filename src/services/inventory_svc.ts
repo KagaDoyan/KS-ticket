@@ -4,10 +4,12 @@ import db from "../adapter.ts/database"
 interface inventoryPayload {
 	id?: number,
 	model?: string,
+	brand?: string,
 	serial?: string,
 	warranty?: string,
 	sell_date?: string,
 	buyer_name?: string,
+	sell_price? : number,
 	created_by: number
 }
 
@@ -64,9 +66,11 @@ export const InventorySvc = {
 			data: {
 				model: payload.model,
 				serial: payload.serial,
+				brand: payload.brand,
 				warranty: payload.warranty,
 				sell_date: payload.sell_date,
 				buyer_name: payload.buyer_name,
+				sell_price: payload.sell_price,
 				created_by: payload.created_by
 			}
 		});
@@ -81,8 +85,10 @@ export const InventorySvc = {
 			data: {
 				model: payload.model,
 				serial: payload.serial,
+				brand: payload.brand,
 				warranty: payload.warranty,
 				sell_date: payload.sell_date,
+				sell_price: payload.sell_price,
 				buyer_name: payload.buyer_name,
 			}
 		});

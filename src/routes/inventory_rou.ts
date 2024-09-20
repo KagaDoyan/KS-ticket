@@ -38,9 +38,11 @@ export function InventoryRoute(app: any) {
             body: t.Object({
                 model: t.String(),
                 serial: t.String(),
+                brand: t.String(),
                 warranty: t.String(),
                 sell_date: t.String(),
                 buyer_name: t.String(),
+                sell_price: t.Nullable(t.Numeric()),
             }),
             detail: {
                 tags: ['Inventory']
@@ -54,9 +56,11 @@ export function InventoryRoute(app: any) {
             body: t.Object({
                 model: t.String(),
                 serial: t.String(),
+                brand: t.String(),
                 warranty: t.String(),
                 sell_date: t.String(),
                 buyer_name: t.String(),
+                sell_price: t.Nullable(t.Numeric()),
             }),
             params: t.Object({
                 id: t.Numeric()
@@ -77,4 +81,4 @@ export function InventoryRoute(app: any) {
                 tags: ['Inventory']
             }
         })
-    }
+}
