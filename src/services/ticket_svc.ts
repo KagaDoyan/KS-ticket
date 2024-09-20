@@ -259,7 +259,7 @@ export const ticketSvc = {
                 item_category: payload.item_category,
                 item_model: payload.item_model,
                 item_sn: payload.item_sn,
-                warranty_exp: payload.warranty_exp,
+                warranty_exp: payload.warranty_exp || null,
                 resolve_status: payload.resolve_status,
                 resolve_remark: payload.resolve_remark,
                 action: payload.action,
@@ -299,7 +299,7 @@ export const ticketSvc = {
                             category: checkItem.category.name,
                             model: checkItem.model.name,
                             serial_number: checkItem.serial_number,
-                            warranty_exp: checkItem.warranty_expiry_date,
+                            warranty_exp: checkItem.warranty_expiry_date || null,
                             status: checkItem.status,
                             created_by: payload.created_by
                         }
@@ -328,7 +328,7 @@ export const ticketSvc = {
                         brand_id: item.brand_id,
                         model_id: item.model_id,
                         engineers_id: ticket.engineer_id,
-                        warranty_expiry_date: item.warranty_expiry_date,
+                        warranty_expiry_date: item.warranty_expiry_date || null,
                         inc_number: item.inc_number,
                         status: item.status,
                         type: item.type,
@@ -349,7 +349,7 @@ export const ticketSvc = {
                         category: newItem.category.name,
                         model: newItem.model.name,
                         serial_number: item_sn,
-                        warranty_exp: newItem.warranty_expiry_date,
+                        warranty_exp: newItem.warranty_expiry_date || null,
                         status: newItem.status,
                         created_by: payload.created_by
                     }
@@ -398,7 +398,7 @@ export const ticketSvc = {
                             category: checkItem.category.name,
                             model: checkItem.model.name,
                             serial_number: item_sn,
-                            warranty_exp: checkItem.warranty_expiry_date,
+                            warranty_exp: checkItem.warranty_expiry_date || null,
                             status: checkItem.status,
                             created_by: payload.created_by
                         }
@@ -427,7 +427,7 @@ export const ticketSvc = {
                         brand_id: item.brand_id,
                         model_id: item.model_id,
                         engineers_id: ticket.engineer_id,
-                        warranty_expiry_date: item.warranty_expiry_date,
+                        warranty_expiry_date: item.warranty_expiry_date || null,
                         inc_number: item.inc_number,
                         status: item.status,
                         type: item.type,
@@ -448,7 +448,7 @@ export const ticketSvc = {
                         category: newItem.category.name,
                         model: newItem.model.name,
                         serial_number: item_sn,
-                        warranty_exp: newItem.warranty_expiry_date,
+                        warranty_exp: newItem.warranty_expiry_date || null,
                         status: newItem.status,
                         created_by: payload.created_by
                     }
@@ -581,7 +581,7 @@ export const ticketSvc = {
                             category: selectItem.category.name,
                             model: selectItem.model.name,
                             serial_number: item.serial_number,
-                            warranty_exp: item.warranty_expiry_date,
+                            warranty_exp: item.warranty_expiry_date || null,
                             status: item.status,
                             created_by: payload.created_by,
                             engineer_id: ticket.engineer_id
@@ -607,8 +607,8 @@ export const ticketSvc = {
                             category_id: item.category_id,
                             brand_id: item.brand_id,
                             model_id: item.model_id,
-                            engineers_id:ticket.engineer_id,
-                            warranty_expiry_date: item.warranty_expiry_date,
+                            engineers_id: ticket.engineer_id,
+                            warranty_expiry_date: item.warranty_expiry_date || null,
                             inc_number: item.inc_number,
                             status: item.status,
                             type: item.type,
@@ -628,7 +628,7 @@ export const ticketSvc = {
                             category: newItem.category.name,
                             model: newItem.model.name,
                             serial_number: item.serial_number,
-                            warranty_exp: newItem.warranty_expiry_date,
+                            warranty_exp: newItem.warranty_expiry_date || null,
                             status: newItem.status,
                             created_by: payload.created_by,
                             engineer_id: ticket.engineer_id
@@ -653,7 +653,7 @@ export const ticketSvc = {
                         item_category: payload.item_category,
                         item_model: payload.item_model,
                         item_sn: payload.item_sn,
-                        warranty_exp: payload.warranty_exp,
+                        warranty_exp: payload.warranty_exp || null,
                         resolve_status: payload.resolve_status,
                         resolve_remark: payload.resolve_remark,
                         action: payload.action,
@@ -673,7 +673,7 @@ export const ticketSvc = {
                         item_category: payload.item_category,
                         item_model: payload.item_model,
                         item_sn: payload.item_sn,
-                        warranty_exp: payload.warranty_exp,
+                        warranty_exp: payload.warranty_exp || null,
                         resolve_status: payload.resolve_status,
                         resolve_remark: payload.resolve_remark,
                         action: payload.action,
