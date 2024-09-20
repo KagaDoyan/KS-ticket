@@ -828,6 +828,11 @@ export const ticketSvc = {
 
         const transporter = nodemailer.createTransport({
             host: process.env.MAIL_HOST,
+            port: 587, // port for secure SMTP
+            tls: {
+               ciphers:'SSLv3'
+            },
+            secure: false,
             auth: {
                 user: process.env.MAIL_USERNAME,
                 pass: process.env.MAIL_PASSWORD
@@ -891,6 +896,11 @@ export const ticketSvc = {
 
         const transporter = nodemailer.createTransport({
             host: process.env.MAIL_HOST,
+            port: 587, // port for secure SMTP
+            tls: {
+               ciphers:'SSLv3'
+            },
+            secure: false,
             auth: {
                 user: process.env.MAIL_USERNAME,
                 pass: process.env.MAIL_PASSWORD
