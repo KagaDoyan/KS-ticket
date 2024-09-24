@@ -549,7 +549,8 @@ export const ticketSvc = {
                 });
 
                 if (selectItem) {
-                    let updateItemStatus = (selectItem.type === "inside" && item.status === "return") ? "in_stock" : item.status;
+                    let updateItemStatus = (item.type === "inside" && item.status === "return") ? "in_stock" : item.status;
+                    console.log(selectItem.type + ' ' + item.status + ' ' + updateItemStatus);
 
                     if (checkExistReturn) {
                         await prisma.return_items.update({
@@ -561,14 +562,16 @@ export const ticketSvc = {
                             }
                         });
 
-                        let item_ticket_id = (selectItem.type === "inside" && item.status === "return") ? null : checkExistReturn.id;
+                        let item_ticket_id = (item.type === "inside" && item.status === "return") ? null : checkExistReturn.id;
+                        console.log(selectItem.type + ' ' + item.status + ' ' + item_ticket_id);
                         await prisma.items.update({
                             where: {
                                 id: selectItem.id,
                             },
                             data: {
                                 status: updateItemStatus,
-                                ticket_id: item_ticket_id
+                                ticket_id: item_ticket_id,
+                                engineers_id: ticket.engineer_id
                             }
                         });
                         continue;
@@ -594,6 +597,7 @@ export const ticketSvc = {
                         },
                         data: {
                             status: updateItemStatus,
+                            engineers_id: ticket.engineer_id,
                             ...(selectItem.type === "inside" && { ticket_id: null })
                         }
                     });

@@ -161,7 +161,7 @@ export function TicketRoute(app: any) {
                 item_sn: t.String(),
                 warranty_exp: t.Any(),
                 resolve_status: t.BooleanString(),
-                resolve_remark: t.Optional(t.String()),
+                resolve_remark: t.Optional(t.Nullable(t.String())),
                 action: t.String(),
                 time_in: t.String(),
                 time_out: t.String(),

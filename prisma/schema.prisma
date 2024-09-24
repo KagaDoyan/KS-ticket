@@ -192,6 +192,11 @@ model items {
   storage_id           Int?
 }
 
+model teams {
+  id        Int    @id @default(autoincrement())
+  team_name String
+}
+
 model priority_groups {
   id                      Int                       @id @default(autoincrement())
   group_name              String
