@@ -61,7 +61,7 @@ export function ItemRoute(app: any) {
                 brand_id: t.Numeric(),
                 customer_id: t.Optional(t.Number()),
                 model_id: t.Numeric(),
-                warranty_expiry_date: t.Date(),
+                warranty_expiry_date: t.Optional(t.Date()),
                 inc_number: t.Optional(t.String()),
                 status: t.String(),
                 storage_id: t.Number(),
@@ -80,6 +80,7 @@ export function ItemRoute(app: any) {
             }),
             body: t.Object({
                 engineer_id: t.Nullable(t.Number()), // when remove engineer send null
+                storage_id: t.Optional(t.Number()),
             }),
             params: t.Object({
                 id: t.Numeric()

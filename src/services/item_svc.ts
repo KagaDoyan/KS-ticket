@@ -114,6 +114,7 @@ export const itemSvc = {
 			},
 			data: {
 				engineers_id: payload.engineer_id,
+				storage_id: payload.storage_id,
 			}
 		});
 		return item;

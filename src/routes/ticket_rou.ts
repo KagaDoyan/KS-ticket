@@ -133,7 +133,7 @@ export function TicketRoute(app: any) {
                 time_out: t.String(),
                 store_item: t.Any(),
                 spare_item: t.Any(),
-                images: t.Optional(t.Any()),
+                images: t.Optional(t.Files()),
                 delete_images: t.Optional(t.Any())
             }),
             detail: {
