@@ -13,17 +13,22 @@ export const TeamCtrl = {
     },
 
     async createTeam(ctx: any) {
-        const team = await TeamSvc.createTeam(ctx.request.body);
+        const team = await TeamSvc.createTeam({ ...ctx.body });
         return team
-    },  
+    },
 
-    async updateTeam(ctx: any) {        
-        const team = await TeamSvc.updateTeam(ctx.params.id, ctx.request.body);
+    async updateTeam(ctx: any) {
+        const team = await TeamSvc.updateTeam(ctx.params.id, { ...ctx.body });
         return team
-    },  
+    },
 
     async deleteTeam(ctx: any) {
         const team = await TeamSvc.deleteTeam(ctx.params.id);
         return team
+    },
+
+    async getTeamOption(ctx: any) {
+        const teams = await TeamSvc.getTeamOption();
+        return teams
     }
 }

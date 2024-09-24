@@ -2,7 +2,7 @@ import { Prisma } from "@prisma/client";
 import db from "../adapter.ts/database";
 interface teamPayload {
     id?: number
-    name: string
+    team_name: string
 }
 export const TeamSvc = {
     async getTeams(limit: number, page: number, search?: string) {
@@ -22,9 +22,9 @@ export const TeamSvc = {
             where: whereCondition,
             skip: offset,
             take: limit,
-			orderBy: {
-				id: "desc"
-			}
+            orderBy: {
+                id: "desc"
+            }
         });
         return {
             page: page,
@@ -45,7 +45,7 @@ export const TeamSvc = {
     async createTeam(payload: teamPayload) {
         const team = await db.teams.create({
             data: {
-                team_name: payload.name
+                team_name: payload.team_name
             }
         });
         return team
@@ -56,7 +56,7 @@ export const TeamSvc = {
                 id: id
             },
             data: {
-                team_name: payload.name
+                team_name: payload.team_name
             }
         });
         return team
@@ -68,5 +68,10 @@ export const TeamSvc = {
             }
         });
         return team
+    },
+
+    async getTeamOption() {
+        const teams = await db.teams.findMany();
+        return teams
     }
 }

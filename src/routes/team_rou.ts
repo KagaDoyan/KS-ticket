@@ -36,7 +36,7 @@ export function TeamRou(app: any) {
                 authorization: t.String()
             }),
             body: t.Object({
-                name: t.String(),
+                team_name: t.String(),
             }),
             detail: {
                 tags: ['Team']
@@ -51,7 +51,7 @@ export function TeamRou(app: any) {
                 id: t.Numeric()
             }),
             body: t.Object({
-                name: t.String(),
+                team_name: t.String(),
             }),
             detail: {
                 tags: ['Team']
@@ -64,6 +64,15 @@ export function TeamRou(app: any) {
             }),
             params: t.Object({
                 id: t.Numeric()
+            }),
+            detail: {
+                tags: ['Team']
+            }
+        })
+        .get("/option", TeamCtrl.getTeamOption, {
+            beforeHandle: middleware.IsAuth,
+            headers: t.Object({
+                authorization: t.String()
             }),
             detail: {
                 tags: ['Team']
