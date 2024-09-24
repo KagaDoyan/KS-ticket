@@ -2,7 +2,8 @@ import { TeamSvc } from "../services/team_svc";
 
 export const TeamCtrl = {
     async getTeams(ctx: any) {
-        const teams = await TeamSvc.getTeams();
+        //paginate team filter
+        const teams = await TeamSvc.getTeams(ctx.query.limit, ctx.query.page, ctx.query.search);
         return teams
     },
 
