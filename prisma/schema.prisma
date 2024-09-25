@@ -228,6 +228,7 @@ model priorities {
   created_at         DateTime        @default(now())
   created_by         Int
   priority_groups_id Int
+  tickets            tickets[]
 }
 
 model engineers {
@@ -302,6 +303,7 @@ model tickets {
   item                 items[]
   return_ticket        return_ticket?
   return_ticket_images return_ticket_images[]
+  prioritie            priorities?            @relation(fields: [priority_id], references: [id])
 }
 
 model store_items {

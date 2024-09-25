@@ -19,6 +19,7 @@
     "@turf/turf": "^7.1.0",
     "@types/nodemailer": "^6.4.15",
     "crypto-js": "^4.2.0",
+    "dayjs": "^1.11.13",
     "elysia": "latest",
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^6.9.15",

@@ -1,31 +1,47 @@
 import { Prisma } from "@prisma/client";
 import db from "../adapter.ts/database";
+import dayjs from "dayjs";
 
 interface MA {
-    brand: string;
-    ticketTitle: string;
-    ticketDescription: string;
     incNo: string; // Incident Number
     ticketNumber: string;
-    assignedTo: string;
-    ticketDate: string; // Consider using Date type if you're handling date objects
-    ticketTime: string; // Consider using Date type if you're handling time objects
+    brand: string;
+    storeNumber: string;
     storeName: string;
     storeContactPhone: string;
+    contactName: string;
+    ticketTitle: string;
+    ticketDescription: string;
+    assignedTo: string;
+    slaPriorityGroup: string | undefined;
+    slaPriority: string | undefined; // SLA Priority
+    ticketopenDate: string; // Consider using Date type if you're handling date objects
+    ticketopenTime: string; // Consider using Date type if you're handling time objects
+    appointmentDate?: string; // Optional if no appointment is scheduled
+    appointmentTime?: string; // Optional if no appointment is scheduled
     ticketStatus: string;
     ticketStatusDetail?: string; // Optional field, only for pending status
-    ticketCloseTime?: string; // Optional if the ticket is not yet closed
-    ticketCloseDate?: string; // Optional if the ticket is not yet closed
+    ticketCloseDate?: string | null; // Optional if the ticket is not yet closed
+    ticketCloseTime?: string | null; // Optional if the ticket is not yet closed
     engineerName: string;
     engineerNote?: string; // Optional if no notes are provided
-    appointmentTime?: string; // Optional if no appointment is scheduled
-    appointmentDate?: string; // Optional if no appointment is scheduled
     solution?: string | null; // Optional if no solution is provided yet
-    slaPriority: string; // SLA Priority
     recoveryTime: string; // Deadline for SLA (could also be Date if preferred)
     slaOverdue: string; // Whether it was closed within SLA (Yes/No as boolean)
-    lastUpdated?: string; // Date when the ticket was last updated
+    item_brand?: string | null;
+    item_category?: string | null;
+    item_model?: string | null;
+    item_sn?: string | null;
+    warranty_exp?: string | null;
+    resloved: boolean | null;
+    resolve_remark?: string | null;
     action: string | null;
+    timeIn?: string | null;
+    timeOut?: string | null;
+    created_by: string;
+    close_date?: string | null;
+    close_time?: string | null;
+
     storeDeviceBrand1?: string;
     storeDeviceModel1?: string;
     storeDeviceSerial1?: string;
@@ -59,15 +75,30 @@ interface MA {
 }
 
 export const reportSvc = {
-    reportMA: async (from: string, to: string) => {
+    reportMA: async (from: string, to: string, brand_name: string) => {
+        var wharecondition: Prisma.ticketsWhereInput = {
+            open_date: {
+                gte: from,
+                lte: to
+            }
+        }
+
+        if (brand_name) {
+            wharecondition = {
+                AND: [
+                    wharecondition,
+                    {
+                        customer: {
+                            fullname: {
+                                contains: brand_name
+                            }
+                        }
+                    }
+                ]
+            }
+        }
         let allTicket = await db.tickets.findMany({
-            where: {
-                deleted_at: null,
-                open_date: {
-                    gte: from,
-                    lte: to,
-                }
-            },
+            where: wharecondition,
             include: {
                 shop: true,
                 engineer: {
@@ -85,6 +116,12 @@ export const reportSvc = {
                     where: {
                         deleted_at: null
                     },
+                },
+                created_user: true,
+                prioritie: {
+                    include: {
+                        priority_group: true
+                    }
                 }
             }
         });
@@ -101,25 +138,43 @@ export const reportSvc = {
                 SLA_overdue = timeNow > timeSLA ? "No" : "Yes";
             }
             var ticketOnly: MA = {
-                brand: ticket.customer.fullname,
-                ticketTitle: ticket.title,
-                assignedTo: ticket.assigned_to,
-                ticketDescription: ticket.description,
-                incNo: ticket.inc_number == "n/a" ? ticket.ticket_number : ticket.inc_number,
+                incNo: ticket.inc_number, // Incident Number
                 ticketNumber: ticket.ticket_number,
-                ticketDate: ticket.appointment_date,
-                ticketTime: ticket.appointment_time,
-                storeName: ticket.shop.shop_number + " " + ticket.shop.shop_name,
-                storeContactPhone: ticket.shop.phone,
-                ticketStatus: ticket.ticket_status,
-                engineerName: ticket.engineer.name + " " + ticket.engineer.lastname,
+                brand: ticket.customer.fullname,
+                storeNumber: ticket.shop.shop_number,
+                storeName: ticket.shop.shop_name,
+                storeContactPhone: ticket.contact_tel,
+                contactName: ticket.contact_name,
+                ticketTitle: ticket.title,
+                ticketDescription: ticket.description,
+                assignedTo: ticket.assigned_to,
+                slaPriorityGroup: ticket.prioritie?.priority_group.group_name,
                 slaPriority: ticket.sla_priority_level,
-                recoveryTime: ticket.due_by,
-                slaOverdue: SLA_overdue,
+                ticketopenDate: ticket.open_date,
+                ticketopenTime: ticket.open_time,
                 appointmentDate: ticket.appointment_date,
                 appointmentTime: ticket.appointment_time,
+                ticketStatus: ticket.ticket_status,
+                ticketCloseTime: ticket.close_time,
+                ticketCloseDate: ticket.close_date,
+                engineerName: ticket.engineer?.name,
                 solution: ticket.solution,
+                recoveryTime: dayjs(ticket.due_by).format("YYYY-MM-DD HH:mm"), // Deadline for SLA (could also be Date if preferred)
+                slaOverdue: SLA_overdue,
+                item_brand: ticket.item_brand,
+                item_category: ticket.item_category,
+                item_model: ticket.item_model,
+                item_sn: ticket.item_sn,
+                warranty_exp: dayjs(ticket.warranty_exp).format("YYYY-MM-DD"),
+                resloved: ticket.resolve_status,
+                resolve_remark: ticket.resolve_remark,
                 action: ticket.action,
+                timeIn: ticket.time_in,
+                timeOut: ticket.time_out,
+                created_by: ticket.created_user.fullname,
+                close_date: ticket.close_date,
+                close_time: ticket.close_time
+
             }
             for (var i = 1; i <= 5; i++) {
                 ticketOnly["storeDeviceBrand" + i] = ticket.store_item[i]?.brand ?? "";

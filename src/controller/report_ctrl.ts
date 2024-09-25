@@ -4,7 +4,7 @@ import { response } from "./reponse";
 
 export const ReportCtrl = {
     getReportMA: async (ctx: any) => {
-        const data = await reportSvc.reportMA(ctx.query.from, ctx.query.to);
+        const data = await reportSvc.reportMA(ctx.query.from, ctx.query.to, ctx.query.brand_name);
         return response.SuccessResponse(ctx, data); 
     },
 

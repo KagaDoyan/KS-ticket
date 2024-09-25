@@ -814,16 +814,52 @@ export const ticketSvc = {
                 deleted_at: null,
             }
         });
-        if (!shop) return engineers;
         const engineerPoints: any = [];
         const engineerNoPoints: any = [];
+        if (!shop) {
+            for (const item of engineers) {
+                const openTicket = await db.tickets.count({
+                    where: {
+                        engineer_id: item.id,
+                        ticket_status: { not: 'close' },
+                        deleted_at: null
+                    }
+                })
+                if (item.latitude && item.longitude) {
+                    engineerPoints.push({
+                        point: turf.point([Number(item.longitude), Number(item.latitude)]),
+                        id: item.id,
+                        name: item.name,
+                        lastname: item.lastname,
+                        open_ticket: openTicket
+                    });
+                    continue;
+                }
+                engineerNoPoints.push({
+                    id: item.id,
+                    name: item.name,
+                    lastname: item.lastname,
+                    distance: 0,
+                    open_ticket: openTicket
+                });
+            }
+            return engineerNoPoints
+        };
         for (const item of engineers) {
+            const openTicket = await db.tickets.count({
+                where: {
+                    engineer_id: item.id,
+                    ticket_status: { not: 'close' },
+                    deleted_at: null
+                }
+            })
             if (item.latitude && item.longitude) {
                 engineerPoints.push({
                     point: turf.point([Number(item.longitude), Number(item.latitude)]),
                     id: item.id,
                     name: item.name,
-                    lastname: item.lastname
+                    lastname: item.lastname,
+                    open_ticket: openTicket
                 });
                 continue;
             }
@@ -831,7 +867,8 @@ export const ticketSvc = {
                 id: item.id,
                 name: item.name,
                 lastname: item.lastname,
-                distance: 0
+                distance: 0,
+                open_ticket: openTicket
             });
         }
         if (engineerPoints.length < 0) {
