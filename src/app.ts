@@ -20,6 +20,10 @@ export const app = new Elysia()
     assets: 'files',
     prefix: '/image'
   }))
+  .use(staticPlugin({
+    assets: 'assets',
+    prefix: '/assets'
+  }))
   .use(jwt({
     name: 'jwt',
     secret: Bun.env.JWT_SECRET!,

@@ -1,4 +1,5 @@
 import { TeamSvc } from "../services/team_svc";
+import { response } from "./reponse";
 
 export const TeamCtrl = {
     async getTeams(ctx: any) {
@@ -29,6 +30,6 @@ export const TeamCtrl = {
 
     async getTeamOption(ctx: any) {
         const teams = await TeamSvc.getTeamOption();
-        return teams
+        return response.SuccessResponse(ctx, teams)
     }
 }
