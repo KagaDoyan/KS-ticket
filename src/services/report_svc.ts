@@ -76,8 +76,16 @@ export const reportSvc = {
                     }
                 },
                 customer: true,
-                store_item: true,
-                spare_item: true
+                store_item: {
+                    where: {
+                        deleted_at: null
+                    },
+                },
+                spare_item: {
+                    where: {
+                        deleted_at: null
+                    },
+                }
             }
         });
         let ticketReport: any = [];
