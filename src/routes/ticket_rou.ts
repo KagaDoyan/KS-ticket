@@ -68,6 +68,7 @@ export function TicketRoute(app: any) {
                 appointment_time: t.String(),
                 engineer_id: t.Number(),
                 priority_id: t.Number(),
+                item_category: t.String(),
             }),
             detail: {
                 tags: ['Ticket']

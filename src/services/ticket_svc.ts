@@ -5,6 +5,7 @@ import crypto from 'crypto';
 import * as turf from '@turf/turf';
 import sharp from 'sharp';
 import nodemailer from 'nodemailer';
+import { SecToTimeString } from "../utilities/sec_to_time_string";
 
 interface itemList {
     id?: number,
@@ -259,7 +260,7 @@ export const ticketSvc = {
                 item_category: payload.item_category,
                 item_model: payload.item_model,
                 item_sn: payload.item_sn,
-                warranty_exp: payload.warranty_exp || null,
+                warranty_exp: payload.warranty_exp ? new Date(payload.warranty_exp) : null,
                 resolve_status: payload.resolve_status,
                 resolve_remark: payload.resolve_remark,
                 action: payload.action,
@@ -902,6 +903,16 @@ export const ticketSvc = {
                     where: {
                         deleted_at: null
                     }
+                },
+                store_item: {
+                    where: {
+                        deleted_at: null
+                    }
+                },
+                spare_item: {
+                    where: {
+                        deleted_at: null
+                    }
                 }
             }
         });
@@ -914,17 +925,29 @@ export const ticketSvc = {
         } else if (ticket.ticket_status == "spare") {
             status_title = "Install Spare";
         }
+
+        const deviceListClean = ticket.store_item.filter((element) => element);
+        const replaceDeviceListClean = ticket.spare_item.filter((element) => element);
+
+        const oldDeviceLabel = "   เก่า<br>";
+        const newDeviceLabel = "   ใหม่<br>";
+
+        const deviceListCleanMapped = deviceListClean.map((element) => `• ${element.category} ${element.brand} ${element.model} s/n: ${element.serial_number} ${oldDeviceLabel}`);
+        const replaceDeviceListCleanMapped = replaceDeviceListClean.map((element) => `• ${element.category} ${element.brand} ${element.model} s/n: ${element.serial_number} ${newDeviceLabel}`);
+
+        const deviceStr = deviceListCleanMapped.join('');
+        const replaceDeviceStr = replaceDeviceListCleanMapped.join('');
         let incNumber = ticket.inc_number == "n/a" ? ticket.ticket_number : ticket.inc_number;
-        let mailSubject = `${status_title} : [${ticket.sla_priority_level} :Assigned ] | ${incNumber}  | ${ticket.shop_id}-${ticket.shop.shop_name} | ${ticket.title}`;
-        let mailHeader = `แจ้งปิดงาน | ${incNumber}`;
+        let mailSubject = `${ticket.sla_priority_level} | ${status_title} | ${incNumber ? incNumber : ticket.ticket_number} | ${ticket.shop_id}-${ticket.shop.shop_name} | ${ticket.item_category} | ${ticket.title}`;
+        let mailHeader = `แจ้งปิดงาน | ${incNumber ? incNumber : ticket.ticket_number}`;
         let htmlString = '<h3>' + mailHeader + '</h3><br>' +
             '<h3>Service Detail</h3><br>' +
             '<table style="width:100%;text-align:left;">' +
             '<tr><th style="vertical-align:top">Service Number</th><td style="vertical-align:top">' + ticket.ticket_number + '</td></tr>' +
             '<tr><th style="vertical-align:top">Engineer</th><td style="vertical-align:top">' + ticket.engineer.name + " " + ticket.engineer.name + '</td></tr>' +
-            '<tr><th style="vertical-align:top">Equipment</th><td style="vertical-align:top">' + ticket.item_category + " " + ticket.item_brand + " " + ticket.item_model + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Equipment</th><td style="vertical-align:top">' + ticket.item_category + '</td></tr>' +
             '<tr><th style="vertical-align:top">Investigation</th><td style="vertical-align:top">' + ticket.investigation + '</td></tr>' +
-            '<tr><th style="vertical-align:top">Solution</th><td style="vertical-align:top">' + ticket.solution + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Solution</th><td style="vertical-align:top">' + ticket.solution + '<br>' + deviceStr + replaceDeviceStr + '</td></tr>' +
             '<tr><th style="vertical-align:top">Appointment Time</th><td style="vertical-align:top">' + ticket.appointment_date + " " + ticket.appointment_time + '</td></tr>' +
             '<tr><th style="vertical-align:top">Time Start</th><td style="vertical-align:top">' + ticket.open_date + " " + ticket.open_time + '</td></tr>' +
             '<tr><th style="vertical-align:top">Time Finish</th><td style="vertical-align:top">' + (ticket.close_date || "") + " " + (ticket.close_time || "") + '</td></tr>' +
@@ -982,13 +1005,14 @@ export const ticketSvc = {
                     where: {
                         deleted_at: null
                     }
-                }
+                },
+                prioritie: true
             }
         });
 
         if (!ticket) return { message: "No Ticket Data" }
         // Set email content
-        let mailSubject = `Appointment | ${ticket.sla_priority_level} | Assigned | ${ticket.inc_number == "n/a" ? ticket.ticket_number : ticket.inc_number}| ${ticket.shop.shop_number}-${ticket.shop.shop_name} | ${ticket.item_category} ${ticket.item_brand} ${ticket.item_model} | ${ticket.title}`;
+        let mailSubject = `Appointment | ${ticket.sla_priority_level} ${SecToTimeString(parseInt(ticket.prioritie?.time_sec ? ticket.prioritie.time_sec : "0"))} | Assigned | ${ticket.inc_number == "n/a" ? ticket.ticket_number : ticket.inc_number}| ${ticket.shop.shop_number}-${ticket.shop.shop_name} | ${ticket.item_category} | ${ticket.title}`;
         let htmlString = `
             <p>Open Case ${ticket.inc_number == "n/a" ? ticket.ticket_number : ticket.inc_number}</p>
             <p>Title : ${ticket.title}</p>
@@ -998,7 +1022,7 @@ export const ticketSvc = {
             <p>Province : ${ticket.shop.province.name}</p>
             <p>Contact Name : ${ticket.contact_name}</p>
             <p>Contact Phone : ${ticket.contact_tel}</p>
-            <p>Priority : ${ticket.sla_priority_level}</p>
+            <p>Priority : ${ticket.sla_priority_level} ${SecToTimeString(parseInt(ticket.prioritie?.time_sec ? ticket.prioritie.time_sec : "0"))}</p>
             <p>Engineer : ${ticket.engineer.name} ${ticket.engineer.lastname}</p>
             <p>Appointment : ${ticket.appointment_date} ${ticket.appointment_time}</p>
             <br>

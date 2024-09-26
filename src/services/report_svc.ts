@@ -39,8 +39,6 @@ interface MA {
     timeIn?: string | null;
     timeOut?: string | null;
     created_by: string;
-    close_date?: string | null;
-    close_time?: string | null;
 
     storeDeviceBrand1?: string;
     storeDeviceModel1?: string;
@@ -171,20 +169,18 @@ export const reportSvc = {
                 action: ticket.action,
                 timeIn: ticket.time_in,
                 timeOut: ticket.time_out,
-                created_by: ticket.created_user.fullname,
-                close_date: ticket.close_date,
-                close_time: ticket.close_time
+                created_by: ticket.created_user.fullname
 
             }
-            for (var i = 1; i <= 5; i++) {
-                ticketOnly["storeDeviceBrand" + i] = ticket.store_item[i]?.brand ?? "";
-                ticketOnly["storeDeviceModel" + i] = ticket.store_item[i]?.model ?? "";
-                ticketOnly["storeDeviceSerial" + i] = ticket.store_item[i]?.serial_number ?? "";
+            for (var i = 0; i <= 4; i++) {
+                ticketOnly["storeDeviceBrand" + (i + 1)] = ticket.store_item[i]?.brand ?? "";
+                ticketOnly["storeDeviceModel" + (i + 1)] = ticket.store_item[i]?.model ?? "";
+                ticketOnly["storeDeviceSerial" + (i + 1)] = ticket.store_item[i]?.serial_number ?? "";
             }
-            for (var i = 1; i <= 5; i++) {
-                ticketOnly["spareDeviceBrand" + i] = ticket.spare_item[i]?.brand ?? "";
-                ticketOnly["spareDeviceModel" + i] = ticket.spare_item[i]?.model ?? "";
-                ticketOnly["spareDeviceSerial" + i] = ticket.spare_item[i]?.serial_number ?? "";
+            for (var i = 0; i <= 4; i++) {
+                ticketOnly["spareDeviceBrand" + (i + 1)] = ticket.spare_item[i]?.brand ?? "";
+                ticketOnly["spareDeviceModel" + (i + 1)] = ticket.spare_item[i]?.model ?? "";
+                ticketOnly["spareDeviceSerial" + (i + 1)] = ticket.spare_item[i]?.serial_number ?? "";
             }
             ticketReport.push(ticketOnly);
         }
