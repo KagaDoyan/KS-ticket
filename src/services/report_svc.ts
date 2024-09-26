@@ -70,6 +70,21 @@ interface MA {
     spareDeviceBrand5?: string;
     spareDeviceModel5?: string;
     spareDeviceSerial5?: string;
+    returnDeviceBrand1?: string;
+    returnDeviceModel1?: string;
+    returnDeviceSerial1?: string;
+    returnDeviceBrand2?: string;
+    returnDeviceModel2?: string;
+    returnDeviceSerial2?: string;
+    returnDeviceBrand3?: string;
+    returnDeviceModel3?: string;
+    returnDeviceSerial3?: string;
+    returnDeviceBrand4?: string;
+    returnDeviceModel4?: string;
+    returnDeviceSerial4?: string;
+    returnDeviceBrand5?: string;
+    returnDeviceModel5?: string;
+    returnDeviceSerial5?: string;
 }
 
 export const reportSvc = {
@@ -120,6 +135,12 @@ export const reportSvc = {
                     include: {
                         priority_group: true
                     }
+                },
+                return_item: {
+                    where: {
+                        deleted_at: null,
+                        status: "return"
+                    },
                 }
             }
         });
@@ -181,6 +202,11 @@ export const reportSvc = {
                 ticketOnly["spareDeviceBrand" + (i + 1)] = ticket.spare_item[i]?.brand ?? "";
                 ticketOnly["spareDeviceModel" + (i + 1)] = ticket.spare_item[i]?.model ?? "";
                 ticketOnly["spareDeviceSerial" + (i + 1)] = ticket.spare_item[i]?.serial_number ?? "";
+            }
+            for (var i = 0; i <= 4; i++) {
+                ticketOnly["returnDeviceBrand" + (i + 1)] = ticket.return_item[i]?.brand ?? "";
+                ticketOnly["returnDeviceModel" + (i + 1)] = ticket.return_item[i]?.model ?? "";
+                ticketOnly["returnDeviceSerial" + (i + 1)] = ticket.return_item[i]?.serial_number ?? "";
             }
             ticketReport.push(ticketOnly);
         }
