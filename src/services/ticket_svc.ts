@@ -525,6 +525,9 @@ export const ticketSvc = {
                 where: {
                     id: id,
                     deleted_at: null
+                },
+                include:{
+                    shop: true
                 }
             });
             if (!ticket) return { message: "No Ticket data" };
@@ -572,6 +575,7 @@ export const ticketSvc = {
                             data: {
                                 status: updateItemStatus,
                                 ticket_id: item_ticket_id,
+                                shop_number: updateItemStatus === "in_stock" ? ticket.shop.shop_number : null,
                                 engineers_id: ticket.engineer_id
                             }
                         });
@@ -938,7 +942,7 @@ export const ticketSvc = {
         const deviceStr = deviceListCleanMapped.join('');
         const replaceDeviceStr = replaceDeviceListCleanMapped.join('');
         let incNumber = ticket.inc_number == "n/a" ? ticket.ticket_number : ticket.inc_number;
-        let mailSubject = `${ticket.sla_priority_level} | ${status_title} | ${incNumber ? incNumber : ticket.ticket_number} | ${ticket.shop_id}-${ticket.shop.shop_name} | ${ticket.item_category} | ${ticket.title}`;
+        let mailSubject = `${status_title} : [${ticket.sla_priority_level} : Assigned] | ${incNumber ? incNumber : ticket.ticket_number} | ${ticket.shop.shop_number}-${ticket.shop.shop_name} | ${ticket.item_category} | ${ticket.title}`;
         let mailHeader = `แจ้งปิดงาน | ${incNumber ? incNumber : ticket.ticket_number}`;
         let htmlString = '<h3>' + mailHeader + '</h3><br>' +
             '<h3>Service Detail</h3><br>' +
@@ -954,9 +958,23 @@ export const ticketSvc = {
             '</table>';
         let attachments: any = [];
         for (const image of ticket.ticket_image) {
+            // Detect file type by extension
+            let mimeType = "";
+            const extension = image.name.split('.').pop()?.toLowerCase();
+    
+            if (extension === "png") {
+                mimeType = "image/png";
+            } else if (extension === "jpg" || extension === "jpeg") {
+                mimeType = "image/jpeg";
+            } else if (extension === "pdf") {
+                mimeType = "application/pdf";
+            } else {
+                mimeType = "application/octet-stream"; // default for unknown types
+            }
             attachments.push({
                 filename: image.name,
-                path: 'files/' + image.name
+                path: 'files/' + image.name,
+                contentType: mimeType
             });
         }
 
@@ -1012,7 +1030,7 @@ export const ticketSvc = {
 
         if (!ticket) return { message: "No Ticket Data" }
         // Set email content
-        let mailSubject = `Appointment | ${ticket.sla_priority_level} ${SecToTimeString(parseInt(ticket.prioritie?.time_sec ? ticket.prioritie.time_sec : "0"))} | Assigned | ${ticket.inc_number == "n/a" ? ticket.ticket_number : ticket.inc_number}| ${ticket.shop.shop_number}-${ticket.shop.shop_name} | ${ticket.item_category} | ${ticket.title}`;
+        let mailSubject = `Appointment | ${ticket.sla_priority_level} | Assigned | ${ticket.inc_number == "n/a" ? ticket.ticket_number : ticket.inc_number}| ${ticket.shop.shop_number}-${ticket.shop.shop_name} | ${ticket.item_category} | ${ticket.title}`;
         let htmlString = `
             <p>Open Case ${ticket.inc_number == "n/a" ? ticket.ticket_number : ticket.inc_number}</p>
             <p>Title : ${ticket.title}</p>

@@ -190,6 +190,7 @@ model items {
   ticket               tickets?    @relation(fields: [ticket_id], references: [id])
   storage              storages?   @relation(fields: [storage_id], references: [id])
   storage_id           Int?
+  shop_number          String?
 }
 
 model teams {
