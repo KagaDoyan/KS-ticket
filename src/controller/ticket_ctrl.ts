@@ -91,6 +91,11 @@ export const TicketCtrl = {
         return response.SuccessResponse(ctx, data)
     },
 
+    sendOpenMail: async (ctx: any) => {
+        const data = await ticketSvc.sendOpenTicketMail(ctx.params.id)
+        return response.SuccessResponse(ctx, data)
+    },
+
     deletereturnitem: async (ctx: any) => {
         // const userID = await middleware.GetUserFromToken(ctx);
         const data = await ticketSvc.deleteReturnItem(ctx.params.id)

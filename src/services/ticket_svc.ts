@@ -1074,6 +1074,71 @@ export const ticketSvc = {
         };
     },
 
+    sendOpenTicketMail: async (id: number) => {
+        const ticket = await db.tickets.findFirst({
+            where: {
+                id: id
+            },
+            include: {
+                shop: {
+                    include: {
+                        province: true
+                    }
+                },
+                engineer: true,
+                customer: true,
+                ticket_image: {
+                    where: {
+                        deleted_at: null
+                    }
+                },
+                prioritie: true
+            }
+        });
+
+        if (!ticket) return { message: "No Ticket Data" }
+        // Set email content
+        let mailSubject = `Open Case | ${ticket.sla_priority_level} | Assigned | ${ticket.inc_number == "n/a" ? ticket.ticket_number : ticket.inc_number}| ${ticket.shop.shop_number}-${ticket.shop.shop_name} | ${ticket.item_category} | ${ticket.title} | ${ticket.item_sn}`;
+        let htmlString = `
+            <p>Incident (เลขที่ใบแจ้งงาน): ${ticket.inc_number == "n/a" ? ticket.ticket_number : ticket.inc_number}</p>
+            <p>Contact (ผู้แจ้ง): ${ticket.contact_name}</p>
+            <p>Phone (เบอร์โทร): ${ticket.contact_tel}</p>
+            <p>Store (สาขา): ${ticket.shop.shop_number}-${ticket.shop.shop_name}</p>
+            <p>Description (รายละเอียด):</p>
+            <p>${ticket.description}</p>
+            <p>Assign to (แจ้งเปิดงานให้กับ): ${ticket.assigned_to}</p>
+            <p>Incident open date/time (วันและเวลาที่เปิดงาน): ${ticket.open_date} ${ticket.open_time}</p>
+            <p>Estimate Resolving Time (เวลาแก้ไขโดยประมาณ): ${ticket.sla_priority_level} ${ticket.prioritie?.name}</p>
+            <p>DueBy Date (วันและเวลาที่ครบกำหนด): ${ticket.due_by}</p>
+        `;
+
+        const transporter = nodemailer.createTransport({
+            host: process.env.MAIL_HOST,
+            port: 587, // port for secure SMTP
+            tls: {
+                ciphers: 'SSLv3'
+            },
+            secure: false,
+            auth: {
+                user: process.env.MAIL_USERNAME,
+                pass: process.env.MAIL_PASSWORD
+            },
+        });
+
+        const mailOptions = {
+            from: process.env.MAIL_SENDER,
+            to: ticket.shop.email,
+            subject: mailSubject,
+            html: htmlString,
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        return {
+            message: "Send Mail Complete"
+        };
+    },
+
     deleteReturnItem: async (id: number) => {
         return await db.return_items.update({
             where: {
