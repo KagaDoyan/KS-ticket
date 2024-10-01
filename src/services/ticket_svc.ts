@@ -6,6 +6,8 @@ import * as turf from '@turf/turf';
 import sharp from 'sharp';
 import nodemailer from 'nodemailer';
 import { SecToTimeString } from "../utilities/sec_to_time_string";
+import dayjs from "dayjs";
+import { Line_svc } from "./line_svc";
 
 interface itemList {
     id?: number,
@@ -212,6 +214,35 @@ export const ticketSvc = {
                 time_out: payload.time_out
             }
         });
+        // send line notification
+        const ticketData = await db.tickets.findUnique({
+            where: {
+                id: ticket.id
+            },
+            include: {
+                shop: true,
+                prioritie: {
+                    include: {
+                        priority_group: true
+                    }
+                },
+                customer: true
+            }
+        })
+
+        if (customer?.line_id) {
+            var message = `Open Case | ${ticketData?.sla_priority_level} | Assgined | ${(ticketData?.inc_number === 'n/a' ? ticketData?.ticket_number : ticketData?.inc_number)} | ${ticketData?.shop.shop_number}-${ticketData?.shop.shop_name} | ${ticketData?.item_category} | ${ticketData?.title} | ${ticketData?.ticket_number} | ${dayjs(new Date()).format('HH:mm')}\n\n`
+            message += `Incident (เลขที่ใบแจ้งงาน): ${(ticketData?.inc_number === 'n/a' ? ticketData?.ticket_number : ticketData?.inc_number)}\n\n`
+            message += `Contact (ผู้แจ้ง): ${ticketData?.contact_name}\n\n`
+            message += `Phone (เบอร์โทร): ${ticketData?.contact_tel}\n\n`
+            message += `Store (สาขา): ${ticketData?.shop.shop_number}-${ticketData?.shop.shop_name}\n\n`
+            message += `Description (รายละเอียด): ${ticketData?.description}\n\n`
+            message += `Assigned To (ผู้เปีดงานให้กับ): ${ticketData?.assigned_to}\n\n`
+            message += `Incident open date/time (วันและเวลาที่เปิดงาน): ${dayjs(ticketData?.open_date).format('DD/MM/YYYY')} ${ticketData?.open_time}\n\n`
+            message += `Estimated Resolving Time (วันและเวลาแก้ไขโดยประมาณ): ${ticketData?.sla_priority_level} ${ticketData?.prioritie?.priority_group.group_name} ${ticketData?.prioritie?.time_sec ? SecToTimeString(parseInt(ticketData?.prioritie?.time_sec)) : ''}\n\n`
+            message += `DueBy Date (วันและเวลาครบกําหนด): ${dayjs(ticketData?.due_by).format('DD/MM/YYYY HH:mm')}\n\n`
+            Line_svc.sendMessage(customer?.line_engineer_id!, message);
+        }
         return ticket;
     },
 
@@ -1016,6 +1047,19 @@ export const ticketSvc = {
         };
 
         await transporter.sendMail(mailOptions);
+        //line notification
+        var message = `${ticket.investigation} ${ticket.solution}\n`
+        const LineoldDeviceLabel = "   นำกลับ\n";
+        const LinenewDeviceLabel = "   สแปร์\n";
+
+        const LinedeviceListCleanMapped = deviceListClean.map((element) => ` ${element.category} ${element.brand} ${element.model} s/n: ${element.serial_number} ${LineoldDeviceLabel}`);
+        const LinereplaceDeviceListCleanMapped = replaceDeviceListClean.map((element) => ` ${element.category} ${element.brand} ${element.model} s/n: ${element.serial_number} ${LinenewDeviceLabel}`);
+
+        const LinedeviceStr = LinedeviceListCleanMapped.join('');
+        const LinereplaceDeviceStr = LinereplaceDeviceListCleanMapped.join('');
+        message += `${LinedeviceStr}${LinereplaceDeviceStr}`
+        message += `ส่งเมลล์และรูปปิดงานเรียบร้อยครับ`
+        Line_svc.sendMessage(ticket.customer.line_id!, message);
 
         return {
             message: "Send Mail Complete"
@@ -1200,6 +1244,21 @@ export const ticketSvc = {
 
         await transporter.sendMail(mailOptions);
 
+        //send line notification
+        var message = `Open Case ${(ticket?.inc_number === 'n/a' ? ticket?.ticket_number : ticket?.inc_number)}\n`
+        message += `Title : ${ticket.title}\n`
+        message += `Cases Number : ${ticket.ticket_number}\n`
+        message += `Store ID : ${ticket.shop.shop_number}\n`
+        message += `Store Name :  ${ticket.shop.shop_name}\n`
+        message += `Province : ${ticket.shop.province.name}\n`
+        message += `Contact Name : ${ticket.contact_name}\n`
+        message += `Contact Phone : ${ticket.contact_tel}\n`
+        message += `Priority : ${ticket.sla_priority_level} (${ticket.prioritie?.time_sec ? SecToTimeString(parseInt(ticket.prioritie.time_sec)) : ""}.)\n`
+        message += `Engineer : ${ticket.engineer.name} ${ticket.engineer.lastname}\n`
+        message += `Appointment : ${dayjs(ticket.appointment_date).format('DD/MM/YYYY')} ${ticket.appointment_time}\n`
+        message += `ช่างนัดหมายสาขาวันที่ : ${dayjs(ticket.appointment_date).format('DD/MM/YYYY')} ${ticket.appointment_time}\n`
+
+        await Line_svc.sendMessage(ticket.customer.line_id!, message)
         return {
             message: "Send Mail Complete"
         };
