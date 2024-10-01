@@ -10,7 +10,7 @@ export const TicketCtrl = {
     },
 
     getTicketByDateRange: async (ctx: any) => {
-        const data = await ticketSvc.getTicketByDateRange(ctx.query.start, ctx.query.end)
+        const data = await ticketSvc.getTicketByDateRange(ctx.query.start, ctx.query.end,ctx.query.brand_name)
         return response.SuccessResponse(ctx, data)
     },
 
@@ -83,6 +83,11 @@ export const TicketCtrl = {
 
     sendMail: async (ctx: any) => {
         const data = await ticketSvc.sendMail(ctx.params.id)
+        return response.SuccessResponse(ctx, data)
+    },
+
+    sendReturnMail: async (ctx: any) => {
+        const data = await ticketSvc.sendReturnMail(ctx.params.id)
         return response.SuccessResponse(ctx, data)
     },
 

@@ -12,7 +12,7 @@ export function ReportRoute(app: any) {
             query: t.Object({
                 from: t.String(),
                 to: t.String(),
-                brand_name: t.Optional(t.String()),
+                brand_name: t.Optional(t.Numeric()),
             }),
             detail: {
                 tags: ['Report']

@@ -51,16 +51,18 @@ model users {
 }
 
 model customers {
-  id              Int               @id @default(autoincrement())
-  fullname        String
-  shortname       String
-  deleted_at      DateTime?
-  created_at      DateTime          @default(now())
-  created_by      Int
-  shops           shops[]
-  tickets         tickets[]
-  priority_groups priority_groups[]
-  items           items[]
+  id               Int               @id @default(autoincrement())
+  fullname         String
+  shortname        String
+  deleted_at       DateTime?
+  created_at       DateTime          @default(now())
+  created_by       Int
+  shops            shops[]
+  tickets          tickets[]
+  priority_groups  priority_groups[]
+  items            items[]
+  line_id          String?
+  line_engineer_id String?
 }
 
 model shops {
@@ -407,4 +409,9 @@ model storages {
   craeted_by Int
   deleted_at DateTime?
   items      items[]
+}
+
+model mail_recipient {
+  id    Int    @id @default(autoincrement())
+  email String
 }

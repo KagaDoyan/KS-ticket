@@ -526,7 +526,7 @@ export const ticketSvc = {
                     id: id,
                     deleted_at: null
                 },
-                include:{
+                include: {
                     shop: true
                 }
             });
@@ -773,19 +773,35 @@ export const ticketSvc = {
         return ticket;
     },
 
-    getTicketByDateRange: async (start: string, end: string) => {
+    getTicketByDateRange: async (start: string, end: string, brand_name: number) => {
+        var wharecondition: Prisma.ticketsWhereInput = {
+            open_date: {
+                gte: start,
+                lte: end
+            }
+        }
+
+        if (brand_name != 0) {
+            wharecondition = {
+                AND: [
+                    wharecondition,
+                    {
+                        customer: {
+                            id: {
+                                equals: brand_name
+                            }
+                        }
+                    }
+                ]
+            }
+        }
         const tickets = await db.tickets.findMany({
-            where: {
-                open_date: {
-                    gte: start,
-                    lte: end
-                },
-                deleted_at: null
-            },
+            where: wharecondition,
             include: {
                 created_user: true,
                 engineer: true,
-                customer: true
+                customer: true,
+                shop: true
             }
         });
         return tickets;
@@ -961,7 +977,7 @@ export const ticketSvc = {
             // Detect file type by extension
             let mimeType = "";
             const extension = image.name.split('.').pop()?.toLowerCase();
-    
+
             if (extension === "png") {
                 mimeType = "image/png";
             } else if (extension === "jpg" || extension === "jpeg") {
@@ -977,6 +993,121 @@ export const ticketSvc = {
                 contentType: mimeType
             });
         }
+
+        const transporter = nodemailer.createTransport({
+            host: process.env.MAIL_HOST,
+            port: 587, // port for secure SMTP
+            tls: {
+                ciphers: 'SSLv3'
+            },
+            secure: false,
+            auth: {
+                user: process.env.MAIL_USERNAME,
+                pass: process.env.MAIL_PASSWORD
+            },
+        });
+
+        const mailOptions = {
+            from: process.env.MAIL_SENDER,
+            to: ticket.shop.email,
+            subject: mailSubject,
+            html: htmlString,
+            attachments: attachments
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        return {
+            message: "Send Mail Complete"
+        };
+    },
+
+
+    sendReturnMail: async (id: number) => {
+        const ticket = await db.tickets.findFirst({
+            where: {
+                id: id
+            },
+            include: {
+                shop: true,
+                engineer: true,
+                customer: true,
+                ticket_image: {
+                    where: {
+                        deleted_at: null
+                    }
+                },
+                store_item: {
+                    where: {
+                        deleted_at: null
+                    }
+                },
+                spare_item: {
+                    where: {
+                        deleted_at: null
+                    }
+                },
+                return_ticket: true
+            }
+        });
+
+        if (!ticket) return { message: "No Ticket Data" }
+        // Set email content
+        let status_title = ""
+        status_title = "Resolved Case";
+        // if (ticket.ticket_status == "close") {
+        //     status_title = "Resolved Case";
+        // } else if (ticket.ticket_status == "spare") {
+        //     status_title = "Install Spare";
+        // }
+
+        const deviceListClean = ticket.store_item.filter((element) => element);
+        const replaceDeviceListClean = ticket.spare_item.filter((element) => element);
+
+        const oldDeviceLabel = "   เก่า<br>";
+        const newDeviceLabel = "   ใหม่<br>";
+
+        const deviceListCleanMapped = deviceListClean.map((element) => `• ${element.category} ${element.brand} ${element.model} s/n: ${element.serial_number} ${oldDeviceLabel}`);
+        const replaceDeviceListCleanMapped = replaceDeviceListClean.map((element) => `• ${element.category} ${element.brand} ${element.model} s/n: ${element.serial_number} ${newDeviceLabel}`);
+
+        const deviceStr = deviceListCleanMapped.join('');
+        const replaceDeviceStr = replaceDeviceListCleanMapped.join('');
+        let incNumber = ticket.inc_number == "n/a" ? ticket.ticket_number : ticket.inc_number;
+        let mailSubject = `${status_title} : [${ticket.sla_priority_level} : Assigned] | ${incNumber ? incNumber : ticket.ticket_number} | ${ticket.shop.shop_number}-${ticket.shop.shop_name} | ${ticket.item_category} | ${ticket.title}`;
+        let mailHeader = `แจ้งปิดงาน | ${incNumber ? incNumber : ticket.ticket_number}`;
+        let htmlString = '<h3>' + mailHeader + '</h3><br>' +
+            '<h3>Service Detail</h3><br>' +
+            '<table style="width:100%;text-align:left;">' +
+            '<tr><th style="vertical-align:top">Service Number</th><td style="vertical-align:top">' + ticket.ticket_number + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Engineer</th><td style="vertical-align:top">' + ticket.engineer.name + " " + ticket.engineer.name + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Equipment</th><td style="vertical-align:top">' + ticket.return_ticket?.item_category + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Investigation</th><td style="vertical-align:top">' + ticket.return_ticket?.investigation + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Solution</th><td style="vertical-align:top">' + ticket.return_ticket?.solution + '<br>' + deviceStr + replaceDeviceStr + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Appointment Time</th><td style="vertical-align:top">' + ticket.appointment_date + " " + ticket.appointment_time + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Time Start</th><td style="vertical-align:top">' + ticket.open_date + " " + ticket.open_time + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Time Finish</th><td style="vertical-align:top">' + (ticket.close_date || "") + " " + (ticket.close_time || "") + '</td></tr>' +
+            '</table>';
+        let attachments: any = [];
+        // for (const image of ticket.ticket_image) {
+        //     // Detect file type by extension
+        //     let mimeType = "";
+        //     const extension = image.name.split('.').pop()?.toLowerCase();
+
+        //     if (extension === "png") {
+        //         mimeType = "image/png";
+        //     } else if (extension === "jpg" || extension === "jpeg") {
+        //         mimeType = "image/jpeg";
+        //     } else if (extension === "pdf") {
+        //         mimeType = "application/pdf";
+        //     } else {
+        //         mimeType = "application/octet-stream"; // default for unknown types
+        //     }
+        //     attachments.push({
+        //         filename: image.name,
+        //         path: 'files/' + image.name,
+        //         contentType: mimeType
+        //     });
+        // }
 
         const transporter = nodemailer.createTransport({
             host: process.env.MAIL_HOST,

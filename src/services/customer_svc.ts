@@ -6,10 +6,12 @@ interface customePayload {
     fullname: string,
     shortname: string
     created_by: number
+    line_id: string
+    line_engineer_id: string
 }
 
 export const CustomerSvc = {
-    getallCustomer: async (limit: number, page: number,search: string) => {
+    getallCustomer: async (limit: number, page: number, search: string) => {
         let whereCondition: Prisma.customersWhereInput = {
             deleted_at: null
         }
@@ -32,9 +34,9 @@ export const CustomerSvc = {
             where: whereCondition,
             skip: offset,
             take: limit,
-			orderBy: {
-				id: "desc"
-			}
+            orderBy: {
+                id: "desc"
+            }
         });
 
         return {
@@ -82,7 +84,9 @@ export const CustomerSvc = {
             data: {
                 fullname: payload.fullname,
                 shortname: payload.shortname,
-                created_by: payload.created_by
+                created_by: payload.created_by,
+                line_id: payload.line_id,
+                line_engineer_id: payload.line_engineer_id
             },
             select: {
                 id: true
@@ -98,7 +102,9 @@ export const CustomerSvc = {
             },
             data: {
                 fullname: payload.fullname,
-                shortname: payload.shortname
+                shortname: payload.shortname,
+                line_id: payload.line_id,
+                line_engineer_id: payload.line_engineer_id
             }
         })
         return customer

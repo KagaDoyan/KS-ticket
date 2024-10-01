@@ -28,6 +28,7 @@ export function TicketRoute(app: any) {
             query: t.Object({
                 start: t.String(),
                 end: t.String(),
+                brand_name: t.Optional(t.Numeric())
             }),
             detail: {
                 tags: ['Ticket']
@@ -220,6 +221,18 @@ export function TicketRoute(app: any) {
             }
         })
         .post("/mail/:id", TicketCtrl.sendMail, {
+            beforeHandle: middleware.IsAuth,
+            headers: t.Object({
+                authorization: t.String()
+            }),
+            params: t.Object({
+                id: t.Numeric()
+            }),
+            detail: {
+                tags: ['Ticket']
+            }
+        })
+        .post("/return_mail/:id", TicketCtrl.sendReturnMail, {
             beforeHandle: middleware.IsAuth,
             headers: t.Object({
                 authorization: t.String()

@@ -15,6 +15,8 @@ import { NodeRoute } from "./node_rou";
 import { StorageRoute } from "./storage_rou";
 import { InventoryRoute } from "./inventory_rou";
 import { TeamRou } from "./team_rou";
+import { LineRoute } from "./line_rou";
+import { MailRecipientRoute } from "./mail_recipient_rou";
 
 export function MainRoute(app: any) {
     return app
@@ -35,4 +37,6 @@ export function MainRoute(app: any) {
         .group("/storage", StorageRoute)
         .group("/inventory", InventoryRoute)
         .group("/team", TeamRou)
+        .group("/line", LineRoute)
+        .group("/mail_recipient", MailRecipientRoute)
 }

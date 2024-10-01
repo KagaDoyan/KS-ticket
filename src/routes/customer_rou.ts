@@ -38,6 +38,8 @@ export function CustomerRoute(app: any) {
             body: t.Object({
                 fullname: t.String(),
                 shortname: t.String(),
+                line_id: t.Optional(t.String()),
+                line_engineer_id: t.Optional(t.String()),
             }),
             detail: {
                 tags: ['Customer']
@@ -51,6 +53,8 @@ export function CustomerRoute(app: any) {
             body: t.Object({
                 fullname: t.String(),
                 shortname: t.String(),
+                line_id: t.String(),
+                line_engineer_id: t.String(),
             }),
             params: t.Object({
                 id: t.Numeric()
