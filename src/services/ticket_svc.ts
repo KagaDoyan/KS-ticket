@@ -623,7 +623,8 @@ export const ticketSvc = {
                             warranty_exp: item.warranty_expiry_date || null,
                             status: item.status,
                             created_by: payload.created_by,
-                            engineer_id: ticket.engineer_id
+                            engineer_id: ticket.engineer_id,
+                            item_type: item.type === "inside" ? "spare" : "store"
                         }
                     });
 

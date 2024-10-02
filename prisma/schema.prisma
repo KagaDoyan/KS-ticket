@@ -373,9 +373,9 @@ model return_ticket_images {
 }
 
 model return_items {
-  id            Int         @id @default(autoincrement())
+  id            Int              @id @default(autoincrement())
   ticket_id     Int
-  ticket        tickets     @relation(fields: [ticket_id], references: [id])
+  ticket        tickets          @relation(fields: [ticket_id], references: [id])
   brand         String
   category      String
   model         String
@@ -383,10 +383,16 @@ model return_items {
   warranty_exp  DateTime?
   status        item_status
   deleted_at    DateTime?
-  created_at    DateTime    @default(now())
+  created_at    DateTime         @default(now())
   created_by    Int
   engineer_id   Int
-  engineer      engineers   @relation(fields: [engineer_id], references: [id])
+  engineer      engineers        @relation(fields: [engineer_id], references: [id])
+  item_type     return_item_type?
+}
+
+enum return_item_type {
+  store
+  spare
 }
 
 model ticket_images {
