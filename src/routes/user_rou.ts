@@ -37,6 +37,7 @@ export function UserRoute(app: any) {
                 fullname: t.String(),
                 password: t.String(),
                 role: t.String(),
+                customer_id: t.Optional(t.Numeric())
             }),
             detail: {
                 tags: ['User']
