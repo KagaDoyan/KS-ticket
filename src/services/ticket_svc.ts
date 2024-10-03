@@ -1096,7 +1096,12 @@ export const ticketSvc = {
                         deleted_at: null
                     }
                 },
-                return_ticket: true
+                return_ticket: true,
+                return_item: {
+                    where: {
+                        deleted_at: null
+                    }
+                }
             }
         });
 
@@ -1110,9 +1115,9 @@ export const ticketSvc = {
         //     status_title = "Install Spare";
         // }
 
-        const deviceListClean = ticket.store_item.filter((element) => element);
-        const replaceDeviceListClean = ticket.spare_item.filter((element) => element);
-
+        const deviceListClean = ticket.return_item.filter((element) => element.item_type == "spare" && element.status == "return");
+        const replaceDeviceListClean = ticket.return_item.filter((element) => element.item_type == "store" && element.status == "return");
+        
         const oldDeviceLabel = "   เก่า<br>";
         const newDeviceLabel = "   ใหม่<br>";
 
