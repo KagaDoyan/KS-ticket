@@ -87,6 +87,36 @@ interface MA {
     returnDeviceSerial5?: string;
 }
 
+interface inventory {
+    category: string
+    brand: string
+    model: string
+    serial: string
+    owner: string
+    condition: string
+    usage: string
+    status: string
+    used_by: string
+    inc_no: string
+    ticket_no: string
+    remark: string
+}
+
+interface broken {
+    inc_no: string
+    ticket_date: string
+    ticket_time: string
+    store_id: string
+    store_name: string
+    ticket_title: string
+    category: string
+    brand: string
+    model: string
+    serial: string
+    warranty: string
+    location: string
+}
+
 export const reportSvc = {
     reportMA: async (from: string, to: string, brand_name: string) => {
         var wharecondition: Prisma.ticketsWhereInput = {
@@ -218,7 +248,7 @@ export const reportSvc = {
     reportInventory: async () => {
         let allItem = await db.items.findMany({
             where: {
-                deleted_at: null
+                deleted_at: null,
             },
             include: {
                 engineer: true,
@@ -230,20 +260,26 @@ export const reportSvc = {
                         shop: true,
                         customer: true,
                     }
-                }
+                },
+                customer: true
             }
         });
-        let invetory: any = []
+        let invetory: inventory[] = []
         for (const item of allItem) {
-            let { engineer, category, brand, model, ticket, ...itemOnly } = item;
-            itemOnly["engineer"] = item.engineer?.name + " " + item.engineer?.lastname;
-            itemOnly["category"] = item.category.name;
-            itemOnly["brand"] = item.brand.name;
-            itemOnly["model"] = item.model.name;
-            itemOnly["owner"] = item.ticket?.customer.fullname;
-            itemOnly["shop"] = item.ticket?.shop.shop_name;
-            itemOnly["inc_number"] = item.ticket?.inc_number || "";
-            itemOnly["remark"] = item.ticket?.resolve_remark;
+            var itemOnly: inventory = {
+                category: item.category.name,
+                brand: item.brand.name,
+                model: item.model.name,
+                serial: item.serial_number,
+                owner: item.customer?.fullname!,
+                condition: item.status == "repair" ? "broken" : "good",
+                usage: item.status,
+                status: item.status == "spare" ? "spare" : (item.engineers_id ? "node" : "in stock"),
+                used_by: item.engineers_id ? item.engineer?.name! : "",
+                inc_no: item.ticket?.inc_number!,
+                ticket_no: item.ticket?.ticket_number!,
+                remark: item.Remark!
+            }
             invetory.push(itemOnly);
         }
         return {
@@ -264,26 +300,42 @@ export const reportSvc = {
                 }
             },
             include: {
-                ticket: true
+                ticket: {
+                    include: {
+                        shop: true
+                    }
+                }
             }
         });
-        let storeReport: any = [];
+        let storeReport: broken[] = [];
         for (const item of storeItem) {
             let brokenItem = await db.items.findFirst({
                 where: {
                     serial_number: item.serial_number,
                     deleted_at: null
+                },
+                include: {
+                    storage: true,
+                    category: true,
+                    brand: true,
+                    model: true
                 }
             })
             if (!brokenItem) continue;
-            console.log(brokenItem.engineers_id);
-            let store_location = brokenItem.engineers_id ? "Node" : "Warehouse";
-            let { ticket, ...itemOnly } = item;
-            itemOnly["ticket_date"] = item.ticket.appointment_date;
-            itemOnly["ticket_time"] = item.ticket.appointment_time;
-            itemOnly["location"] = store_location;
-            itemOnly["inc_number"] = item.ticket.inc_number;
-            itemOnly["ticket_title"] = item.ticket.title;
+            var itemOnly: broken = {
+                inc_no: item.ticket.inc_number,
+                ticket_date: item.ticket.appointment_date,
+                ticket_time: item.ticket.appointment_time,
+                store_id: item.ticket.shop.shop_number,
+                store_name: item.ticket.shop.shop_name,
+                ticket_title: item.ticket.title,
+                location: brokenItem.engineers_id ? "Node" : brokenItem.storage?.name!,
+                brand: brokenItem.brand.name,
+                model: brokenItem.model.name,
+                serial: brokenItem.serial_number,
+                category: brokenItem.category.name,
+                warranty: brokenItem.warranty_expiry_date ? dayjs(brokenItem.warranty_expiry_date).format("YYYY-MM-DD") : "",
+            }
             storeReport.push(itemOnly);
         }
         return {

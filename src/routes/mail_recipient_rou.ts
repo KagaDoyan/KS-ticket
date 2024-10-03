@@ -45,6 +45,11 @@ export function MailRecipientRoute(app: any) {
             headers: t.Object({
                 authorization: t.String()
             }),
+            query: t.Object({
+                limit: t.Numeric(),
+                page: t.Numeric(),
+                search: t.Optional(t.String())
+            }),
             detail: {
                 tags: ['mailRecipient']
             }
