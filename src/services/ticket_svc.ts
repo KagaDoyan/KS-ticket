@@ -994,7 +994,7 @@ export const ticketSvc = {
         const deviceStr = deviceListCleanMapped.join('');
         const replaceDeviceStr = replaceDeviceListCleanMapped.join('');
         let incNumber = ticket.inc_number == "n/a" ? ticket.ticket_number : ticket.inc_number;
-        let mailSubject = `${status_title} : [${ticket.sla_priority_level} : Assigned] | ${incNumber ? incNumber : ticket.ticket_number} | ${ticket.shop.shop_number}-${ticket.shop.shop_name} | ${ticket.item_category} | ${ticket.title}`;
+        let mailSubject = `${status_title} | [${ticket.sla_priority_level} : Assigned] | ${incNumber ? incNumber : ticket.ticket_number} | ${ticket.shop.shop_number}-${ticket.shop.shop_name} | ${ticket.item_category} | ${ticket.title}`;
         let mailHeader = `แจ้งปิดงาน | ${incNumber ? incNumber : ticket.ticket_number}`;
         let htmlString = '<h3>' + mailHeader + '</h3><br>' +
             '<h3>Service Detail</h3><br>' +
@@ -1112,7 +1112,7 @@ export const ticketSvc = {
         if (!ticket) return { message: "No Ticket Data" }
         // Set email content
         let status_title = ""
-        status_title = "Resolved Case";
+        status_title = "Return Case";
         // if (ticket.ticket_status == "close") {
         //     status_title = "Resolved Case";
         // } else if (ticket.ticket_status == "spare") {
@@ -1131,7 +1131,7 @@ export const ticketSvc = {
         const deviceStr = deviceListCleanMapped.join('');
         const replaceDeviceStr = replaceDeviceListCleanMapped.join('');
         let incNumber = ticket.inc_number == "n/a" ? ticket.ticket_number : ticket.inc_number;
-        let mailSubject = `${status_title} : [${ticket.sla_priority_level} : Assigned] | ${incNumber ? incNumber : ticket.ticket_number} | ${ticket.shop.shop_number}-${ticket.shop.shop_name} | ${ticket.item_category} | ${ticket.title}`;
+        let mailSubject = `${status_title} | [${ticket.sla_priority_level} : Assigned] | ${incNumber ? incNumber : ticket.ticket_number} | ${ticket.shop.shop_number}-${ticket.shop.shop_name} | ${ticket.item_category} | ${ticket.title}`;
         let mailHeader = `แจ้งปิดงาน | ${incNumber ? incNumber : ticket.ticket_number}`;
         let htmlString = '<h3>' + mailHeader + '</h3><br>' +
             '<h3>Service Detail</h3><br>' +
