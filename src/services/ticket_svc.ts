@@ -606,7 +606,7 @@ export const ticketSvc = {
                             data: {
                                 status: updateItemStatus,
                                 ticket_id: item_ticket_id,
-                                shop_number: updateItemStatus === "in_stock" ? ticket.shop.shop_number : null,
+                                shop_number: updateItemStatus === "in_stock" ? null : ticket.shop.shop_number,
                                 engineers_id: ticket.engineer_id
                             }
                         });
@@ -653,7 +653,8 @@ export const ticketSvc = {
                             inc_number: item.inc_number,
                             status: item.status,
                             type: item.type,
-                            created_by: payload.created_by
+                            created_by: payload.created_by,
+                            shop_number: ticket.shop.shop_number
                         },
                         include: {
                             brand: true,
@@ -672,7 +673,8 @@ export const ticketSvc = {
                             warranty_exp: newItem.warranty_expiry_date || null,
                             status: newItem.status,
                             created_by: payload.created_by,
-                            engineer_id: ticket.engineer_id
+                            engineer_id: ticket.engineer_id,
+                            item_type: item.type === "inside" ? "spare" : "store"
                         }
                     });
                 }
