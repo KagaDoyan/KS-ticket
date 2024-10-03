@@ -8,6 +8,7 @@ import nodemailer from 'nodemailer';
 import { SecToTimeString } from "../utilities/sec_to_time_string";
 import dayjs from "dayjs";
 import { Line_svc } from "./line_svc";
+import { cc } from "bun:ffi";
 
 interface itemList {
     id?: number,
@@ -945,6 +946,7 @@ export const ticketSvc = {
     },
 
     sendMail: async (id: number) => {
+        const cc = await db.mail_recipient.findMany({})
         const ticket = await db.tickets.findFirst({
             where: {
                 id: id
@@ -1046,7 +1048,8 @@ export const ticketSvc = {
             to: ticket.shop.email,
             subject: mailSubject,
             html: htmlString,
-            attachments: attachments
+            attachments: attachments,
+            cc: cc.map(obj => obj.email)
         };
 
         await transporter.sendMail(mailOptions);
@@ -1073,6 +1076,7 @@ export const ticketSvc = {
 
 
     sendReturnMail: async (id: number) => {
+        const cc = await db.mail_recipient.findMany({})
         const ticket = await db.tickets.findFirst({
             where: {
                 id: id
@@ -1117,7 +1121,7 @@ export const ticketSvc = {
 
         const deviceListClean = ticket.return_item.filter((element) => element.item_type == "spare" && element.status == "return");
         const replaceDeviceListClean = ticket.return_item.filter((element) => element.item_type == "store" && element.status == "return");
-        
+
         const oldDeviceLabel = "   เก่า<br>";
         const newDeviceLabel = "   ใหม่<br>";
 
@@ -1181,7 +1185,8 @@ export const ticketSvc = {
             to: ticket.shop.email,
             subject: mailSubject,
             html: htmlString,
-            attachments: attachments
+            attachments: attachments,
+            cc: cc.map(obj => obj.email)
         };
 
         await transporter.sendMail(mailOptions);
