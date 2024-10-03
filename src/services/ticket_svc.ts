@@ -522,7 +522,6 @@ export const ticketSvc = {
         if (payload.delete_images != null && payload.delete_images.length != 0) {
             let deleteImages = typeof payload.delete_images === 'string' ? [payload.delete_images] : payload.delete_images;
             for (const imageName of deleteImages) {
-                console.log(imageName);
                 let checkImage = await db.ticket_images.findFirst({
                     where: {
                         name: imageName,
@@ -585,7 +584,6 @@ export const ticketSvc = {
 
                 if (selectItem) {
                     let updateItemStatus = (item.type === "inside" && item.status === "return") ? "in_stock" : item.status;
-                    console.log(selectItem.type + ' ' + item.status + ' ' + updateItemStatus);
 
                     if (checkExistReturn) {
                         await prisma.return_items.update({
@@ -598,7 +596,6 @@ export const ticketSvc = {
                         });
 
                         let item_ticket_id = (item.type === "inside" && item.status === "return") ? null : checkExistReturn.id;
-                        console.log(selectItem.type + ' ' + item.status + ' ' + item_ticket_id);
                         await prisma.items.update({
                             where: {
                                 id: selectItem.id,
