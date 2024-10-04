@@ -1060,17 +1060,19 @@ export const ticketSvc = {
         await transporter.sendMail(mailOptions);
         //line notification
         if (ticket.customer.line_id) {
-            var message = `${ticket.investigation} ${ticket.solution}\n`
+
+            var message = `${ticket.inc_number == "n/a" ? ticket.ticket_number : ticket.inc_number}  | ${ticket.shop.shop_number}-${ticket.shop.shop_name}  | ${ticket.item_category} | ${ticket.title}\n\n`
+            message += `${ticket.solution}\n\n`
             const LineoldDeviceLabel = "   นำกลับ\n";
             const LinenewDeviceLabel = "   สแปร์\n";
 
-            const LinedeviceListCleanMapped = deviceListClean.map((element) => ` ${element.category} ${element.brand} ${element.model} s/n: ${element.serial_number} ${LineoldDeviceLabel}`);
-            const LinereplaceDeviceListCleanMapped = replaceDeviceListClean.map((element) => ` ${element.category} ${element.brand} ${element.model} s/n: ${element.serial_number} ${LinenewDeviceLabel}`);
+            const LinedeviceListCleanMapped = deviceListClean.map((element) => `\t${element.category} ${element.brand} ${element.model} s/n: ${element.serial_number} ${LineoldDeviceLabel}`);
+            const LinereplaceDeviceListCleanMapped = replaceDeviceListClean.map((element) => `\t${element.category} ${element.brand} ${element.model} s/n: ${element.serial_number} ${LinenewDeviceLabel}`);
 
             const LinedeviceStr = LinedeviceListCleanMapped.join('');
             const LinereplaceDeviceStr = LinereplaceDeviceListCleanMapped.join('');
             message += `${LinedeviceStr}${LinereplaceDeviceStr}`
-            message += `ส่งเมลล์และรูปปิดงานเรียบร้อยครับ`
+            message += `\nส่งเมลล์และรูปปิดงานเรียบร้อยครับ`
             Line_svc.sendMessage(ticket.customer.line_id!, message);
         }
 
