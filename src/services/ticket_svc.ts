@@ -813,7 +813,7 @@ export const ticketSvc = {
         return ticket;
     },
 
-    getTicketByDateRange: async (start: string, end: string, brand_name: number) => {
+    getTicketByDateRange: async (start: string, end: string, brand_name: string) => {
         var wharecondition: Prisma.ticketsWhereInput = {
             open_date: {
                 gte: start,
@@ -821,14 +821,14 @@ export const ticketSvc = {
             }
         }
 
-        if (brand_name != 0) {
+        if (brand_name) {
             wharecondition = {
                 AND: [
                     wharecondition,
                     {
                         customer: {
-                            id: {
-                                equals: brand_name
+                            shortname: {
+                                in: brand_name.split(",")
                             }
                         }
                     }

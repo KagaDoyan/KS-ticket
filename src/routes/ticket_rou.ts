@@ -28,7 +28,7 @@ export function TicketRoute(app: any) {
             query: t.Object({
                 start: t.String(),
                 end: t.String(),
-                brand_name: t.Optional(t.Numeric())
+                brand_name: t.Optional(t.String())
             }),
             detail: {
                 tags: ['Ticket']
