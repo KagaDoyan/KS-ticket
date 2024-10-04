@@ -354,7 +354,7 @@ export const ticketSvc = {
 
                 let newItem = await db.items.create({
                     data: {
-                        customer_id: payload.customer_id,
+                        customer_id: ticket.customer_id,
                         serial_number: item.serial_number,
                         category_id: item.category_id,
                         brand_id: item.brand_id,
@@ -453,7 +453,7 @@ export const ticketSvc = {
 
                 let newItem = await db.items.create({
                     data: {
-                        customer_id: payload.customer_id,
+                        customer_id: ticket.customer_id,
                         serial_number: item.serial_number,
                         category_id: item.category_id,
                         brand_id: item.brand_id,
@@ -651,7 +651,8 @@ export const ticketSvc = {
                             status: item.status,
                             type: item.type,
                             created_by: payload.created_by,
-                            shop_number: ticket.shop.shop_number
+                            shop_number: ticket.shop.shop_number,
+                            customer_id: ticket.customer_id
                         },
                         include: {
                             brand: true,
