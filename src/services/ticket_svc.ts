@@ -236,7 +236,7 @@ export const ticketSvc = {
             message += `Contact (ผู้แจ้ง): ${ticketData?.contact_name}\n\n`
             message += `Phone (เบอร์โทร): ${ticketData?.contact_tel}\n\n`
             message += `Store (สาขา): ${ticketData?.shop.shop_number}-${ticketData?.shop.shop_name}\n\n`
-            message += `Description (รายละเอียด): ${ticketData?.description}\n\n`
+            message += `Description (รายละเอียด):\n${ticketData?.description}\n\n`
             message += `Assigned To (ผู้เปีดงานให้กับ): ${ticketData?.assigned_to}\n\n`
             message += `Incident open date/time (วันและเวลาที่เปิดงาน): ${dayjs(ticketData?.open_date).format('DD/MM/YYYY')} ${ticketData?.open_time}\n\n`
             message += `Estimated Resolving Time (วันและเวลาแก้ไขโดยประมาณ): ${ticketData?.sla_priority_level} ${ticketData?.prioritie?.priority_group.group_name} ${ticketData?.prioritie?.time_sec ? SecToTimeString(parseInt(ticketData?.prioritie?.time_sec)) : ''}\n\n`
@@ -332,7 +332,7 @@ export const ticketSvc = {
                             model: checkItem.model.name,
                             serial_number: checkItem.serial_number,
                             warranty_exp: checkItem.warranty_expiry_date || null,
-                            status: checkItem.status,
+                            status: item.status,
                             created_by: payload.created_by
                         }
                     });
@@ -342,7 +342,7 @@ export const ticketSvc = {
                             id: checkItem.id
                         },
                         data: {
-                            status: checkItem.status,
+                            status: item.status,
                             engineers_id: ticket.engineer_id,
                             type: item.type,
                             ticket_id: id
@@ -382,7 +382,7 @@ export const ticketSvc = {
                         model: newItem.model.name,
                         serial_number: item_sn,
                         warranty_exp: newItem.warranty_expiry_date || null,
-                        status: newItem.status,
+                        status: item.status,
                         created_by: payload.created_by
                     }
                 });
@@ -400,17 +400,6 @@ export const ticketSvc = {
                         serial_number: item_sn,
                     }
                 });
-                if (checkExistSpare) {
-                    await db.spare_items.update({
-                        where: {
-                            id: checkExistSpare.id
-                        },
-                        data: {
-                            status: item.status,
-                        },
-                    });
-                    continue;
-                }
                 let checkItem = await db.items.findFirst({
                     where: {
                         deleted_at: null,
@@ -422,6 +411,26 @@ export const ticketSvc = {
                         model: true
                     }
                 });
+                if (checkExistSpare) {
+                    await db.spare_items.update({
+                        where: {
+                            id: checkExistSpare.id
+                        },
+                        data: {
+                            status: item.status,
+                        },
+                    });
+                    await db.items.update({
+                        where: {
+                            id: checkItem?.id
+                        },
+                        data: {
+                            status: item.status
+                        }
+                    })
+                    continue;
+                }
+                
                 if (checkItem) {
                     await db.spare_items.create({
                         data: {
@@ -431,7 +440,7 @@ export const ticketSvc = {
                             model: checkItem.model.name,
                             serial_number: item_sn,
                             warranty_exp: checkItem.warranty_expiry_date || null,
-                            status: checkItem.status,
+                            status: item.status,
                             created_by: payload.created_by
                         }
                     });
@@ -441,7 +450,7 @@ export const ticketSvc = {
                             id: checkItem.id
                         },
                         data: {
-                            status: checkItem.status,
+                            status: item.status,
                             engineers_id: ticket.engineer_id,
                             type: item.type,
                             ticket_id: id
@@ -453,7 +462,6 @@ export const ticketSvc = {
 
                 let newItem = await db.items.create({
                     data: {
-                        customer_id: ticket.customer_id,
                         serial_number: item.serial_number,
                         category_id: item.category_id,
                         brand_id: item.brand_id,
@@ -481,7 +489,7 @@ export const ticketSvc = {
                         model: newItem.model.name,
                         serial_number: item_sn,
                         warranty_exp: newItem.warranty_expiry_date || null,
-                        status: newItem.status,
+                        status: item.status,
                         created_by: payload.created_by
                     }
                 });
