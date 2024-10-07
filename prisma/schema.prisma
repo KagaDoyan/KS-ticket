@@ -61,8 +61,9 @@ model customers {
   tickets          tickets[]
   priority_groups  priority_groups[]
   items            items[]
-  line_id          String?
-  line_engineer_id String?
+  line_open        String?
+  line_appointment String?
+  line_close       String?
 }
 
 model shops {
