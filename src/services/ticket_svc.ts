@@ -1386,24 +1386,111 @@ export const ticketSvc = {
         });
         var mailSubject = `[${ticket?.prioritie?.name} : Open ] | ${ticket?.ticket_number} | ${ticket?.shop.shop_number}-${ticket?.shop.shop_name} | ${ticket?.title}`
         if (!ticket) return { message: "No Ticket Data" }
-        if (!ticket.customer.open_mail) return { message : "No Destination Email"}
-        let htmlString = '<table style="width:100%;text-align:left;">' +
-            '<tr><th style="vertical-align:top">Ticket Number (เลขที่ใบแจ้งงาน):</th><td style="vertical-align:top">' + ticket.ticket_number + '</td></tr>' +
-            '<tr><th style="vertical-align:top">Contact (ผู้แจ้ง):</th><td style="vertical-align:top">' + ticket.contact_name + '</td></tr>' +
-            '<tr><th style="vertical-align:top">Phone (เบอร์โทร):</th><td style="vertical-align:top">' + ticket?.contact_tel + '</td></tr>' +
-            '<tr><th style="vertical-align:top">Store (สาขา):</th><td style="vertical-align:top">' + ticket?.shop.shop_number + '-' + ticket.shop.shop_name + '</td></tr>' +
-            '<tr><th style="vertical-align:top">Description (รายละเอียด):</th><td style="vertical-align:top">' + ticket.description + " " + ticket.appointment_time + '</td></tr>' +
-            '<tr><th style="vertical-align:top">Incident open date/time (วันและเวลาที่เปิดงาน):</th><td style="vertical-align:top">' + ticket.open_date + " " + ticket.open_time + '</td></tr>' +
-            '<tr><th style="vertical-align:top">Estimate Resolving Time (เวลาแก้ไขโดยประมาณ):</th><td style="vertical-align:top">' + SecToTimeString(parseInt(ticket.prioritie?.time_sec!)) + '</td></tr>' +
-            '<tr><th style="vertical-align:top">DueBy Date (วันและเวลาที่ครบกำหนด):</th><td style="vertical-align:top">' + ticket.due_by + '</td></tr>' +
-            '<tr></tr>' +
-            '<tr></tr>' +
-            '<tr>--</tr>' +
-            '<tr><th style="vertical-align:top">Suwit Chuoopart</th></tr>' +
-            '<tr><th style="vertical-align:top">IT Helpdesk</th></tr>' +
-            '<tr><th style="vertical-align:top">Advice IT Infinite Public Company Limited</th></tr>' +
-            '<tr><th style="vertical-align:top">Mobile : 02-4609281</th></tr>' +
-            '</table>';
+        if (!ticket.customer.open_mail) return { message: "No Destination Email" }
+        let htmlString = `
+        <div dir="ltr">
+            <p class="MsoNormal" style="margin:0cm;font-size:11pt;font-family:Calibri,sans-serif">
+                <b><span style="font-size:12pt;font-family:Tahoma,sans-serif">Ticket Number (<span lang="TH">เลขที่ใบแจ้งงาน):&nbsp;</span></span></b>
+                <span style="font-family:Arial,Helvetica,sans-serif;font-size:small">${ticket.ticket_number}</span>
+            </p>
+    
+            <p class="MsoNormal" style="margin:0cm;font-size:11pt;font-family:Calibri,sans-serif">
+                &nbsp;
+            </p>
+    
+            <p class="MsoNormal" style="margin:0cm;font-size:11pt;font-family:Calibri,sans-serif">
+                <b><span style="font-size:12pt;font-family:Tahoma,sans-serif">Contact (<span lang="TH">ผู้แจ้ง)</span></span></b>
+                <span lang="TH" style="font-size:12pt;font-family:Tahoma,sans-serif">: ${ticket.contact_name}</span>
+            </p>
+    
+            <p class="MsoNormal" style="margin:0cm;font-size:11pt;font-family:Calibri,sans-serif">
+                &nbsp;
+            </p>
+    
+            <p class="MsoNormal" style="margin:0cm;font-size:11pt;font-family:Calibri,sans-serif">
+                <b><span style="font-size:12pt;font-family:Tahoma,sans-serif">Phone (<span lang="TH">เบอร์โทร)</span></span></b>
+                <span lang="TH" style="font-size:12pt;font-family:Tahoma,sans-serif">:&nbsp;</span>
+                <span style="font-family:Arial,Helvetica,sans-serif;font-size:small">${ticket?.contact_tel}</span>
+            </p>
+    
+            <p class="MsoNormal" style="margin:0cm;font-size:11pt;font-family:Calibri,sans-serif">
+                &nbsp;
+            </p>
+    
+            <p class="MsoNormal" style="margin:0cm;font-size:11pt;font-family:Calibri,sans-serif">
+                <b><span style="font-size:12pt;font-family:Tahoma,sans-serif">Store (<span lang="TH">สาขา):&nbsp;</span></span></b>
+                <span style="font-size:12pt;font-family:Tahoma,sans-serif">&nbsp;</span>
+                <span style="font-family:Arial,Helvetica,sans-serif;font-size:small">${ticket?.shop.shop_number}-${ticket.shop.shop_name}</span>
+            </p>
+    
+            <p class="MsoNormal" style="margin:0cm;font-size:11pt;font-family:Calibri,sans-serif">
+                &nbsp;
+            </p>
+    
+            <p class="MsoNormal" style="margin:0cm;font-size:11pt;font-family:Calibri,sans-serif">
+                <b><span style="font-size:12pt;font-family:Tahoma,sans-serif">Description (<span lang="TH">รายละเอียด):&nbsp;</span></b>
+                <span style="font-family:Arial,Helvetica,sans-serif;font-size:small">${ticket.description}</span>
+            </p>
+    
+            <p class="MsoNormal" style="margin:0cm;font-size:11pt;font-family:Calibri,sans-serif">
+                &nbsp;
+            </p>
+    
+            <p class="MsoNormal" style="margin:0cm;font-size:11pt;font-family:Calibri,sans-serif">
+                <b><span style="font-size:12pt;font-family:Tahoma,sans-serif">Incident open date/time (<span lang="TH">วันและเวลาที่เปิดงาน):&nbsp;</span></span></b>
+                <span style="font-size:12pt;font-family:Tahoma,sans-serif">${dayjs(ticket.open_date).format("DD/MM/YYYY")} ${ticket.open_time}</span>
+            </p>
+    
+            <p class="MsoNormal" style="margin:0cm;font-size:11pt;font-family:Calibri,sans-serif">
+                &nbsp;
+            </p>
+    
+            <p class="MsoNormal" style="margin:0cm;font-size:11pt;font-family:Calibri,sans-serif">
+                <b><span style="font-size:12pt;font-family:Tahoma,sans-serif">Estimate Resolving Time (เวลาแก้ไขโดยประมาณ):&nbsp;</span></b>
+                <span style="font-size:12pt;font-family:Tahoma,sans-serif">${SecToTimeString(parseInt(ticket.prioritie?.time_sec!))}</span>
+            </p>
+    
+            <p class="MsoNormal" style="margin:0cm;font-size:11pt;font-family:Calibri,sans-serif">
+                &nbsp;
+            </p>
+    
+            <p class="MsoNormal" style="margin:0cm;font-size:11pt;font-family:Calibri,sans-serif">
+                <b><span style="font-size:12pt;font-family:Tahoma,sans-serif">DueBy Date (<span lang="TH">วันและเวลาที่ครบกำหนด):&nbsp;</span></span></b>
+                <span style="font-family:Tahoma,sans-serif;font-size:16px">${dayjs(ticket.due_by).format("DD/MM/YYYY hh:mm")}</span>
+            </p>
+    
+            <p class="MsoNormal" style="margin:0cm;font-size:11pt;font-family:Calibri,sans-serif">
+                &nbsp;
+            </p>
+    
+          <div dir="ltr" class="gmail_signature">
+                <div dir="ltr">
+                    <font face="tahoma, sans-serif" style="color: gray;">
+                        <b>--</b>
+                    </font>
+                    <br>
+                    <font face="tahoma, sans-serif" style="color: gray;">
+                        <b>Suwit Chuoopart</b>
+                    </font>
+                    <br>
+                    <font face="tahoma, sans-serif" style="color: gray;">
+                        <b>IT Helpdesk</b>
+                    </font>
+                    <br>
+                    <font face="tahoma, sans-serif" style="color: gray;">
+                        <b><i>Advice IT Infinite Public Company Limited</i></b>
+                    </font>
+                    <br>
+                    <font face="tahoma, sans-serif" style="color: gray;">
+                        <b>Mobile: 02-4609281</b>
+                    </font>
+                    <br>
+                    <img src="https://ci3.googleusercontent.com/meips/ADKq_NYL6cddsWyQInr61nMcO_OyGtQq11kCk0jN2o2yHPpPQK7Pof66Bez1rWvC6Fh_jLa9WU6_AkUxZJ-ft0yfTGiyZp5DeoYPdStDzDiO_8Gyf1fQQehbricff1bWWOekRsBpg74=s0-d-e1-ft#https://img.advice.co.th/images_nas/advice/oneweb/assets/images/logo-color.png"
+                        width="96" height="43" class="CToWUd" style="filter: grayscale(100%);">
+                </div>
+            </div>
+        </div>`;
+
         const transporter = nodemailer.createTransport({
             host: process.env.MAIL_HOST,
             port: 587, // port for secure SMTP
