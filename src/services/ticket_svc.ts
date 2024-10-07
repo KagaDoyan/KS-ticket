@@ -230,7 +230,7 @@ export const ticketSvc = {
             }
         })
 
-        if (customer?.line_engineer_id) {
+        if (customer?.open_mail) {
             var message = `Open Case | ${ticketData?.sla_priority_level} | Assgined | ${(ticketData?.inc_number === 'n/a' ? ticketData?.ticket_number : ticketData?.inc_number)} | ${ticketData?.shop.shop_number}-${ticketData?.shop.shop_name} | ${ticketData?.item_category} | ${ticketData?.title} | ${ticketData?.ticket_number} | ${dayjs(new Date()).format('HH:mm')}\n\n`
             message += `Incident (เลขที่ใบแจ้งงาน): ${(ticketData?.inc_number === 'n/a' ? ticketData?.ticket_number : ticketData?.inc_number)}\n\n`
             message += `Contact (ผู้แจ้ง): ${ticketData?.contact_name}\n\n`
@@ -241,7 +241,7 @@ export const ticketSvc = {
             message += `Incident open date/time (วันและเวลาที่เปิดงาน): ${dayjs(ticketData?.open_date).format('DD/MM/YYYY')} ${ticketData?.open_time}\n\n`
             message += `Estimated Resolving Time (วันและเวลาแก้ไขโดยประมาณ): ${ticketData?.sla_priority_level} ${ticketData?.prioritie?.priority_group.group_name} ${ticketData?.prioritie?.time_sec ? SecToTimeString(parseInt(ticketData?.prioritie?.time_sec)) : ''}\n\n`
             message += `DueBy Date (วันและเวลาครบกําหนด): ${dayjs(ticketData?.due_by).format('DD/MM/YYYY HH:mm')}\n\n`
-            Line_svc.sendMessage(customer?.line_engineer_id!, message);
+            Line_svc.sendMessage(customer?.open_mail!, message);
         }
         return ticket;
     },
@@ -1059,7 +1059,7 @@ export const ticketSvc = {
 
         await transporter.sendMail(mailOptions);
         //line notification
-        if (ticket.customer.line_id) {
+        if (ticket.customer.line_close) {
 
             var message = `${ticket.inc_number == "n/a" ? ticket.ticket_number : ticket.inc_number}  | ${ticket.shop.shop_number}-${ticket.shop.shop_name}  | ${ticket.item_category} | ${ticket.title}\n\n`
             message += `${ticket.solution}\n\n`
@@ -1073,7 +1073,7 @@ export const ticketSvc = {
             const LinereplaceDeviceStr = LinereplaceDeviceListCleanMapped.join('');
             message += `${LinedeviceStr}${LinereplaceDeviceStr}`
             message += `\nส่งเมลล์และรูปปิดงานเรียบร้อยครับ`
-            Line_svc.sendMessage(ticket.customer.line_id!, message);
+            Line_svc.sendMessage(ticket.customer.line_close!, message);
         }
 
         return {
@@ -1267,7 +1267,7 @@ export const ticketSvc = {
         await transporter.sendMail(mailOptions);
 
         //send line notification
-        if (ticket.customer.line_id) {
+        if (ticket.customer.line_appointment) {
             var message = `Open Case ${(ticket?.inc_number === 'n/a' ? ticket?.ticket_number : ticket?.inc_number)}\n`
             message += `Title : ${ticket.title}\n`
             message += `Cases Number : ${ticket.ticket_number}\n`
@@ -1281,7 +1281,7 @@ export const ticketSvc = {
             message += `Appointment : ${dayjs(ticket.appointment_date).format('DD/MM/YYYY')} ${ticket.appointment_time}\n`
             message += `ช่างนัดหมายสาขาวันที่ : ${dayjs(ticket.appointment_date).format('DD/MM/YYYY')} ${ticket.appointment_time}\n`
 
-            Line_svc.sendMessage(ticket.customer.line_id, message)
+            Line_svc.sendMessage(ticket.customer.line_appointment, message)
         }
         return {
             message: "Send Mail Complete"

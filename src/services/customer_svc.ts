@@ -6,8 +6,10 @@ interface customePayload {
     fullname: string,
     shortname: string
     created_by: number
-    line_id: string
-    line_engineer_id: string
+    open_mail?: string
+    line_open?: string
+    line_appointment?: string
+    line_close?: string
 }
 
 export const CustomerSvc = {
@@ -85,8 +87,10 @@ export const CustomerSvc = {
                 fullname: payload.fullname,
                 shortname: payload.shortname,
                 created_by: payload.created_by,
-                line_id: payload.line_id,
-                line_engineer_id: payload.line_engineer_id
+                open_mail: payload.open_mail,
+                line_open: payload.line_open,
+                line_appointment: payload.line_appointment,
+                line_close: payload.line_close
             },
             select: {
                 id: true
@@ -103,8 +107,10 @@ export const CustomerSvc = {
             data: {
                 fullname: payload.fullname,
                 shortname: payload.shortname,
-                line_id: payload.line_id,
-                line_engineer_id: payload.line_engineer_id
+                open_mail: payload.open_mail,
+                line_open: payload.line_open,
+                line_appointment: payload.line_appointment,
+                line_close: payload.line_close
             }
         })
         return customer
