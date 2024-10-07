@@ -247,7 +247,22 @@ export function TicketRoute(app: any) {
             }
         })
         .post("/appointmentMail/:id", TicketCtrl.sendAppointmentMail, {
-            // beforeHandle: middleware.IsAuth,
+            beforeHandle: middleware.IsAuth,
+            headers: t.Object({
+                authorization: t.String()
+            }),
+            params: t.Object({
+                id: t.Numeric()
+            }),
+            body: t.Object({
+                remark: t.Optional(t.String())
+            }),
+            detail: {
+                tags: ['Ticket']
+            }
+        })
+        .post("/open_mail/:id", TicketCtrl.sendOpenTicket, {
+            beforeHandle: middleware.IsAuth,
             headers: t.Object({
                 authorization: t.String()
             }),

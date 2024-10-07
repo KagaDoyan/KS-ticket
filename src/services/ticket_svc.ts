@@ -1368,6 +1368,71 @@ export const ticketSvc = {
         };
     },
 
+    sendOpenTicketMail: async (id: number) => {
+        const ticket = await db.tickets.findFirst({
+            where: {
+                id: id
+            },
+            include: {
+                shop: {
+                    include: {
+                        province: true
+                    }
+                },
+                engineer: true,
+                customer: true,
+                prioritie: true
+            }
+        });
+        var mailSubject = `[${ticket?.prioritie?.name} : Open ] | ${ticket?.ticket_number} | ${ticket?.shop.shop_number}-${ticket?.shop.shop_name} | ${ticket?.title}`
+        if (!ticket) return { message: "No Ticket Data" }
+        let htmlString = '<table style="width:100%;text-align:left;">' +
+            '<tr><th style="vertical-align:top">Ticket Number (เลขที่ใบแจ้งงาน):</th><td style="vertical-align:top">' + ticket.ticket_number + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Contact (ผู้แจ้ง):</th><td style="vertical-align:top">' + ticket.contact_name + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Phone (เบอร์โทร):</th><td style="vertical-align:top">' + ticket?.contact_tel + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Store (สาขา):</th><td style="vertical-align:top">' + ticket?.shop.shop_number + '-' + ticket.shop.shop_name + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Description (รายละเอียด):</th><td style="vertical-align:top">' + ticket.description + " " + ticket.appointment_time + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Incident open date/time (วันและเวลาที่เปิดงาน):</th><td style="vertical-align:top">' + ticket.open_date + " " + ticket.open_time + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Estimate Resolving Time (เวลาแก้ไขโดยประมาณ):</th><td style="vertical-align:top">' + SecToTimeString(parseInt(ticket.prioritie?.time_sec!)) + '</td></tr>' +
+            '<tr><th style="vertical-align:top">DueBy Date (วันและเวลาที่ครบกำหนด):</th><td style="vertical-align:top">' + ticket.due_by + '</td></tr>' +
+            '<tr></tr>' +
+            '<tr></tr>' +
+            '<tr>--</tr>' +
+            '<tr><th style="vertical-align:top">Suwit Chuoopart</th></tr>' +
+            '<tr><th style="vertical-align:top">IT Helpdesk</th></tr>' +
+            '<tr><th style="vertical-align:top">Advice IT Infinite Public Company Limited</th></tr>' +
+            '<tr><th style="vertical-align:top">Mobile : 02-4609281</th></tr>' +
+            '</table>';
+        const transporter = nodemailer.createTransport({
+            host: process.env.MAIL_HOST,
+            port: 587, // port for secure SMTP
+            tls: {
+                ciphers: 'SSLv3'
+            },
+            secure: false,
+            auth: {
+                user: process.env.MAIL_USERNAME,
+                pass: process.env.MAIL_PASSWORD
+            },
+        });
+
+        const mailOptions = {
+            from: process.env.MAIL_SENDER,
+            to: ticket.shop.email,
+            subject: mailSubject,
+            html: htmlString,
+            // attachments: attachments,
+            // cc: cc.map(obj => obj.email)
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        return {
+            message: "Send Mail Complete"
+        };
+
+    },
+
     deleteReturnItem: async (id: number) => {
         return await db.return_items.delete({
             where: {
