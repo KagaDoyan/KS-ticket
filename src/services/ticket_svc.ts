@@ -1173,7 +1173,16 @@ export const ticketSvc = {
                         deleted_at: null
                     }
                 },
-                return_ticket: true,
+                return_ticket: {
+                    where: {
+                        deleted_at: null
+                    }
+                },
+                return_ticket_images: {
+                    where: {
+                        deleted_at: null
+                    }
+                },
                 return_item: {
                     where: {
                         deleted_at: null
@@ -1224,26 +1233,26 @@ export const ticketSvc = {
             '<tr><th style="vertical-align:top">Time Finish</th><td style="vertical-align:top">' + (ticket.close_date || "") + " " + (ticket.close_time || "") + '</td></tr>' +
             '</table>';
         let attachments: any = [];
-        // for (const image of ticket.ticket_image) {
-        //     // Detect file type by extension
-        //     let mimeType = "";
-        //     const extension = image.name.split('.').pop()?.toLowerCase();
+        for (const image of ticket.return_ticket_images) {
+            // Detect file type by extension
+            let mimeType = "";
+            const extension = image.name.split('.').pop()?.toLowerCase();
 
-        //     if (extension === "png") {
-        //         mimeType = "image/png";
-        //     } else if (extension === "jpg" || extension === "jpeg") {
-        //         mimeType = "image/jpeg";
-        //     } else if (extension === "pdf") {
-        //         mimeType = "application/pdf";
-        //     } else {
-        //         mimeType = "application/octet-stream"; // default for unknown types
-        //     }
-        //     attachments.push({
-        //         filename: image.name,
-        //         path: 'files/' + image.name,
-        //         contentType: mimeType
-        //     });
-        // }
+            if (extension === "png") {
+                mimeType = "image/png";
+            } else if (extension === "jpg" || extension === "jpeg") {
+                mimeType = "image/jpeg";
+            } else if (extension === "pdf") {
+                mimeType = "application/pdf";
+            } else {
+                mimeType = "application/octet-stream"; // default for unknown types
+            }
+            attachments.push({
+                filename: image.name,
+                path: 'files/' + image.name,
+                contentType: mimeType
+            });
+        }
 
         const transporter = nodemailer.createTransport({
             host: process.env.MAIL_HOST,
