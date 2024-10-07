@@ -38,10 +38,10 @@ export function CustomerRoute(app: any) {
             body: t.Object({
                 fullname: t.String(),
                 shortname: t.String(),
-                open_mail: t.Optional(t.String()),
-                line_open: t.Optional(t.String()),
-                line_appointment: t.Optional(t.String()),
-                line_close: t.Optional(t.String()),
+                open_mail: t.Optional(t.Nullable(t.String())),
+                line_open: t.Optional(t.Nullable(t.String())),
+                line_appointment: t.Optional(t.Nullable(t.String())),
+                line_close: t.Optional(t.Nullable(t.String())),
             }),
             detail: {
                 tags: ['Customer']
@@ -55,10 +55,10 @@ export function CustomerRoute(app: any) {
             body: t.Object({
                 fullname: t.String(),
                 shortname: t.String(),
-                open_mail: t.Optional(t.String()),
-                line_open: t.Optional(t.String()),
-                line_appointment: t.Optional(t.String()),
-                line_close: t.Optional(t.String()),
+                open_mail: t.Optional(t.Nullable(t.String())),
+                line_open: t.Optional(t.Nullable(t.String())),
+                line_appointment: t.Optional(t.Nullable(t.String())),
+                line_close: t.Optional(t.Nullable(t.String())),
             }),
             params: t.Object({
                 id: t.Numeric()

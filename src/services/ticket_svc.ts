@@ -1386,6 +1386,7 @@ export const ticketSvc = {
         });
         var mailSubject = `[${ticket?.prioritie?.name} : Open ] | ${ticket?.ticket_number} | ${ticket?.shop.shop_number}-${ticket?.shop.shop_name} | ${ticket?.title}`
         if (!ticket) return { message: "No Ticket Data" }
+        if (!ticket.customer.open_mail) return { message : "No Destination Email"}
         let htmlString = '<table style="width:100%;text-align:left;">' +
             '<tr><th style="vertical-align:top">Ticket Number (เลขที่ใบแจ้งงาน):</th><td style="vertical-align:top">' + ticket.ticket_number + '</td></tr>' +
             '<tr><th style="vertical-align:top">Contact (ผู้แจ้ง):</th><td style="vertical-align:top">' + ticket.contact_name + '</td></tr>' +
@@ -1418,7 +1419,7 @@ export const ticketSvc = {
 
         const mailOptions = {
             from: process.env.MAIL_SENDER,
-            to: ticket.shop.email,
+            to: ticket.customer.open_mail,
             subject: mailSubject,
             html: htmlString,
             // attachments: attachments,
