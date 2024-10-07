@@ -81,4 +81,18 @@ export function InventoryRoute(app: any) {
                 tags: ['Inventory']
             }
         })
+        .get("/report", InventoryCtrl.report, {
+            beforeHandle: middleware.IsAuth,
+            headers: t.Object({
+                authorization: t.String()
+            }),
+            query: t.Object({
+                from: t.String(),
+                to: t.String(),
+                search: t.Optional(t.String()),
+            }),
+            detail: {
+                tags: ['Inventory']
+            }
+        })
 }

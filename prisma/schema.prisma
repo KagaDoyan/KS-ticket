@@ -164,7 +164,7 @@ model inventory {
   brand      String?
   serial     String?
   warranty   String?
-  sell_date  String?
+  sell_date  String
   sell_price Int?
   buyer_name String?
   deleted_at DateTime?

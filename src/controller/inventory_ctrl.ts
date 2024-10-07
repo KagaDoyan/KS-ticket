@@ -23,7 +23,7 @@ export const InventoryCtrl = {
     updateInventory: async (ctx: any) => {
         const userID = await middleware.GetUserFromToken(ctx)
         ctx.body.created_by = userID
-        const data = await InventorySvc.updateInventory(ctx.params.id, {...ctx.body})
+        const data = await InventorySvc.updateInventory(ctx.params.id, { ...ctx.body })
         return response.SuccessResponse(ctx, data)
     },
 
@@ -33,4 +33,10 @@ export const InventoryCtrl = {
         const data = await InventorySvc.softDeleteInventory(ctx.params.id)
         return response.SuccessResponse(ctx, data)
     },
+
+    report: async (ctx: any) => {
+        const data = await InventorySvc.reportInventory(ctx.query.from, ctx.query.to, ctx.query.search)
+        return response.SuccessResponse(ctx, data)
+    }
 }
+
