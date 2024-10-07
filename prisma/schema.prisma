@@ -65,6 +65,7 @@ model customers {
   line_open        String?
   line_appointment String?
   line_close       String?
+  mail_recipient   mail_recipient[]
 }
 
 model shops {
@@ -421,6 +422,8 @@ model storages {
 }
 
 model mail_recipient {
-  id    Int    @id @default(autoincrement())
-  email String
+  id          Int       @id @default(autoincrement())
+  email       String
+  customer    customers? @relation(fields: [customer_id], references: [id])
+  customer_id Int?
 }
