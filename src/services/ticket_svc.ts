@@ -36,10 +36,12 @@ interface returnItem {
     action?: string,
     time_in?: any,
     time_out?: any,
-    items: itemList[],
+    items: string,
     created_by: number,
     close_date: string,
     close_time: string,
+    images?: File[],
+    delete_images?: string[]
 }
 
 interface ticketPayload {
@@ -430,7 +432,7 @@ export const ticketSvc = {
                     })
                     continue;
                 }
-                
+
                 if (checkItem) {
                     await db.spare_items.create({
                         data: {
@@ -570,7 +572,11 @@ export const ticketSvc = {
             });
             if (!ticket) return { message: "No Ticket data" };
 
-            for (const item of payload.items) {
+            let items = JSON.parse(payload.items);
+
+            for (const item of items) {
+                console.log(item.serial_number);
+
                 let checkExistReturn = await prisma.return_items.findFirst({
                     where: {
                         deleted_at: null,
@@ -603,7 +609,7 @@ export const ticketSvc = {
                             }
                         });
 
-                        let item_ticket_id = (item.type === "inside" && item.status === "return") ? null : checkExistReturn.id;
+                        let item_ticket_id = (item.type === "inside" && item.status === "return") ? null : ticket.id;
                         await prisma.items.update({
                             where: {
                                 id: selectItem.id,
@@ -704,7 +710,7 @@ export const ticketSvc = {
                         item_sn: payload.item_sn,
                         warranty_exp: payload.warranty_exp || null,
                         resolve_status: payload.resolve_status,
-                        resolve_remark: payload.resolve_remark,
+                        resolve_remark: payload.resolve_remark || payload.resolve_remark != 'null' ? payload.resolve_remark : "",
                         action: payload.action,
                         time_in: payload.time_in,
                         time_out: payload.time_out,
@@ -722,7 +728,7 @@ export const ticketSvc = {
                         item_category: payload.item_category,
                         item_model: payload.item_model,
                         item_sn: payload.item_sn,
-                        warranty_exp: payload.warranty_exp || null,
+                        warranty_exp: payload.warranty_exp ? new Date(payload.warranty_exp) : null,
                         resolve_status: payload.resolve_status,
                         resolve_remark: payload.resolve_remark,
                         action: payload.action,
@@ -743,6 +749,58 @@ export const ticketSvc = {
                     deleted_at: null
                 }
             });
+
+            const images = payload.images as File[];
+            if (images != null && images.length != 0) {
+                for (const image of images) {
+                    let imageName = await generateNameForImage(image.name);
+                    // let imageType = imageName.split('.')[1].toLowerCase();
+                    // Process the image to reduce file
+                    // const buffer = await image.arrayBuffer();
+                    // let resizedImageBuffer;
+                    // if(imageType === 'jpg' || imageType === 'jpeg') {
+                    //     resizedImageBuffer = await sharp(Buffer.from(buffer)).jpeg({ quality: 30 }).toBuffer();
+                    // }
+                    // else if(imageType === 'png') {
+                    //     resizedImageBuffer = await sharp(Buffer.from(buffer)).png({ quality: 30 }).toBuffer();
+                    // }
+                    // else if(imageType === 'webp') {
+                    //     resizedImageBuffer = await sharp(Buffer.from(buffer)).webp({ quality: 30 }).toBuffer();
+                    // }
+                    await Bun.write(`files/` + imageName, image);
+                    await prisma.return_ticket_images.create({
+                        data: {
+                            ticket_id: id,
+                            name: imageName,
+                            path: "/image/" + imageName,
+                            created_by: payload.created_by
+                        }
+                    });
+                }
+            }
+
+            if (payload.delete_images != null && payload.delete_images.length != 0) {
+                let deleteImages = typeof payload.delete_images === 'string' ? [payload.delete_images] : payload.delete_images;
+                for (const imageName of deleteImages) {
+                    let checkImage = await prisma.return_ticket_images.findFirst({
+                        where: {
+                            name: imageName,
+                            deleted_at: null
+                        },
+                    });
+                    if (!checkImage) continue;
+                    await unlink(`files/` + imageName);
+                    await prisma.return_ticket_images.update({
+                        where: {
+                            id: checkImage.id,
+                            deleted_at: null
+                        },
+                        data: {
+                            deleted_at: new Date()
+                        }
+                    });
+                }
+            }
 
             return { message: "Add return list complete" };
         });
@@ -778,6 +836,11 @@ export const ticketSvc = {
                     }
                 },
                 ticket_image: {
+                    where: {
+                        deleted_at: null
+                    }
+                },
+                return_ticket_images: {
                     where: {
                         deleted_at: null
                     }
@@ -951,7 +1014,6 @@ export const ticketSvc = {
     },
 
     sendMail: async (id: number) => {
-        const cc = await db.mail_recipient.findMany({})
         const ticket = await db.tickets.findFirst({
             where: {
                 id: id
@@ -979,6 +1041,11 @@ export const ticketSvc = {
         });
 
         if (!ticket) return { message: "No Ticket Data" }
+        const cc = await db.mail_recipient.findMany({
+            where: {
+                customer_id: ticket.customer_id
+            }
+        })
         // Set email content
         let status_title = ""
         if (ticket.ticket_status == "close") {
@@ -1083,7 +1150,6 @@ export const ticketSvc = {
 
 
     sendReturnMail: async (id: number) => {
-        const cc = await db.mail_recipient.findMany({})
         const ticket = await db.tickets.findFirst({
             where: {
                 id: id
@@ -1117,6 +1183,11 @@ export const ticketSvc = {
         });
 
         if (!ticket) return { message: "No Ticket Data" }
+        const cc = await db.mail_recipient.findMany({
+            where: {
+                customer_id: ticket.customer_id
+            }
+        })
         // Set email content
         let status_title = ""
         status_title = "Return Case";
@@ -1289,12 +1360,9 @@ export const ticketSvc = {
     },
 
     deleteReturnItem: async (id: number) => {
-        return await db.return_items.update({
+        return await db.return_items.delete({
             where: {
                 id: id
-            },
-            data: {
-                deleted_at: new Date()
             }
         });
     }

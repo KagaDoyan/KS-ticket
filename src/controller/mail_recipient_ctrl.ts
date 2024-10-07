@@ -3,7 +3,7 @@ import { response } from "./reponse"
 
 export const MailRecipientCtrl = {
     async getMailRecipient(ctx: any) {
-        const data = await MailRecipientSvc.getRecipientAll(ctx.query.limit, ctx.query.page, ctx.query.search);
+        const data = await MailRecipientSvc.getRecipientAll(ctx.query.limit, ctx.query.page, ctx.query.search, ctx.query.brand);
         return response.SuccessResponse(ctx, data)
     },
     async createMailRecipient(ctx: any) {

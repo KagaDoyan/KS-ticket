@@ -10,7 +10,8 @@ export function MailRecipientRoute(app: any) {
                 authorization: t.String()
             }),
             body: t.Object({
-                email: t.String()
+                email: t.String(),
+                customer_id: t.Optional(t.Number())
             }),
             detail: {
                 tags: ['mailRecipient']
@@ -48,7 +49,8 @@ export function MailRecipientRoute(app: any) {
             query: t.Object({
                 limit: t.Numeric(),
                 page: t.Numeric(),
-                search: t.Optional(t.String())
+                search: t.Optional(t.String()),
+                brand: t.Optional(t.String())
             }),
             detail: {
                 tags: ['mailRecipient']
@@ -63,7 +65,8 @@ export function MailRecipientRoute(app: any) {
                 id: t.Number()
             }),
             body: t.Object({
-                email: t.String()
+                email: t.String(),
+                customer_id: t.Optional(t.Number()),
             }),
             detail: {
                 tags: ['mailRecipient']

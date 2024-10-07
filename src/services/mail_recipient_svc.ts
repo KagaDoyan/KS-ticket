@@ -2,18 +2,32 @@ import { Prisma } from "@prisma/client";
 import db from "../adapter.ts/database";
 
 export const MailRecipientSvc = {
-    async getRecipientAll(limit: number, page: number, search: string) {
+    async getRecipientAll(limit: number, page: number, search: string, brand?: string) {
         let whereCondition: Prisma.mail_recipientWhereInput = {}
 
         if (search) {
             whereCondition.AND = [
                 {
                     OR: [
-                        { email: { contains: search } }
+                        { email: { contains: search } },
+                        { customer: { shortname: { contains: search } } }
                     ]
                 }
             ]
         }
+
+        if (brand) {
+            whereCondition.AND = [
+                {
+                    customer: {
+                        shortname: {
+                            equals: brand
+                        }
+                    }
+                }
+            ]
+        }
+
         const total_item = await db.mail_recipient.count({ where: whereCondition });
         const totalPages = Math.ceil(total_item / limit);
         const offset = (page - 1) * limit;
@@ -23,6 +37,9 @@ export const MailRecipientSvc = {
             take: limit,
             orderBy: {
                 id: "desc"
+            },
+            include: {
+                customer: true
             }
         });
         return {
@@ -38,6 +55,9 @@ export const MailRecipientSvc = {
         const recipient = await db.mail_recipient.findUnique({
             where: {
                 id: id
+            },
+            include: {
+                customer: true
             }
         });
         return recipient
@@ -54,7 +74,8 @@ export const MailRecipientSvc = {
     async CreateRecipient(payload: any) {
         const recipient = await db.mail_recipient.create({
             data: {
-                email: payload.email
+                email: payload.email,
+                customer_id: payload.customer_id
             }
         });
         return recipient
@@ -66,7 +87,8 @@ export const MailRecipientSvc = {
                 id: id
             },
             data: {
-                email: payload.email
+                email: payload.email,
+                customer_id: payload.customer_id
             }
         });
         return recipient

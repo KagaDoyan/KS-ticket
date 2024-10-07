@@ -167,6 +167,8 @@ export function TicketRoute(app: any) {
                 action: t.String(),
                 time_in: t.String(),
                 time_out: t.String(),
+                images: t.Optional(t.Files()),
+                delete_images: t.Optional(t.Any())
             }),
             detail: {
                 tags: ['Ticket']
