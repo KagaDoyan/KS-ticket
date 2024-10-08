@@ -1470,10 +1470,6 @@ export const ticketSvc = {
                     </font>
                     <br>
                     <font face="tahoma, sans-serif" style="color: gray;">
-                        <b>Suwit Chuoopart</b>
-                    </font>
-                    <br>
-                    <font face="tahoma, sans-serif" style="color: gray;">
                         <b>IT Helpdesk</b>
                     </font>
                     <br>
