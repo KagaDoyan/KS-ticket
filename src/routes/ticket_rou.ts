@@ -269,9 +269,6 @@ export function TicketRoute(app: any) {
             params: t.Object({
                 id: t.Numeric()
             }),
-            body: t.Object({
-                remark: t.Optional(t.String())
-            }),
             detail: {
                 tags: ['Ticket']
             }
