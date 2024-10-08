@@ -262,7 +262,7 @@ export function TicketRoute(app: any) {
             }
         })
         .post("/open_mail/:id", TicketCtrl.sendOpenTicket, {
-            // beforeHandle: middleware.IsAuth,
+            beforeHandle: middleware.IsAuth,
             headers: t.Object({
                 authorization: t.String()
             }),
