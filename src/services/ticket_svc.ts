@@ -232,7 +232,7 @@ export const ticketSvc = {
             }
         })
 
-        if (customer?.open_mail) {
+        if (customer?.line_open) {
             var message = `Open Case | ${ticketData?.sla_priority_level} | Assgined | ${(ticketData?.inc_number === 'n/a' ? ticketData?.ticket_number : ticketData?.inc_number)} | ${ticketData?.shop.shop_number}-${ticketData?.shop.shop_name} | ${ticketData?.item_category} | ${ticketData?.title} | ${ticketData?.ticket_number} | ${dayjs(new Date()).format('HH:mm')}\n\n`
             message += `Incident (เลขที่ใบแจ้งงาน): ${(ticketData?.inc_number === 'n/a' ? ticketData?.ticket_number : ticketData?.inc_number)}\n\n`
             message += `Contact (ผู้แจ้ง): ${ticketData?.contact_name}\n\n`
