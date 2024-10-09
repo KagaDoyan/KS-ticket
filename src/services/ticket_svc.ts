@@ -708,7 +708,7 @@ export const ticketSvc = {
                         item_category: payload.item_category,
                         item_model: payload.item_model,
                         item_sn: payload.item_sn,
-                        warranty_exp: payload.warranty_exp || null,
+                        warranty_exp: payload.warranty_exp ? new Date(payload.warranty_exp) : null,
                         resolve_status: payload.resolve_status,
                         resolve_remark: payload.resolve_remark || payload.resolve_remark != 'null' ? payload.resolve_remark : "",
                         action: payload.action,
