@@ -243,7 +243,7 @@ export const ticketSvc = {
             message += `Incident open date/time (วันและเวลาที่เปิดงาน): ${dayjs(ticketData?.open_date).format('DD/MM/YYYY')} ${ticketData?.open_time}\n\n`
             message += `Estimated Resolving Time (วันและเวลาแก้ไขโดยประมาณ): ${ticketData?.sla_priority_level} ${ticketData?.prioritie?.priority_group.group_name} ${ticketData?.prioritie?.time_sec ? SecToTimeString(parseInt(ticketData?.prioritie?.time_sec)) : ''}\n\n`
             message += `DueBy Date (วันและเวลาครบกําหนด): ${dayjs(ticketData?.due_by).format('DD/MM/YYYY HH:mm')}\n\n`
-            try { Line_svc.sendMessage(customer?.open_mail!, message); } catch (error) { console.log(error) }
+            try { Line_svc.sendMessage(customer?.line_open!, message); } catch (error) { console.log(error) }
         }
         return ticket;
     },
