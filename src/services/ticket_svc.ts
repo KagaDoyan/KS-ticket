@@ -881,7 +881,8 @@ export const ticketSvc = {
             open_date: {
                 gte: start,
                 lte: end
-            }
+            },
+            deleted_at: null
         }
 
         if (brand_name) {
