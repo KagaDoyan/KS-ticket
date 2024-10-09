@@ -123,7 +123,8 @@ export const reportSvc = {
             open_date: {
                 gte: from,
                 lte: to
-            }
+            },
+            deleted_at: null
         }
 
         if (brand_name) {
