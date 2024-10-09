@@ -617,7 +617,7 @@ export const ticketSvc = {
                             data: {
                                 status: updateItemStatus,
                                 ticket_id: item_ticket_id ? item_ticket_id : null,
-                                shop_number: updateItemStatus === "in_stock" ? null : ticket.shop.shop_number,
+                                shop_number: updateItemStatus == "in_stock" ? null : ticket.shop.shop_number,
                                 engineers_id: ticket.engineer_id
                             }
                         });
