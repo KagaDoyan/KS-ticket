@@ -243,7 +243,7 @@ export const ticketSvc = {
             message += `Incident open date/time (วันและเวลาที่เปิดงาน): ${dayjs(ticketData?.open_date).format('DD/MM/YYYY')} ${ticketData?.open_time}\n\n`
             message += `Estimated Resolving Time (วันและเวลาแก้ไขโดยประมาณ): ${ticketData?.sla_priority_level} ${ticketData?.prioritie?.priority_group.group_name} ${ticketData?.prioritie?.time_sec ? SecToTimeString(parseInt(ticketData?.prioritie?.time_sec)) : ''}\n\n`
             message += `DueBy Date (วันและเวลาครบกําหนด): ${dayjs(ticketData?.due_by).format('DD/MM/YYYY HH:mm')}\n\n`
-            Line_svc.sendMessage(customer?.open_mail!, message);
+            try { Line_svc.sendMessage(customer?.open_mail!, message); } catch (error) { console.log(error) }
         }
         return ticket;
     },
@@ -1140,7 +1140,9 @@ export const ticketSvc = {
             const LinereplaceDeviceStr = LinereplaceDeviceListCleanMapped.join('');
             message += `${LinedeviceStr}${LinereplaceDeviceStr}`
             message += `\nส่งเมลล์และรูปปิดงานเรียบร้อยครับ`
-            Line_svc.sendMessage(ticket.customer.line_close!, message);
+            try { Line_svc.sendMessage(ticket.customer.line_close!, message); } catch (error) {
+                console.log(error)
+            }
         }
 
         return {
@@ -1361,7 +1363,7 @@ export const ticketSvc = {
             message += `Appointment : ${dayjs(ticket.appointment_date).format('DD/MM/YYYY')} ${ticket.appointment_time}\n`
             message += `ช่างนัดหมายสาขาวันที่ : ${dayjs(ticket.appointment_date).format('DD/MM/YYYY')} ${ticket.appointment_time}\n`
 
-            Line_svc.sendMessage(ticket.customer.line_appointment, message)
+            try {Line_svc.sendMessage(ticket.customer.line_appointment, message)} catch (err) {console.log(err)}
         }
         return {
             message: "Send Mail Complete"
