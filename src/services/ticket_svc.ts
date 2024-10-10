@@ -1093,8 +1093,8 @@ export const ticketSvc = {
             '<tr><th style="vertical-align:top">Investigation</th><td style="vertical-align:top">' + ticket.investigation + '</td></tr>' +
             '<tr><th style="vertical-align:top">Solution</th><td style="vertical-align:top">' + ticket.solution + '<br>' + deviceStr + replaceDeviceStr + '</td></tr>' +
             '<tr><th style="vertical-align:top">Appointment Time</th><td style="vertical-align:top">' + ticket.appointment_date + " " + ticket.appointment_time + '</td></tr>' +
-            '<tr><th style="vertical-align:top">Time Start</th><td style="vertical-align:top">' + ticket.open_date + " " + ticket.open_time + '</td></tr>' +
-            '<tr><th style="vertical-align:top">Time Finish</th><td style="vertical-align:top">' + (ticket.close_date || "") + " " + (ticket.close_time || "") + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Time Start</th><td style="vertical-align:top">' + dayjs(ticket.time_in).format('DD/MM/YYYY HH:mm') + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Time Finish</th><td style="vertical-align:top">' + dayjs(ticket.time_out).format('DD/MM/YYYY HH:mm') + '</td></tr>' +
             '</table>';
         let attachments: any = [];
         for (const image of ticket.ticket_image) {
@@ -1249,8 +1249,8 @@ export const ticketSvc = {
             '<tr><th style="vertical-align:top">Investigation</th><td style="vertical-align:top">' + ticket.return_ticket?.investigation + '</td></tr>' +
             '<tr><th style="vertical-align:top">Solution</th><td style="vertical-align:top">' + ticket.return_ticket?.solution + '<br>' + deviceStr + replaceDeviceStr + '</td></tr>' +
             '<tr><th style="vertical-align:top">Appointment Time</th><td style="vertical-align:top">' + ticket.appointment_date + " " + ticket.appointment_time + '</td></tr>' +
-            '<tr><th style="vertical-align:top">Time Start</th><td style="vertical-align:top">' + ticket.open_date + " " + ticket.open_time + '</td></tr>' +
-            '<tr><th style="vertical-align:top">Time Finish</th><td style="vertical-align:top">' + (ticket.close_date || "") + " " + (ticket.close_time || "") + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Time Start</th><td style="vertical-align:top">' + dayjs(ticket.return_ticket?.time_in).format('DD/MM/YYYY HH:mm') + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Time Finish</th><td style="vertical-align:top">' + dayjs(ticket.return_ticket?.time_out).format('DD/MM/YYYY HH:mm') + '</td></tr>' +
             '</table>';
         let attachments: any = [];
         for (const image of ticket.return_ticket_images) {
@@ -1472,7 +1472,7 @@ export const ticketSvc = {
     
             <p class="MsoNormal" style="margin:0cm;font-size:11pt;font-family:Calibri,sans-serif">
                 <b><span style="font-size:12pt;font-family:Tahoma,sans-serif">Description (<span lang="TH">รายละเอียด):&nbsp;</span></b>
-                ${ticket.description}
+                <span lang="TH" style="font-size:12pt;font-family:Tahoma,sans-serif">: ${ticket.description.replace(/\n/g, '<br>')}</span>
             </p>
     
             <p class="MsoNormal" style="margin:0cm;font-size:11pt;font-family:Calibri,sans-serif">
@@ -1545,7 +1545,7 @@ export const ticketSvc = {
 
         const mailOptions = {
             from: process.env.MAIL_SENDER,
-            to: ticket.customer.open_mail,
+            to: ticket.shop.email,
             subject: mailSubject,
             html: htmlString,
             // attachments: attachments,
