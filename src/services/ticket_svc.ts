@@ -1490,7 +1490,7 @@ export const ticketSvc = {
     
             <p class="MsoNormal" style="margin:0cm;font-size:11pt;font-family:Calibri,sans-serif">
                 <b><span style="font-size:12pt;font-family:Tahoma,sans-serif">Estimate Resolving Time (เวลาแก้ไขโดยประมาณ):&nbsp;</span></b>
-                <span style="font-size:12pt;font-family:Tahoma,sans-serif">${SecToTimeString(parseInt(ticket.prioritie?.time_sec!))}</span>
+                <span style="font-size:12pt;font-family:Tahoma,sans-serif"> ${ticket.prioritie?.name} ${SecToTimeString(parseInt(ticket.prioritie?.time_sec!))}</span>
             </p>
     
             <p class="MsoNormal" style="margin:0cm;font-size:11pt;font-family:Calibri,sans-serif">
