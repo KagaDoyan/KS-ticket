@@ -103,7 +103,8 @@ export const itemSvc = {
 				status: payload.status,
 				storage_id: payload.storage_id,
 				Remark: payload.remark,
-				condition: payload.condition
+				condition: payload.condition,
+				updated_at: new Date(),
 			}
 		});
 		return item;
