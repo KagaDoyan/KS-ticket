@@ -589,8 +589,6 @@ export const ticketSvc = {
             let items = JSON.parse(payload.items);
 
             for (const item of items) {
-                console.log(item.serial_number);
-
                 let checkExistReturn = await prisma.return_items.findFirst({
                     where: {
                         deleted_at: null,
@@ -860,7 +858,8 @@ export const ticketSvc = {
                     where: {
                         deleted_at: null
                     }
-                }
+                },
+                prioritie: true
             }
         });
         return ticket;

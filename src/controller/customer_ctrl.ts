@@ -6,8 +6,6 @@ export const CustomerCtrl = {
     createcustomer: async (ctx: any) => {
         const userID = await middleware.GetUserFromToken(ctx)
         ctx.body.created_by = userID
-        console.log("userID: " + userID);
-
         const data = await CustomerSvc.createCustome({ ...ctx.body })
         return response.SuccessResponse(ctx, data)
     },

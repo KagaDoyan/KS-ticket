@@ -15,7 +15,6 @@ export const Line_svc = {
             }
             // Send message
             const res = await client.pushMessage(userId, message);
-            console.log('Message sent successfully!');
             return res
         } catch (error) {
             console.error('Error sending message:', error);

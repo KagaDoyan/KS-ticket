@@ -110,8 +110,6 @@ export const itemSvc = {
 	},
 
 	updateEngineerItem: async (id: number, payload: itemPayload) => {
-		console.log(payload.engineer_id);
-
 		const item = await db.items.update({
 			where: {
 				id: id
