@@ -65,6 +65,8 @@ export function ItemRoute(app: any) {
                 inc_number: t.Optional(t.String()),
                 status: t.String(),
                 storage_id: t.Number(),
+                remark: t.Optional(t.String()),
+                condition: t.Optional(t.String()),
             }),
             params: t.Object({
                 id: t.Numeric()

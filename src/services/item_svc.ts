@@ -15,7 +15,9 @@ interface itemPayload {
 	type?: item_type,
 	created_by: number,
 	engineer_id: number | null,
-	storage_id: number
+	storage_id: number,
+	remark?: string
+	condition?: string
 }
 
 export const itemSvc = {
@@ -100,6 +102,8 @@ export const itemSvc = {
 				warranty_expiry_date: payload.warranty_expiry_date,
 				status: payload.status,
 				storage_id: payload.storage_id,
+				Remark: payload.remark,
+				condition: payload.condition
 			}
 		});
 		return item;

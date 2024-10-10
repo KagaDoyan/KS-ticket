@@ -243,7 +243,11 @@ export const ticketSvc = {
             message += `Incident open date/time (วันและเวลาที่เปิดงาน): ${dayjs(ticketData?.open_date).format('DD/MM/YYYY')} ${ticketData?.open_time}\n\n`
             message += `Estimated Resolving Time (วันและเวลาแก้ไขโดยประมาณ): ${ticketData?.sla_priority_level} ${ticketData?.prioritie?.priority_group.group_name} ${ticketData?.prioritie?.time_sec ? SecToTimeString(parseInt(ticketData?.prioritie?.time_sec)) : ''}\n\n`
             message += `DueBy Date (วันและเวลาครบกําหนด): ${dayjs(ticketData?.due_by).format('DD/MM/YYYY HH:mm')}\n\n`
-            try { Line_svc.sendMessage(customer?.line_open!, message); } catch (error) { console.log(error) }
+
+            const line_groups = customer.line_open.split(',');
+            for (const group of line_groups) {
+                Line_svc.sendMessage(group, message);
+            }
         }
         return ticket;
     },
@@ -300,6 +304,9 @@ export const ticketSvc = {
                 time_in: payload.time_in,
                 time_out: payload.time_out,
                 updated_by: payload.updated_by
+            },
+            include: {
+                shop: true,
             }
         });
         if (payload.store_item) {
@@ -347,7 +354,8 @@ export const ticketSvc = {
                             status: item.status,
                             engineers_id: ticket.engineer_id,
                             type: item.type,
-                            ticket_id: id
+                            ticket_id: id,
+                            updated_at: new Date()
                         }
                     })
 
@@ -394,6 +402,7 @@ export const ticketSvc = {
         if (payload.spare_item) {
             let spareItem = JSON.parse(payload.spare_item);
             for (const item of spareItem) {
+                let shop = ticket.shop.shop_number + '-' + ticket.shop.shop_name
                 let item_sn = item.serial_number;
                 let checkExistSpare = await db.spare_items.findFirst({
                     where: {
@@ -427,7 +436,9 @@ export const ticketSvc = {
                             id: checkItem?.id
                         },
                         data: {
-                            status: item.status
+                            status: item.status,
+                            shop_number: item.status == "spare" ? shop : null,
+                            updated_at: new Date()
                         }
                     })
                     continue;
@@ -455,7 +466,9 @@ export const ticketSvc = {
                             status: item.status,
                             engineers_id: ticket.engineer_id,
                             type: item.type,
-                            ticket_id: id
+                            ticket_id: id,
+                            shop_number: item.status == "spare" ? shop : null,
+                            updated_at: new Date()
                         }
                     })
 
@@ -474,6 +487,7 @@ export const ticketSvc = {
                         status: item.status,
                         type: item.type,
                         created_by: payload.created_by,
+                        shop_number: item.status == "spare" ? shop : null,
                         ticket_id: id
                     },
                     include: {
@@ -617,8 +631,9 @@ export const ticketSvc = {
                             data: {
                                 status: updateItemStatus,
                                 ticket_id: item_ticket_id ? item_ticket_id : null,
-                                shop_number: updateItemStatus == "in_stock" ? null : ticket.shop.shop_number,
-                                engineers_id: ticket.engineer_id
+                                shop_number: updateItemStatus == "in_stock" ? null : ticket.shop.shop_number + '-' + ticket.shop.shop_name,
+                                engineers_id: ticket.engineer_id,
+                                updated_at: new Date()
                             }
                         });
                         continue;
@@ -646,6 +661,7 @@ export const ticketSvc = {
                         data: {
                             status: updateItemStatus,
                             engineers_id: ticket.engineer_id,
+                            updated_at: new Date(),
                             ...(selectItem.type === "inside" && { ticket_id: null })
                         }
                     });
@@ -1141,8 +1157,10 @@ export const ticketSvc = {
             const LinereplaceDeviceStr = LinereplaceDeviceListCleanMapped.join('');
             message += `${LinedeviceStr}${LinereplaceDeviceStr}`
             message += `\nส่งเมลล์และรูปปิดงานเรียบร้อยครับ`
-            try { Line_svc.sendMessage(ticket.customer.line_close!, message); } catch (error) {
-                console.log(error)
+
+            const line_groups = ticket.customer.line_close.split(',');
+            for (const group of line_groups) {
+                Line_svc.sendMessage(group, message);
             }
         }
 
@@ -1281,6 +1299,26 @@ export const ticketSvc = {
 
         await transporter.sendMail(mailOptions);
 
+        if (ticket.customer.line_close) {
+            var message = `${ticket.inc_number == "n/a" ? ticket.ticket_number : ticket.inc_number}  | ${ticket.shop.shop_number}-${ticket.shop.shop_name}  | ${ticket.item_category} | ${ticket.title}\n\n`
+            message += `${ticket.solution}\n\n`
+            const LineoldDeviceLabel = "   นำกลับ\n";
+            const LinenewDeviceLabel = "   สแปร์\n";
+
+            const LinedeviceListCleanMapped = deviceListClean.map((element) => `\t${element.category} ${element.brand} ${element.model} s/n: ${element.serial_number} ${LineoldDeviceLabel}`);
+            const LinereplaceDeviceListCleanMapped = replaceDeviceListClean.map((element) => `\t${element.category} ${element.brand} ${element.model} s/n: ${element.serial_number} ${LinenewDeviceLabel}`);
+
+            const LinedeviceStr = LinedeviceListCleanMapped.join('');
+            const LinereplaceDeviceStr = LinereplaceDeviceListCleanMapped.join('');
+            message += `${LinedeviceStr}${LinereplaceDeviceStr}`
+            message += `\nส่งเมลล์และรูปปิดงานเรียบร้อยครับ`
+
+            const line_groups = ticket.customer.line_close.split(',');
+            for (const group of line_groups) {
+                Line_svc.sendMessage(group, message);
+            }
+        }
+
         return {
             message: "Send Mail Complete"
         };
@@ -1310,7 +1348,7 @@ export const ticketSvc = {
 
         if (!ticket) return { message: "No Ticket Data" }
         // Set email content
-        let mailSubject = `Appointment | ${ticket.sla_priority_level} | Assigned | ${ticket.inc_number == "n/a" ? ticket.ticket_number : ticket.inc_number}| ${ticket.shop.shop_number}-${ticket.shop.shop_name} | ${ticket.item_category} | ${ticket.title}`;
+        let mailSubject = `Appointment | ${ticket.sla_priority_level} | Assigned | ${ticket.inc_number == "n/a" ? ticket.ticket_number : ticket.inc_number} | ${ticket.shop.shop_number}-${ticket.shop.shop_name} | ${ticket.item_category} | ${ticket.title}`;
         let htmlString = `
             <p>Open Case ${ticket.inc_number == "n/a" ? ticket.ticket_number : ticket.inc_number}</p>
             <p>Title : ${ticket.title}</p>
@@ -1364,7 +1402,10 @@ export const ticketSvc = {
             message += `Appointment : ${dayjs(ticket.appointment_date).format('DD/MM/YYYY')} ${ticket.appointment_time}\n`
             message += `ช่างนัดหมายสาขาวันที่ : ${dayjs(ticket.appointment_date).format('DD/MM/YYYY')} ${ticket.appointment_time}\n`
 
-            try {Line_svc.sendMessage(ticket.customer.line_appointment, message)} catch (err) {console.log(err)}
+            const line_groups = ticket.customer.line_appointment;
+            for (const group of line_groups.split(',')) {
+                Line_svc.sendMessage(group, message);
+            }
         }
         return {
             message: "Send Mail Complete"

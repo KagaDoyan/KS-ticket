@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import db from "../adapter.ts/database";
 import dayjs from "dayjs";
+import { SecToTimeString } from "../utilities/sec_to_time_string";
 
 interface MA {
     incNo: string; // Incident Number
@@ -15,6 +16,7 @@ interface MA {
     assignedTo: string;
     slaPriorityGroup: string | undefined;
     slaPriority: string | undefined; // SLA Priority
+    slaPriorityTime: string | undefined; // SLA Priority
     ticketopenDate: string; // Consider using Date type if you're handling date objects
     ticketopenTime: string; // Consider using Date type if you're handling time objects
     appointmentDate?: string; // Optional if no appointment is scheduled
@@ -94,12 +96,13 @@ interface inventory {
     serial: string
     owner: string
     condition: string
-    usage: string
+    location: string
     status: string
     used_by: string
     inc_no: string
     ticket_no: string
     remark: string
+    updated_at: string
 }
 
 interface broken {
@@ -115,6 +118,10 @@ interface broken {
     serial: string
     warranty: string
     location: string
+    status: string
+    updated_at: string
+    condition: string
+    remark: string
 }
 
 export const reportSvc = {
@@ -199,7 +206,8 @@ export const reportSvc = {
                 ticketDescription: ticket.description,
                 assignedTo: ticket.assigned_to,
                 slaPriorityGroup: ticket.prioritie?.priority_group.group_name,
-                slaPriority: ticket.sla_priority_level,
+                slaPriority: SecToTimeString(parseInt(ticket.prioritie?.time_sec!)),
+                slaPriorityTime: ticket.due_by,
                 ticketopenDate: ticket.open_date,
                 ticketopenTime: ticket.open_time,
                 appointmentDate: ticket.appointment_date,
@@ -218,11 +226,10 @@ export const reportSvc = {
                 warranty_exp: dayjs(ticket.warranty_exp).format("YYYY-MM-DD"),
                 resloved: ticket.resolve_status,
                 resolve_remark: ticket.resolve_remark,
-                action: ticket.action,
+                action: ticket.ticket_status === "close" ? "closed" : ticket.action,
                 timeIn: ticket.time_in,
                 timeOut: ticket.time_out,
                 created_by: ticket.created_user.fullname
-
             }
             for (var i = 0; i <= 4; i++) {
                 ticketOnly["storeDeviceBrand" + (i + 1)] = ticket.store_item[i]?.brand ?? "";
@@ -250,9 +257,16 @@ export const reportSvc = {
         let allItem = await db.items.findMany({
             where: {
                 deleted_at: null,
+                status: {
+                    not: "repair"
+                }
             },
             include: {
-                engineer: true,
+                engineer: {
+                    include: {
+                        node: true
+                    }
+                },
                 category: true,
                 brand: true,
                 model: true,
@@ -274,12 +288,13 @@ export const reportSvc = {
                 serial: item.serial_number,
                 owner: item.customer?.fullname!,
                 condition: item.status == "repair" ? "broken" : "good",
-                usage: item.status,
-                status: item.status == "spare" ? "spare" : (item.engineers_id ? "node" : "in stock"),
+                status: item.status,
+                location: item.status == "spare" ? item.shop_number! : (item.engineers_id ? item.engineer?.node?.name! : "in stock"),
                 used_by: item.engineers_id ? item.engineer?.name! : "",
                 inc_no: item.ticket?.inc_number!,
                 ticket_no: item.ticket?.ticket_number!,
-                remark: item.Remark!
+                remark: item.Remark!,
+                updated_at: dayjs(item.updated_at).format("DD/MM/YYYY HH:mm:ss"),
             }
             invetory.push(itemOnly);
         }
@@ -289,16 +304,14 @@ export const reportSvc = {
     },
 
     reportStoreBrokenPart: async (from: string, to: string) => {
-        let storeItem = await db.store_items.findMany({
+        let storeItem = await db.items.findMany({
             where: {
                 deleted_at: null,
-                ticket: {
-                    deleted_at: null,
-                    appointment_date: {
-                        gte: from,
-                        lte: to,
-                    },
-                }
+                status: "repair",
+                // updated_at: {
+                //     gte: new Date(from),
+                //     lte: new Date(to)
+                // }
             },
             include: {
                 ticket: {
@@ -324,18 +337,22 @@ export const reportSvc = {
             })
             if (!brokenItem) continue;
             var itemOnly: broken = {
-                inc_no: item.ticket.inc_number,
-                ticket_date: item.ticket.appointment_date,
-                ticket_time: item.ticket.appointment_time,
-                store_id: item.ticket.shop.shop_number,
-                store_name: item.ticket.shop.shop_name,
-                ticket_title: item.ticket.title,
+                inc_no: item.ticket?.inc_number!,
+                ticket_date: item.ticket?.appointment_date!,
+                ticket_time: item.ticket?.appointment_time!,
+                store_id: item.ticket?.shop.shop_number!,
+                store_name: item.ticket?.shop.shop_name!,
+                ticket_title: item.ticket?.title!,
                 location: brokenItem.engineers_id ? "Node" : brokenItem.storage?.name!,
                 brand: brokenItem.brand.name,
                 model: brokenItem.model.name,
                 serial: brokenItem.serial_number,
                 category: brokenItem.category.name,
                 warranty: brokenItem.warranty_expiry_date ? dayjs(brokenItem.warranty_expiry_date).format("YYYY-MM-DD") : "",
+                status: item.status,
+                updated_at: dayjs(item.updated_at).format("DD/MM/YYYY HH:mm:ss"),
+                remark: item.Remark!,
+                condition: item.status == "repair" ? "broken" : "good",
             }
             storeReport.push(itemOnly);
         }

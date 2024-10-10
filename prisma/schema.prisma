@@ -197,6 +197,8 @@ model items {
   storage_id           Int?
   shop_number          String?
   Remark               String?
+  updated_at           DateTime?
+  condition            String?
 }
 
 model teams {
@@ -422,7 +424,7 @@ model storages {
 }
 
 model mail_recipient {
-  id          Int       @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   email       String
   customer    customers? @relation(fields: [customer_id], references: [id])
   customer_id Int?
