@@ -375,7 +375,8 @@ export const ticketSvc = {
                         status: item.status,
                         type: item.type,
                         created_by: payload.created_by,
-                        ticket_id: id
+                        ticket_id: id,
+                        updated_at: new Date()
                     },
                     include: {
                         brand: true,
@@ -393,7 +394,7 @@ export const ticketSvc = {
                         serial_number: item_sn,
                         warranty_exp: newItem.warranty_expiry_date || null,
                         status: item.status,
-                        created_by: payload.created_by
+                        created_by: payload.created_by,
                     }
                 });
             }
@@ -488,7 +489,8 @@ export const ticketSvc = {
                         type: item.type,
                         created_by: payload.created_by,
                         shop_number: item.status == "spare" ? shop : null,
-                        ticket_id: id
+                        ticket_id: id,
+                        updated_at: new Date()
                     },
                     include: {
                         brand: true,
@@ -680,7 +682,8 @@ export const ticketSvc = {
                             type: item.type,
                             created_by: payload.created_by,
                             shop_number: ticket.shop.shop_number,
-                            customer_id: ticket.customer_id
+                            customer_id: ticket.customer_id,
+                            updated_at: new Date()
                         },
                         include: {
                             brand: true,
