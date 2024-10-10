@@ -1472,7 +1472,7 @@ export const ticketSvc = {
     
             <p class="MsoNormal" style="margin:0cm;font-size:11pt;font-family:Calibri,sans-serif">
                 <b><span style="font-size:12pt;font-family:Tahoma,sans-serif">Description (<span lang="TH">รายละเอียด):&nbsp;</span></b>
-                <span style="font-family:Arial,Helvetica,sans-serif;font-size:small">${ticket.description}</span>
+                ${ticket.description}
             </p>
     
             <p class="MsoNormal" style="margin:0cm;font-size:11pt;font-family:Calibri,sans-serif">
