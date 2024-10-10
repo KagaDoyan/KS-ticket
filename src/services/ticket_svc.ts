@@ -290,8 +290,8 @@ export const ticketSvc = {
                 ticket_status: payload.ticket_status,
                 close_date: payload.close_date,
                 close_time: payload.close_time,
-                solution: payload.solution,
-                investigation: payload.investigation,
+                solution: payload.solution?.replace(/\n\s*\n/g, '\n'),
+                investigation: payload.investigation?.replace(/\n\s*\n/g, '\n'),
                 close_description: payload.close_description,
                 item_brand: payload.item_brand,
                 item_category: payload.item_category,
@@ -716,8 +716,8 @@ export const ticketSvc = {
                 await prisma.return_ticket.create({
                     data: {
                         ticket_id: id,
-                        investigation: payload.investigation,
-                        solution: payload.solution,
+                        investigation: payload.investigation?.replace(/\n\s*\n/g, '\n'),
+                        solution: payload.solution?.replace(/\n\s*\n/g, '\n'),
                         item_brand: payload.item_brand,
                         item_category: payload.item_category,
                         item_model: payload.item_model,
