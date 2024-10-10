@@ -1427,7 +1427,7 @@ export const ticketSvc = {
                 prioritie: true
             }
         });
-        var mailSubject = `[${ticket?.prioritie?.name} : Open ] | ${ticket?.ticket_number} | ${ticket?.shop.shop_number}-${ticket?.shop.shop_name} | ${ticket?.title}`
+        var mailSubject = `[${ticket?.prioritie?.name} : Open ] | ${ticket?.ticket_number} | ${ticket?.shop.shop_number}-${ticket?.shop.shop_name} | ${ticket?.item_category} | ${ticket?.title}`
         if (!ticket) return { message: "No Ticket Data" }
         if (!ticket.customer.open_mail) return { message: "No Destination Email" }
         let htmlString = `
