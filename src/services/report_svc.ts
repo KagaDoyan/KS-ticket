@@ -72,6 +72,10 @@ interface MA {
     spareDeviceBrand5?: string;
     spareDeviceModel5?: string;
     spareDeviceSerial5?: string;
+    return_investigation?: string;
+    return_solution?: string;
+    return_time_in?: string;
+    return_time_out?: string;
     returnDeviceBrand1?: string;
     returnDeviceModel1?: string;
     returnDeviceSerial1?: string;
@@ -151,6 +155,7 @@ export const reportSvc = {
         let allTicket = await db.tickets.findMany({
             where: wharecondition,
             include: {
+                return_ticket: true,
                 shop: true,
                 engineer: {
                     include: {
@@ -229,7 +234,11 @@ export const reportSvc = {
                 action: ticket.ticket_status === "close" ? "closed" : ticket.action,
                 timeIn: ticket.time_in,
                 timeOut: ticket.time_out,
-                created_by: ticket.created_user.fullname
+                created_by: ticket.created_user.fullname,
+                return_investigation: ticket.return_ticket?.investigation!,
+                return_solution: ticket.return_ticket?.solution!,
+                return_time_in: ticket.return_ticket?.time_in!,
+                return_time_out: ticket.return_ticket?.time_out!
             }
             for (var i = 0; i <= 4; i++) {
                 ticketOnly["storeDeviceBrand" + (i + 1)] = ticket.store_item[i]?.brand ?? "";
