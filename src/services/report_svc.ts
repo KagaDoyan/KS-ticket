@@ -274,8 +274,8 @@ export const reportSvc = {
                 AND: [
                     whereCondition,
                     {
-                        brand: {
-                            name: {
+                        customer: {
+                            fullname: {
                                 equals: brand_name
                             }
                         }
