@@ -9,7 +9,7 @@ export const ReportCtrl = {
     },
 
     getReportInventory: async (ctx: any) => {
-        const data = await reportSvc.reportInventory();
+        const data = await reportSvc.reportInventory(ctx.query.brand_name);
         return response.SuccessResponse(ctx, data); 
     },
 

@@ -262,14 +262,29 @@ export const reportSvc = {
         }
     },
 
-    reportInventory: async () => {
+    reportInventory: async (brand_name: string) => {
+        var whereCondition : Prisma.itemsWhereInput = {
+            deleted_at: null,
+            status: {
+                not: "repair"
+            }
+        }
+        if (brand_name) {
+            whereCondition = {
+                AND: [
+                    whereCondition,
+                    {
+                        brand: {
+                            name: {
+                                equals: brand_name
+                            }
+                        }
+                    }
+                ]
+            }
+        }
         let allItem = await db.items.findMany({
-            where: {
-                deleted_at: null,
-                status: {
-                    not: "repair"
-                }
-            },
+            where: whereCondition,
             include: {
                 engineer: {
                     include: {

@@ -43,6 +43,7 @@ export function InventoryRoute(app: any) {
                 sell_date: t.String(),
                 buyer_name: t.String(),
                 sell_price: t.Nullable(t.Numeric()),
+                base_price: t.Nullable(t.Numeric()),
             }),
             detail: {
                 tags: ['Inventory']
@@ -61,6 +62,7 @@ export function InventoryRoute(app: any) {
                 sell_date: t.String(),
                 buyer_name: t.String(),
                 sell_price: t.Nullable(t.Numeric()),
+                base_price: t.Nullable(t.Numeric()),
             }),
             params: t.Object({
                 id: t.Numeric()

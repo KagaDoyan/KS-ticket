@@ -169,6 +169,7 @@ model inventory {
   buyer_name String?
   deleted_at DateTime?
   created_by Int
+  base_price Int?
 }
 
 model items {

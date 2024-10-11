@@ -23,6 +23,9 @@ export function ReportRoute(app: any) {
             headers: t.Object({
                 authorization: t.String()
             }),
+            query: t.Object({
+                brand_name: t.Optional(t.String()),
+            }),
             detail: {
                 tags: ['Report']
             }

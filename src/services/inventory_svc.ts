@@ -11,7 +11,8 @@ interface inventoryPayload {
 	sell_date: string,
 	buyer_name?: string,
 	sell_price?: number,
-	created_by: number
+	created_by: number,
+	base_price?: number,
 }
 
 export const InventorySvc = {
@@ -72,7 +73,8 @@ export const InventorySvc = {
 				sell_date: payload.sell_date,
 				buyer_name: payload.buyer_name,
 				sell_price: payload.sell_price,
-				created_by: payload.created_by
+				created_by: payload.created_by,
+				base_price: payload.base_price
 			}
 		});
 		return inventory;
@@ -91,6 +93,7 @@ export const InventorySvc = {
 				sell_date: payload.sell_date,
 				sell_price: payload.sell_price,
 				buyer_name: payload.buyer_name,
+				base_price: payload.base_price
 			}
 		});
 		return inventory;
