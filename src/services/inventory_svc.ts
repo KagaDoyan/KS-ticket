@@ -148,6 +148,7 @@ export const InventorySvc = {
 				sell_price: true,
 				buyer_name: true,
 				warranty: true,
+				base_price: true
 			}
 		});
 		return inventory;
