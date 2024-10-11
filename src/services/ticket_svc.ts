@@ -299,7 +299,7 @@ export const ticketSvc = {
                 item_sn: payload.item_sn,
                 warranty_exp: payload.warranty_exp ? new Date(payload.warranty_exp) : null,
                 resolve_status: payload.resolve_status,
-                resolve_remark: payload.resolve_remark,
+                resolve_remark: payload.resolve_remark ? payload.resolve_remark.replace(/\n\s*\n/g, '\n') : "",
                 action: payload.action,
                 time_in: payload.time_in,
                 time_out: payload.time_out,
