@@ -17,6 +17,7 @@ import { InventoryRoute } from "./inventory_rou";
 import { TeamRou } from "./team_rou";
 import { LineRoute } from "./line_rou";
 import { MailRecipientRoute } from "./mail_recipient_rou";
+import { MailSignatureRoute } from "./mail_signature";
 
 export function MainRoute(app: any) {
     return app
@@ -39,4 +40,5 @@ export function MainRoute(app: any) {
         .group("/team", TeamRou)
         .group("/line", LineRoute)
         .group("/mail_recipient", MailRecipientRoute)
+        .group("/mail_signature", MailSignatureRoute)
 }

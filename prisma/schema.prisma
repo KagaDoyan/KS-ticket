@@ -66,6 +66,7 @@ model customers {
   line_appointment String?
   line_close       String?
   mail_recipient   mail_recipient[]
+  mail_signature   mail_signature?
 }
 
 model shops {
@@ -429,4 +430,12 @@ model mail_recipient {
   email       String
   customer    customers? @relation(fields: [customer_id], references: [id])
   customer_id Int?
+}
+
+model mail_signature {
+  id             Int       @id @default(autoincrement())
+  customer       customers @relation(fields: [customers_id], references: [id])
+  customers_id   Int       @unique
+  signature_body String
+  image          String
 }
