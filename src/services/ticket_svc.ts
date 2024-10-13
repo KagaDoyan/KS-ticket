@@ -1441,7 +1441,7 @@ export const ticketSvc = {
         const user = await db.users.findFirst({where: {id: user_id}})
         var mailSubject = `[${ticket?.prioritie?.name} : Open ] | ${ticket?.ticket_number} | ${ticket?.shop.shop_number}-${ticket?.shop.shop_name} | ${ticket?.item_category} | ${ticket?.title}`
         if (!ticket) return { message: "No Ticket Data" }
-        if (!ticket.customer.open_mail) return { message: "No Destination Email" }
+        if (!ticket.shop.email) return { message: "No Destination Email" }
         let signature = ticket.customer.mail_signature ? `
             <div dir="ltr" class="gmail_signature" >
                 <div dir="ltr" style="margin: 0; padding: 0;">
