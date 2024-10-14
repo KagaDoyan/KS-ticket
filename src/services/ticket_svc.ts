@@ -41,7 +41,8 @@ interface returnItem {
     close_date: string,
     close_time: string,
     images?: File[],
-    delete_images?: string[]
+    delete_images?: string[],
+    engineer_id: number
 }
 
 interface ticketPayload {
@@ -572,6 +573,8 @@ export const ticketSvc = {
     },
 
     updateReturnItem: async (id: number, payload: returnItem) => {
+        console.log(payload.engineer_id);
+        
         if (payload.items == null || payload.items.length === 0) {
             return { message: "No Return Item list to add" };
         }
@@ -632,7 +635,7 @@ export const ticketSvc = {
                                 status: updateItemStatus,
                                 ticket_id: item_ticket_id ? item_ticket_id : null,
                                 shop_number: updateItemStatus == "in_stock" ? null : ticket.shop.shop_number + '-' + ticket.shop.shop_name,
-                                engineers_id: ticket.engineer_id,
+                                engineers_id: payload.engineer_id,
                                 updated_at: new Date()
                             }
                         });
@@ -660,7 +663,7 @@ export const ticketSvc = {
                         },
                         data: {
                             status: updateItemStatus,
-                            engineers_id: ticket.engineer_id,
+                            engineers_id: payload.engineer_id,
                             updated_at: new Date(),
                             ...(selectItem.type === "inside" && { ticket_id: null })
                         }
@@ -731,6 +734,7 @@ export const ticketSvc = {
                         action: payload.action,
                         time_in: payload.time_in,
                         time_out: payload.time_out,
+                        engineer_id: payload.engineer_id
                     }
                 });
             } else {
@@ -751,6 +755,7 @@ export const ticketSvc = {
                         action: payload.action,
                         time_in: payload.time_in,
                         time_out: payload.time_out,
+                        engineer_id: payload.engineer_id
                     }
                 });
             }

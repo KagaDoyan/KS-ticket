@@ -72,6 +72,7 @@ interface MA {
     spareDeviceBrand5?: string;
     spareDeviceModel5?: string;
     spareDeviceSerial5?: string;
+    return_engineer?: string;
     return_investigation?: string;
     return_solution?: string;
     return_time_in?: string;
@@ -155,7 +156,11 @@ export const reportSvc = {
         let allTicket = await db.tickets.findMany({
             where: wharecondition,
             include: {
-                return_ticket: true,
+                return_ticket: {
+                    include: {
+                        engineer: true
+                    }
+                },
                 shop: true,
                 engineer: {
                     include: {
@@ -236,6 +241,7 @@ export const reportSvc = {
                 timeOut: ticket.time_out,
                 created_by: ticket.created_user.fullname,
                 return_investigation: ticket.return_ticket?.investigation!,
+                return_engineer: ticket.return_ticket?.engineer?.name!+" "+ ticket.return_ticket?.engineer?.lastname,
                 return_solution: ticket.return_ticket?.solution!,
                 return_time_in: ticket.return_ticket?.time_in!,
                 return_time_out: ticket.return_ticket?.time_out!
@@ -263,7 +269,7 @@ export const reportSvc = {
     },
 
     reportInventory: async (brand_name: string) => {
-        var whereCondition : Prisma.itemsWhereInput = {
+        var whereCondition: Prisma.itemsWhereInput = {
             deleted_at: null,
             status: {
                 not: "repair"

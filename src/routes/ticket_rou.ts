@@ -168,7 +168,8 @@ export function TicketRoute(app: any) {
                 time_in: t.String(),
                 time_out: t.String(),
                 images: t.Optional(t.Files()),
-                delete_images: t.Optional(t.Any())
+                delete_images: t.Optional(t.Any()),
+                engineer_id: t.Numeric()
             }),
             detail: {
                 tags: ['Ticket']
