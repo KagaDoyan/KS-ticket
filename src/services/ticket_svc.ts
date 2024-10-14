@@ -176,12 +176,10 @@ export const ticketSvc = {
                 id: payload.customer_id
             }
         })
-        let ticketNumber: string = await generateRandomNumber(5);
-        ticketNumber = customer?.shortname + ticketNumber
         const ticket = await db.tickets.create({
             data: {
                 inc_number: payload.inc_number,
-                ticket_number: ticketNumber,
+                ticket_number: "",
                 customer_id: payload.customer_id,
                 shop_id: payload.shop_id,
                 open_date: payload.open_date,
@@ -215,6 +213,17 @@ export const ticketSvc = {
                 action: payload.action,
                 time_in: payload.time_in,
                 time_out: payload.time_out
+            }
+        });
+
+        // update ticket number
+        const ticketNumber = customer?.shortname + ticket.id.toString().padStart(5, '0');
+        await db.tickets.update({
+            where: {
+                id: ticket.id
+            },
+            data: {
+                ticket_number: ticketNumber
             }
         });
         // send line notification
