@@ -262,6 +262,7 @@ model engineers {
   items                items[]
   node                 nodes?                 @relation(fields: [node_id], references: [id])
   return_items         return_items[]
+  return_ticket        return_ticket[]
 }
 
 model tickets {
@@ -350,9 +351,9 @@ model spare_items {
 }
 
 model return_ticket {
-  id             Int       @id @default(autoincrement())
-  ticket_id      Int       @unique
-  ticket         tickets   @relation(fields: [ticket_id], references: [id])
+  id             Int        @id @default(autoincrement())
+  ticket_id      Int        @unique
+  ticket         tickets    @relation(fields: [ticket_id], references: [id])
   investigation  String?
   solution       String?
   item_brand     String?
@@ -366,7 +367,9 @@ model return_ticket {
   time_in        String?
   time_out       String?
   deleted_at     DateTime?
-  created_at     DateTime  @default(now())
+  created_at     DateTime   @default(now())
+  engineer       engineers? @relation(fields: [engineer_id], references: [id])
+  engineer_id    Int?
 }
 
 model return_ticket_images {
