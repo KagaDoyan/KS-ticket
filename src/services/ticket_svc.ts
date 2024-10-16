@@ -624,7 +624,6 @@ export const ticketSvc = {
 
                 if (selectItem) {
                     let updateItemStatus = (item.type === "inside" && item.status === "return") ? "in_stock" : item.status;
-
                     if (checkExistReturn) {
                         await prisma.return_items.update({
                             where: {
@@ -673,6 +672,7 @@ export const ticketSvc = {
                         data: {
                             status: updateItemStatus,
                             engineers_id: payload.engineer_id,
+                            shop_number: updateItemStatus == "in_stock" ? null : ticket.shop.shop_number + '-' + ticket.shop.shop_name,
                             updated_at: new Date(),
                             ...(selectItem.type === "inside" && { ticket_id: null })
                         }
