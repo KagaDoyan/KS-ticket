@@ -31,7 +31,8 @@ export const app = new Elysia()
   }))
   .use(jwt({
     name: 'refreshJwt',
-    secret: Bun.env.JWT_REFRESH!
+    secret: Bun.env.JWT_REFRESH!,
+    exp: '14d'
   }))
   .get("/api/health", () => "OK")
   .error('AUTHENTICATION_ERROR', AuthenticationError)
