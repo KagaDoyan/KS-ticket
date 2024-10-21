@@ -439,6 +439,6 @@ model mail_signature {
   id             Int       @id @default(autoincrement())
   customer       customers @relation(fields: [customers_id], references: [id])
   customers_id   Int       @unique
-  signature_body String
+  signature_body String    @db.Text
   image          String
 }
