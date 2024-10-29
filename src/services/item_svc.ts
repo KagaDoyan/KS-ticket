@@ -49,7 +49,11 @@ export const itemSvc = {
 				category: true,
 				brand: true,
 				model: true,
-				engineer: true,
+				engineer: {
+					include: {
+						node: true
+					}
+				},
 				storage: true
 			}
 		});

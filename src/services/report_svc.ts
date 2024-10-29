@@ -102,6 +102,7 @@ interface inventory {
     owner: string
     condition: string
     location: string
+    node: string
     status: string
     used_by: string
     inc_no: string
@@ -321,6 +322,7 @@ export const reportSvc = {
                 status: item.status,
                 location: item.status == "spare" ? item.shop_number! : (item.engineers_id ? item.engineer?.node?.name! : "in stock"),
                 used_by: item.engineers_id ? item.engineer?.name! : "",
+                node: item.engineers_id ? item.engineer?.node?.name! : "",
                 inc_no: item.ticket?.inc_number!,
                 ticket_no: item.ticket?.ticket_number!,
                 remark: item.Remark!,
