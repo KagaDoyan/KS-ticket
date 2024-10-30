@@ -109,6 +109,7 @@ interface inventory {
     ticket_no: string
     remark: string
     updated_at: string
+    item_type: string
 }
 
 interface broken {
@@ -327,6 +328,7 @@ export const reportSvc = {
                 ticket_no: item.ticket?.ticket_number!,
                 remark: item.Remark!,
                 updated_at: dayjs(item.updated_at).format("DD/MM/YYYY HH:mm:ss"),
+                item_type : item.item_type ? item.item_type : ""
             }
             invetory.push(itemOnly);
         }
