@@ -51,25 +51,23 @@ model users {
 }
 
 model customers {
-  id                          Int                           @id @default(autoincrement())
-  fullname                    String
-  shortname                   String
-  deleted_at                  DateTime?
-  created_at                  DateTime                      @default(now())
-  created_by                  Int
-  shops                       shops[]
-  tickets                     tickets[]
-  priority_groups             priority_groups[]
-  items                       items[]
-  open_mail                   String?
-  line_open                   String?
-  line_appointment            String?
-  line_close                  String?
-  mail_recipient              mail_recipient[]
-  mail_signature              mail_signature?
-  customer_mailer             customer_mailer?              @relation(fields: [customer_mailerId], references: [id])
-  customer_mailerId           Int?
-  customer_on_customer_mailer customer_on_customer_mailer[]
+  id               Int               @id @default(autoincrement())
+  fullname         String
+  shortname        String
+  deleted_at       DateTime?
+  created_at       DateTime          @default(now())
+  created_by       Int
+  shops            shops[]
+  tickets          tickets[]
+  priority_groups  priority_groups[]
+  items            items[]
+  open_mail        String?
+  line_open        String?
+  line_appointment String?
+  line_close       String?
+  mail_recipient   mail_recipient[]
+  mail_signature   mail_signature?
+  customer_mailer  customer_mailer[] @relation("customer_on_customer_mailer")
 }
 
 model shops {
@@ -447,19 +445,10 @@ model mail_signature {
 }
 
 model customer_mailer {
-  id                          Int                           @id @default(autoincrement())
-  sender_email                String
-  sender_password             String
-  sender_host                 String
-  sender_port                 String
-  customers                   customers[]
-  customer_on_customer_mailer customer_on_customer_mailer[]
-}
-
-model customer_on_customer_mailer {
-  customer_id        Int @unique
-  customer           customers       @relation(fields: [customer_id], references: [id])
-  customer_mailer_id Int
-  customer_mailer    customer_mailer @relation(fields: [customer_mailer_id], references: [id])
-  @@id([customer_id, customer_mailer_id])
+  id              Int         @id @default(autoincrement())
+  sender_email    String
+  sender_password String
+  sender_host     String
+  sender_port     String
+  customers       customers[] @relation("customer_on_customer_mailer")
 }

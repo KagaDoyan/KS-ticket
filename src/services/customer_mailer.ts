@@ -48,6 +48,9 @@ export const CustomerMailerSvc = {
         const mailer = await db.customer_mailer.findUnique({
             where: {
                 id: id
+            },
+            include: {
+                customers: true
             }
         })
         return mailer
@@ -82,6 +85,9 @@ export const CustomerMailerSvc = {
             take: limit,
             orderBy: {
                 id: "desc"
+            },
+            include: {
+                customers: true
             }
         })
         return {

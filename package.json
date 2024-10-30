@@ -4,7 +4,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bun run --watch src/server.ts",
-    "mg": "bunx prisma migrate dev",
+    "mg": "bunx prisma migrate deploy",
     "gn": "bunx prisma generate"
   },
   "dependencies": {
