@@ -31,7 +31,7 @@ export function CustomerMailerRou(app: any) {
             }),
             body: t.Object({
                 email : t.String(),
-                password : t.String(),
+                password : t.Optional(t.String()),
                 host : t.String(),
                 port : t.String(),
                 customer_id: t.Array(t.Numeric())
@@ -73,6 +73,18 @@ export function CustomerMailerRou(app: any) {
                 limit: t.Numeric(),
                 page: t.Numeric(),
                 search: t.Optional(t.String())
+            }),
+            detail: {
+                tags: ['Customer Mailer']
+            }
+        })
+        .get("/test/:id", CustomerMailerCtrl.MailerTest, {
+            beforeHandle: middleware.IsAuth,
+            headers: t.Object({
+                authorization: t.String()
+            }),
+            params: t.Object({
+                id: t.Numeric()
             }),
             detail: {
                 tags: ['Customer Mailer']

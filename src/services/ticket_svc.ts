@@ -583,7 +583,7 @@ export const ticketSvc = {
 
     updateReturnItem: async (id: number, payload: returnItem) => {
         console.log(payload.engineer_id);
-        
+
         if (payload.items == null || payload.items.length === 0) {
             return { message: "No Return Item list to add" };
         }
@@ -1432,7 +1432,7 @@ export const ticketSvc = {
         };
     },
 
-    sendOpenTicketMail: async (id: number,user_id: number) => {
+    sendOpenTicketMail: async (id: number, user_id: number) => {
         const ticket = await db.tickets.findFirst({
             where: {
                 id: id
@@ -1452,7 +1452,7 @@ export const ticketSvc = {
                 prioritie: true
             }
         });
-        const user = await db.users.findFirst({where: {id: user_id}})
+        const user = await db.users.findFirst({ where: { id: user_id } })
         var mailSubject = `[${ticket?.prioritie?.name} : Open ] | ${ticket?.ticket_number} | ${ticket?.shop.shop_number}-${ticket?.shop.shop_name} | ${ticket?.item_category} | ${ticket?.title}`
         if (!ticket) return { message: "No Ticket Data" }
         if (!ticket.shop.email) return { message: "No Destination Email" }
@@ -1463,13 +1463,13 @@ export const ticketSvc = {
                     <p>${user?.fullname}</p>
                     ${ticket.customer?.mail_signature?.signature_body}
                     </div>
-                    <img 
-                    src="${Bun.env.FILE_URL+ticket.customer?.mail_signature?.image}" 
+                    ${ticket.customer?.mail_signature?.image ? `<img 
+                    src="${Bun.env.FILE_URL + ticket.customer?.mail_signature?.image}" 
                     width="96" 
                     height="43"
                     style="filter: grayscale(100%);" 
                     alt="Company Logo"
-                    />
+                    />` : ""}
                 </div>
             </div>
         ` : ""

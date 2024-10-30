@@ -1,4 +1,4 @@
-import { Prisma, item_status, item_type } from "@prisma/client"
+import { Prisma, item_status, item_type, item_types } from "@prisma/client"
 import db from "../adapter.ts/database"
 import { DataNotFoundError } from "../exception/DataNotFound"
 
@@ -17,7 +17,8 @@ interface itemPayload {
 	engineer_id: number | null,
 	storage_id: number,
 	remark?: string
-	condition?: string
+	condition?: string,
+	item_type?: item_types
 }
 
 export const itemSvc = {
@@ -87,6 +88,7 @@ export const itemSvc = {
 				status: payload.status,
 				created_by: payload.created_by,
 				storage_id: payload.storage_id,
+				item_type: payload.item_type,
 			}
 		});
 		return item;
@@ -109,6 +111,7 @@ export const itemSvc = {
 				Remark: payload.remark,
 				condition: payload.condition,
 				updated_at: new Date(),
+				item_type: payload.item_type,
 			}
 		});
 		return item;

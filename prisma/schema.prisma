@@ -202,6 +202,12 @@ model items {
   Remark               String?
   updated_at           DateTime?
   condition            String?
+  item_type            item_types?
+}
+
+enum item_types {
+  spare
+  replacement
 }
 
 model teams {

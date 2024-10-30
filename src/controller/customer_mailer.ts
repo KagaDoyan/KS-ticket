@@ -21,5 +21,10 @@ export const CustomerMailerCtrl = {
     deleteMailer: async (ctx:any) => {
         const data = await CustomerMailerSvc.deleteMailer(ctx.params.id)
         return response.SuccessResponse(ctx, data)
+    },
+
+    MailerTest: async (ctx:any) => {
+        const data = await CustomerMailerSvc.TestMailer(ctx.params.id)
+        return response.SuccessResponse(ctx, data)
     }
 }
