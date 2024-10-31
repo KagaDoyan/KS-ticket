@@ -27,20 +27,6 @@ export const CustomerMailerSvc = {
         return mailer
     },
     updateMailer: async (id: number, data: payload) => {
-        const checkMailer = await db.customer_mailer.findFirst({
-            where: {
-                customers: {
-                    some: {
-                        id: {
-                            in: data.customer_id
-                        }
-                    }
-                }
-            }
-        })
-        if (checkMailer && checkMailer.id != id) {
-            throw new Error("mailer with these customer already exist")
-        }
         const mailer = await db.customer_mailer.update({
             where: {
                 id: id
