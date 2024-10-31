@@ -4,7 +4,7 @@ services:
   app-dev:
     image: dev:latest # Use prebuilt image for development
     ports:
-      - "3030:3030" # Expose the app on port 3030 for dev
+      - "3030:3000" # Expose the app on port 3030 for dev
     environment:
       NODE_ENV: development
     command: ["bun", "src/server.ts"]
@@ -18,7 +18,7 @@ services:
   app-prd:
     image: prd:latest # Use prebuilt image for production
     ports:
-      - "3031:3030" # Expose the app on a different port for production
+      - "3000:3000" # Expose the app on a different port for production
     environment:
       NODE_ENV: production
     command: ["bun", "src/server.ts"]
