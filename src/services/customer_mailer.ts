@@ -3,30 +3,15 @@ import db from "../adapter.ts/database"
 import { Prisma } from "@prisma/client"
 
 interface payload {
-    id : number
-    email : string
-    password : string
-    host : string
-    port : string
+    id: number
+    email: string
+    password: string
+    host: string
+    port: string
     customer_id: number[],
 }
 export const CustomerMailerSvc = {
     createMailer: async (data: payload) => {
-        //find mailer by customer id list
-        const checkMailer = await db.customer_mailer.findFirst({
-            where: {
-                customers: {
-                    some: {
-                        id: {
-                            in: data.customer_id
-                        }
-                    }
-                }
-            }
-        })
-        if (checkMailer) {
-            throw new Error("mailer with these customer already exist")
-        }
         const mailer = await db.customer_mailer.create({
             data: {
                 id: data.id,
@@ -35,8 +20,8 @@ export const CustomerMailerSvc = {
                 sender_host: data.host,
                 sender_port: data.port,
                 customers: {
-					connect: data.customer_id.map(id => ({ id }))
-				},
+                    connect: data.customer_id.map(id => ({ id }))
+                },
             }
         })
         return mailer
@@ -52,7 +37,7 @@ export const CustomerMailerSvc = {
                     }
                 }
             }
-        })        
+        })
         if (checkMailer && checkMailer.id != id) {
             throw new Error("mailer with these customer already exist")
         }
@@ -108,16 +93,16 @@ export const CustomerMailerSvc = {
     getAllMailer: async (limit: number, page: number, search: string) => {
         let whereCondition: Prisma.customer_mailerWhereInput = {}
         if (search) {
-			whereCondition.AND = [
-				{
-					OR: [
-						{ sender_email: { contains: search } },
+            whereCondition.AND = [
+                {
+                    OR: [
+                        { sender_email: { contains: search } },
                         { customers: { some: { fullname: { contains: search } } } },
                         { customers: { some: { shortname: { contains: search } } } }
-					]
-				}
-			]
-		}
+                    ]
+                }
+            ]
+        }
         const total_mailer = await db.customer_mailer.count({ where: whereCondition })
         const totalPages = Math.ceil(total_mailer / limit)
         const offset = (page - 1) * limit
@@ -136,7 +121,7 @@ export const CustomerMailerSvc = {
                 customers: true
             }
         })
-        
+
         return {
             page: page,
             total_pages: totalPages,
@@ -176,7 +161,7 @@ export const CustomerMailerSvc = {
                 pass: mailer.sender_password
             },
         });
-        
+
 
         const mailOptions = {
             from: mailer.sender_email,
