@@ -284,7 +284,7 @@ model tickets {
   open_time            String
   close_date           String?
   close_time           String?
-  title                String
+  title                String                 @db.LongText
   description          String                 @db.LongText
   due_by               String
   priority_id          Int?
