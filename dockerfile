@@ -11,6 +11,4 @@ RUN bun upgrade
 RUN bun install --production
 ENV NODE_ENV production
 RUN bunx prisma generate
-# RUN bunx prisma migrate dev --name init
-RUN bunx prisma generate
 CMD ["bun", "src/server.ts"]
