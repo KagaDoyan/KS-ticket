@@ -31,7 +31,17 @@ export const itemSvc = {
 			whereCondition.AND = [
 				{
 					OR: [
-						{ serial_number: { contains: search } }
+						{ serial_number: { contains: search } },
+						{ inc_number: { contains: search } },
+						{ brand: { name: { contains: search } } },
+						{ model: { name: { contains: search } } },
+						{ category: { name: { contains: search } } },
+						{ customer: { fullname: { contains: search } } },
+						{ engineer: { name: { contains: search } } },
+						{ engineer: { node: { name: { contains: search } } } },
+						{ storage: { name: { contains: search } } },
+						{ Remark: { contains: search } },
+						{ condition: { contains: search } },
 					]
 				}
 			]

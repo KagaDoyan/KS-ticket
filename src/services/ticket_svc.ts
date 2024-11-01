@@ -139,8 +139,17 @@ export const ticketSvc = {
             whereCondition.AND = [
                 {
                     OR: [
+                        { ticket_number: { contains: search } },
+                        { inc_number: { contains: search } },
                         { ticket_status: status },
-                        { title: { contains: search } }
+                        { title: { contains: search } },
+                        { description: { contains: search } },
+                        { shop: { shop_name: { contains: search } } },
+                        { shop: { shop_number: { contains: search } } },
+                        { engineer: { name: { contains: search } } },
+                        { engineer: { node: { name: { contains: search } } } },
+                        { customer: { fullname: { contains: search } } },
+                        { customer: { shortname: { contains: search } } },
                     ]
                 }
             ]
