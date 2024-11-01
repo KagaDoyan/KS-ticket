@@ -9,6 +9,6 @@ COPY . .
 ENV PATH="/root/.bun/bin:${PATH}"
 RUN bun upgrade
 RUN bun install --production
-ENV NODE_ENV production
+ENV NODE_ENV=production
 RUN bunx prisma generate
 CMD ["bun", "src/server.ts"]
