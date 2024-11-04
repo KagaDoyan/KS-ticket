@@ -208,6 +208,7 @@ model items {
 enum item_types {
   spare
   replacement
+  brand
 }
 
 model teams {
