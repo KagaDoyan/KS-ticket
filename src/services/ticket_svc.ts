@@ -1148,21 +1148,34 @@ export const ticketSvc = {
             });
         }
 
+        const mailer = await db.customer_mailer.findFirst({
+            where: {
+                customers: {
+                    some: {
+                        id: ticket.customer_id
+                    }
+                }
+            }
+        })
+        if (!mailer) {
+            throw new Error("Mailer not found");
+        }
+
         const transporter = nodemailer.createTransport({
-            host: process.env.MAIL_HOST,
-            port: 587, // port for secure SMTP
+            host: mailer.sender_host,
+            port: parseInt(mailer.sender_port), // port for secure SMTP
             tls: {
                 ciphers: 'SSLv3'
             },
             secure: false,
             auth: {
-                user: process.env.MAIL_USERNAME,
-                pass: process.env.MAIL_PASSWORD
+                user: mailer.sender_email,
+                pass: mailer.sender_password
             },
         });
 
         const mailOptions = {
-            from: process.env.MAIL_SENDER,
+            from: mailer.sender_email,
             to: ticket.shop.email,
             subject: mailSubject,
             html: htmlString,
@@ -1303,22 +1316,34 @@ export const ticketSvc = {
                 contentType: mimeType
             });
         }
+        const mailer = await db.customer_mailer.findFirst({
+            where: {
+                customers: {
+                    some: {
+                        id: ticket.customer_id
+                    }
+                }
+            }
+        })
+        if (!mailer) {
+            throw new Error("Mailer not found");
+        }
 
         const transporter = nodemailer.createTransport({
-            host: process.env.MAIL_HOST,
-            port: 587, // port for secure SMTP
+            host: mailer.sender_host,
+            port: parseInt(mailer.sender_port), // port for secure SMTP
             tls: {
                 ciphers: 'SSLv3'
             },
             secure: false,
             auth: {
-                user: process.env.MAIL_USERNAME,
-                pass: process.env.MAIL_PASSWORD
+                user: mailer.sender_email,
+                pass: mailer.sender_password
             },
         });
 
         const mailOptions = {
-            from: process.env.MAIL_SENDER,
+            from: mailer.sender_email,
             to: ticket.shop.email,
             subject: mailSubject,
             html: htmlString,
@@ -1394,21 +1419,34 @@ export const ticketSvc = {
             <p>ช่างนัดหมายสาขาวันที่ ${ticket.appointment_date} ${ticket.appointment_time} ${payload.remark || "เนื่องจากสาขาสะดวกให้เข้าเวลาดังกล่าว"}</p>
         `;
 
+        const mailer = await db.customer_mailer.findFirst({
+            where: {
+                customers: {
+                    some: {
+                        id: ticket.customer_id
+                    }
+                }
+            }
+        })
+        if (!mailer) {
+            throw new Error("Mailer not found");
+        }
+
         const transporter = nodemailer.createTransport({
-            host: process.env.MAIL_HOST,
-            port: 587, // port for secure SMTP
+            host: mailer.sender_host,
+            port: parseInt(mailer.sender_port), // port for secure SMTP
             tls: {
                 ciphers: 'SSLv3'
             },
             secure: false,
             auth: {
-                user: process.env.MAIL_USERNAME,
-                pass: process.env.MAIL_PASSWORD
+                user: mailer.sender_email,
+                pass: mailer.sender_password
             },
         });
 
         const mailOptions = {
-            from: process.env.MAIL_SENDER,
+            from: mailer.sender_email,
             to: ticket.shop.email,
             subject: mailSubject,
             html: htmlString,
@@ -1561,21 +1599,34 @@ export const ticketSvc = {
           ${signature}
         </div>`;
 
+        const mailer = await db.customer_mailer.findFirst({
+            where: {
+                customers: {
+                    some: {
+                        id: ticket.customer_id
+                    }
+                }
+            }
+        })
+        if (!mailer) {
+            throw new Error("Mailer not found");
+        }
+
         const transporter = nodemailer.createTransport({
-            host: process.env.MAIL_HOST,
-            port: 587, // port for secure SMTP
+            host: mailer.sender_host,
+            port: parseInt(mailer.sender_port), // port for secure SMTP
             tls: {
                 ciphers: 'SSLv3'
             },
             secure: false,
             auth: {
-                user: process.env.MAIL_USERNAME,
-                pass: process.env.MAIL_PASSWORD
+                user: mailer.sender_email,
+                pass: mailer.sender_password
             },
         });
 
         const mailOptions = {
-            from: process.env.MAIL_SENDER,
+            from: mailer.sender_email,
             to: ticket.shop.email,
             subject: mailSubject,
             html: htmlString,
