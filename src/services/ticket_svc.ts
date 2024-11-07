@@ -424,13 +424,9 @@ export const ticketSvc = {
             for (const item of spareItem) {
                 let shop = ticket.shop.shop_number + '-' + ticket.shop.shop_name
                 let item_sn = item.serial_number;
-                let checkExistSpare = await db.spare_items.findFirst({
-                    where: {
-                        deleted_at: null,
-                        ticket_id: id,
-                        serial_number: item_sn,
-                    }
-                });
+                let checkExistSpare: any
+
+                //find item
                 let checkItem = await db.items.findFirst({
                     where: {
                         deleted_at: null,
@@ -442,6 +438,47 @@ export const ticketSvc = {
                         model: true
                     }
                 });
+
+                if (item.id) {
+                    checkExistSpare = await db.spare_items.findFirst({
+                        where: {
+                            deleted_at: null,
+                            ticket_id: id,
+                            id: item.id,
+                        }
+                    });
+                    if (checkExistSpare) {
+                        await db.spare_items.update({
+                            where: {
+                                id: checkExistSpare.id
+                            },
+                            data: {
+                                status: item.status,
+                            },
+                        });
+                        await db.items.update({
+                            where: {
+                                id: checkItem?.id
+                            },
+                            data: {
+                                status: item.status,
+                                shop_number: item.status == "spare" ? shop : null,
+                                updated_at: new Date()
+                            }
+                        })
+                        continue;
+                    }
+                } else {
+                    if (!checkItem?.reuse) {
+                        checkExistSpare = await db.spare_items.findFirst({
+                            where: {
+                                deleted_at: null,
+                                ticket_id: id,
+                                serial_number: item_sn,
+                            }
+                        });
+                    }
+                }
                 if (checkExistSpare) {
                     await db.spare_items.update({
                         where: {
@@ -612,13 +649,6 @@ export const ticketSvc = {
             let items = JSON.parse(payload.items);
 
             for (const item of items) {
-                let checkExistReturn = await prisma.return_items.findFirst({
-                    where: {
-                        deleted_at: null,
-                        ticket_id: id,
-                        serial_number: item.serial_number,
-                    }
-                });
                 let selectItem = await prisma.items.findFirst({
                     where: {
                         deleted_at: null,
@@ -630,8 +660,15 @@ export const ticketSvc = {
                         model: true
                     }
                 });
-
-                if (selectItem) {
+                let checkExistReturn: any
+                if (item.id) {
+                    checkExistReturn = await prisma.return_items.findFirst({
+                        where: {
+                            deleted_at: null,
+                            ticket_id: id,
+                            id: item.id,
+                        }
+                    });
                     let updateItemStatus = (item.type === "inside" && item.status === "return") ? "in_stock" : item.status;
                     if (checkExistReturn) {
                         await prisma.return_items.update({
@@ -646,7 +683,7 @@ export const ticketSvc = {
                         let item_ticket_id = (item.type === "inside" && item.status === "return") ? null : ticket.id;
                         await prisma.items.update({
                             where: {
-                                id: selectItem.id,
+                                id: selectItem?.id,
                             },
                             data: {
                                 status: updateItemStatus,
@@ -658,6 +695,46 @@ export const ticketSvc = {
                         });
                         continue;
                     }
+                } else {
+                    if (!selectItem?.reuse) {
+                        checkExistReturn = await prisma.return_items.findFirst({
+                            where: {
+                                deleted_at: null,
+                                ticket_id: id,
+                                serial_number: item.serial_number,
+                            }
+                        });
+                    }
+                }
+
+
+                if (selectItem) {
+                    let updateItemStatus = (item.type === "inside" && item.status === "return") ? "in_stock" : item.status;
+                    // if (checkExistReturn) {
+                    //     await prisma.return_items.update({
+                    //         where: {
+                    //             id: checkExistReturn.id,
+                    //         },
+                    //         data: {
+                    //             status: item.status
+                    //         }
+                    //     });
+
+                    //     let item_ticket_id = (item.type === "inside" && item.status === "return") ? null : ticket.id;
+                    //     await prisma.items.update({
+                    //         where: {
+                    //             id: selectItem.id,
+                    //         },
+                    //         data: {
+                    //             status: updateItemStatus,
+                    //             ticket_id: item_ticket_id ? item_ticket_id : null,
+                    //             shop_number: updateItemStatus == "in_stock" ? null : ticket.shop.shop_number + '-' + ticket.shop.shop_name,
+                    //             engineers_id: payload.engineer_id,
+                    //             updated_at: new Date()
+                    //         }
+                    //     });
+                    //     continue;
+                    // }
 
                     await prisma.return_items.create({
                         data: {

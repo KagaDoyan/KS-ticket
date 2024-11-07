@@ -18,7 +18,8 @@ interface itemPayload {
 	storage_id: number,
 	remark?: string
 	condition?: string,
-	item_type?: item_types
+	item_type?: item_types,
+	reuse?: boolean
 }
 
 export const itemSvc = {
@@ -99,6 +100,7 @@ export const itemSvc = {
 				created_by: payload.created_by,
 				storage_id: payload.storage_id,
 				item_type: payload.item_type,
+				reuse: payload.reuse
 			}
 		});
 		return item;
@@ -122,6 +124,7 @@ export const itemSvc = {
 				condition: payload.condition,
 				updated_at: new Date(),
 				item_type: payload.item_type,
+				reuse: payload.reuse
 			}
 		});
 		return item;

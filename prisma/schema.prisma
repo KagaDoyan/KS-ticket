@@ -203,6 +203,7 @@ model items {
   updated_at           DateTime?
   condition            String?
   item_type            item_types?
+  reuse                Boolean?
 }
 
 enum item_types {
