@@ -294,7 +294,8 @@ export const ticketSvc = {
                 ticket_status: payload.ticket_status,
                 appointment_date: payload.appointment_date,
                 appointment_time: payload.appointment_time,
-                engineer_id: payload.engineer_id
+                engineer_id: payload.engineer_id,
+                item_category: payload.item_category,
             }
         });
         return ticket;
