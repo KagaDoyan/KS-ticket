@@ -100,7 +100,9 @@ export const itemSvc = {
 				created_by: payload.created_by,
 				storage_id: payload.storage_id,
 				item_type: payload.item_type,
-				reuse: payload.reuse
+				reuse: payload.reuse,
+				Remark: payload.remark,
+				condition: payload.condition
 			}
 		});
 		return item;
