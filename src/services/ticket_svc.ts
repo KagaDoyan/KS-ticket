@@ -780,7 +780,7 @@ export const ticketSvc = {
                             status: item.status,
                             type: item.type,
                             created_by: payload.created_by,
-                            shop_number: ticket.shop.shop_number,
+                            shop_number: ticket.shop.shop_number+'-' + ticket.shop.shop_name,
                             customer_id: ticket.customer_id,
                             updated_at: new Date()
                         },
