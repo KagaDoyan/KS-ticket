@@ -390,7 +390,7 @@ export const ticketSvc = {
                         brand_id: item.brand_id,
                         model_id: item.model_id,
                         engineers_id: ticket.engineer_id,
-                        warranty_expiry_date: item.warranty_expiry_date || null,
+                        warranty_expiry_date: item.warranty_expire_date ? new Date(item.warranty_expire_date) : null,
                         inc_number: item.inc_number,
                         status: item.status,
                         type: item.type,
@@ -540,7 +540,7 @@ export const ticketSvc = {
                         brand_id: item.brand_id,
                         model_id: item.model_id,
                         engineers_id: ticket.engineer_id,
-                        warranty_expiry_date: item.warranty_expiry_date || null,
+                        warranty_expiry_date: item.warranty_expire_date ? new Date(item.warranty_expire_date) : null,
                         inc_number: item.inc_number,
                         status: item.status,
                         type: item.type,
@@ -775,7 +775,7 @@ export const ticketSvc = {
                             brand_id: item.brand_id,
                             model_id: item.model_id,
                             engineers_id: ticket.engineer_id,
-                            warranty_expiry_date: item.warranty_expiry_date || null,
+                            warranty_expiry_date: item.warranty_expire_date ? new Date(item.warranty_expire_date) : null,
                             inc_number: item.inc_number,
                             status: item.status,
                             type: item.type,
@@ -798,7 +798,7 @@ export const ticketSvc = {
                             category: newItem.category.name,
                             model: newItem.model.name,
                             serial_number: item.serial_number,
-                            warranty_exp: newItem.warranty_expiry_date || null,
+                            warranty_exp: newItem.warranty_expiry_date ? new Date(item.warranty_expiry_date) : null,
                             status: newItem.status,
                             created_by: payload.created_by,
                             engineer_id: ticket.engineer_id,
@@ -1264,7 +1264,6 @@ export const ticketSvc = {
         await transporter.sendMail(mailOptions);
         //line notification
         if (ticket.customer.line_close) {
-
             var message = `${ticket.inc_number == "n/a" ? ticket.ticket_number : ticket.inc_number}  | ${ticket.shop.shop_number}-${ticket.shop.shop_name}  | ${ticket.item_category} | ${ticket.title}\n\n`
             message += `${ticket.solution}\n\n`
             const LineoldDeviceLabel = "   นำกลับ\n";
