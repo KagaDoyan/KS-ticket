@@ -8,6 +8,7 @@ import nodemailer from 'nodemailer';
 import { SecToTimeString } from "../utilities/sec_to_time_string";
 import dayjs from "dayjs";
 import { Line_svc } from "./line_svc";
+import { cc } from "bun:ffi";
 
 interface itemList {
     id?: number,
@@ -1523,11 +1524,17 @@ export const ticketSvc = {
             },
         });
 
+        const cc = await db.mail_recipient.findMany({
+            where: {
+                customer_id: ticket.customer_id
+            }
+        })
         const mailOptions = {
             from: mailer.sender_email,
             to: ticket.shop.email,
             subject: mailSubject,
             html: htmlString,
+            cc: cc.map(obj => obj.email)
         };
 
         await transporter.sendMail(mailOptions);
@@ -1703,13 +1710,19 @@ export const ticketSvc = {
             },
         });
 
+        const cc = await db.mail_recipient.findMany({
+            where: {
+                customer_id: ticket.customer_id
+            }
+        })
+
         const mailOptions = {
             from: mailer.sender_email,
             to: ticket.shop.email,
             subject: mailSubject,
             html: htmlString,
             // attachments: attachments,
-            // cc: cc.map(obj => obj.email)
+            cc: cc.map(obj => obj.email)
         };
 
         await transporter.sendMail(mailOptions);
