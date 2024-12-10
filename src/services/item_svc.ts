@@ -119,7 +119,7 @@ export const itemSvc = {
 				brand_id: payload.brand_id,
 				customer_id: payload.customer_id || null,
 				model_id: payload.model_id,
-				warranty_expiry_date: payload.warranty_expiry_date,
+				warranty_expiry_date: payload.warranty_expiry_date || null,
 				status: payload.status,
 				storage_id: payload.storage_id,
 				Remark: payload.remark,

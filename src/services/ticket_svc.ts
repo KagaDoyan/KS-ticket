@@ -77,7 +77,7 @@ interface ticketPayload {
     item_category?: string,
     item_model?: string,
     item_sn?: string,
-    warranty_exp?: Date,
+    warranty_exp?: string,
     resolve_status: boolean,
     resolve_remark?: string,
     action?: string,
@@ -318,7 +318,7 @@ export const ticketSvc = {
                 item_category: payload.item_category,
                 item_model: payload.item_model,
                 item_sn: payload.item_sn,
-                warranty_exp: payload.warranty_exp ? new Date(payload.warranty_exp) : null,
+                warranty_exp: payload.warranty_exp && payload.warranty_exp != 'Invalid Date' ? new Date(payload.warranty_exp) : null,
                 resolve_status: payload.resolve_status,
                 resolve_remark: payload.resolve_remark && payload.resolve_remark != 'null' ? payload.resolve_remark.replace(/\n\s*\n/g, '\n') : "",
                 action: payload.action,
@@ -341,7 +341,6 @@ export const ticketSvc = {
                         serial_number: item_sn,
                     }
                 });
-                if (checkExistStore) continue;
                 let checkItem = await db.items.findFirst({
                     where: {
                         deleted_at: null,
@@ -353,6 +352,33 @@ export const ticketSvc = {
                         model: true
                     }
                 });
+                if (checkExistStore) {
+                    await db.store_items.update({
+                        where: {
+                            id: checkExistStore.id
+                        },
+                        data: {
+                            status: item.status,
+                            warranty_exp: item.warranty_expire_date ? new Date(item.warranty_expire_date) : null,
+                            brand: item.brand,
+                            model: item.model,
+                            category: item.category,
+                        },
+                    });
+                    await db.items.update({
+                        where: {
+                            id: checkItem?.id
+                        },
+                        data: {
+                            status: item.status,
+                            warranty_expiry_date: item.warranty_expire_date ? new Date(item.warranty_expire_date) : null,
+                            brand_id: item.brand_id,
+                            model_id: item.model_id,
+                            category_id: item.category_id,
+                        }
+                    })
+                    continue
+                };
                 if (checkItem) {
                     await db.store_items.create({
                         data: {
@@ -374,6 +400,10 @@ export const ticketSvc = {
                         data: {
                             status: item.status,
                             engineers_id: ticket.engineer_id,
+                            warranty_expiry_date: item.warranty_expire_date ? new Date(item.warranty_expire_date) : null,
+                            brand_id: item.brand_id,
+                            model_id: item.model_id,
+                            category_id: item.category_id,
                             type: item.type,
                             ticket_id: id,
                             updated_at: new Date()
@@ -395,10 +425,12 @@ export const ticketSvc = {
                         inc_number: item.inc_number,
                         status: item.status,
                         type: item.type,
-                        shop_number: item.status == "spare" || item.status == "replace" ? ticket.shop.shop_number+'-' + ticket.shop.shop_name : null,
+                        shop_number: item.status == "spare" || item.status == "replace" ? ticket.shop.shop_number + '-' + ticket.shop.shop_name : null,
                         created_by: payload.created_by,
                         ticket_id: id,
-                        updated_at: new Date()
+                        updated_at: new Date(),
+                        condition: "broken",
+                        item_type: "brand"
                     },
                     include: {
                         brand: true,
@@ -457,6 +489,10 @@ export const ticketSvc = {
                             },
                             data: {
                                 status: item.status,
+                                warranty_exp: item.warranty_expire_date ? new Date(item.warranty_expire_date) : null,
+                                brand: item.brand,
+                                model: item.model,
+                                category: item.category,
                             },
                         });
                         await db.items.update({
@@ -466,7 +502,11 @@ export const ticketSvc = {
                             data: {
                                 status: item.status,
                                 shop_number: item.status == "spare" ? shop : null,
-                                updated_at: new Date()
+                                updated_at: new Date(),
+                                warranty_expiry_date: item.warranty_expire_date ? new Date(item.warranty_expire_date) : null,
+                                brand_id: item.brand_id,
+                                model_id: item.model_id,
+                                category_id: item.category_id,
                             }
                         })
                         continue;
@@ -525,6 +565,10 @@ export const ticketSvc = {
                         data: {
                             status: item.status,
                             engineers_id: ticket.engineer_id,
+                            warranty_expiry_date: item.warranty_expire_date ? new Date(item.warranty_expire_date) : null,
+                            brand_id: item.brand_id,
+                            model_id: item.model_id,
+                            category_id: item.category_id,
                             type: item.type,
                             ticket_id: id,
                             shop_number: item.status == "spare" ? shop : null,
@@ -547,9 +591,11 @@ export const ticketSvc = {
                         status: item.status,
                         type: item.type,
                         created_by: payload.created_by,
-                        shop_number: item.status == "spare" || item.status == "replace" ? ticket.shop.shop_number+'-' + ticket.shop.shop_name : null,
+                        shop_number: item.status == "spare" || item.status == "replace" ? ticket.shop.shop_number + '-' + ticket.shop.shop_name : null,
                         ticket_id: id,
-                        updated_at: new Date()
+                        updated_at: new Date(),
+                        condition: "good",
+                        item_type: item.status == "spare" ? "spare" : "replacement"
                     },
                     include: {
                         brand: true,
@@ -782,7 +828,7 @@ export const ticketSvc = {
                             status: item.status,
                             type: item.type,
                             created_by: payload.created_by,
-                            shop_number: ticket.shop.shop_number+'-' + ticket.shop.shop_name,
+                            shop_number: ticket.shop.shop_number + '-' + ticket.shop.shop_name,
                             customer_id: ticket.customer_id,
                             updated_at: new Date()
                         },
@@ -1139,7 +1185,8 @@ export const ticketSvc = {
         return engineerList;
     },
 
-    sendMail: async (id: number) => {
+    sendMail: async (id: number, user_id: number) => {
+        const user = await db.users.findFirst({ where: { id: user_id } })
         const ticket = await db.tickets.findFirst({
             where: {
                 id: id
@@ -1147,7 +1194,11 @@ export const ticketSvc = {
             include: {
                 shop: true,
                 engineer: true,
-                customer: true,
+                customer: {
+                    include: {
+                        mail_signature: true
+                    }
+                },
                 ticket_image: {
                     where: {
                         deleted_at: null
@@ -1172,6 +1223,23 @@ export const ticketSvc = {
                 customer_id: ticket.customer_id
             }
         })
+        let signature = ticket.customer.mail_signature ? `
+        <div dir="ltr" class="gmail_signature" >
+            <div dir="ltr" style="margin: 0; padding: 0;">
+               <div style="margin: 0; padding: 0; color: gray; line-height: 0.2;">
+                <p>${user?.fullname}</p>
+                ${ticket.customer?.mail_signature?.signature_body}
+                </div>
+                ${ticket.customer?.mail_signature?.image ? `<img 
+                src="${Bun.env.FILE_URL + ticket.customer?.mail_signature?.image}" 
+                width="96" 
+                height="43"
+                style="filter: grayscale(100%);" 
+                alt="Company Logo"
+                />` : ""}
+            </div>
+        </div>
+    ` : ""
         // Set email content
         let status_title = ""
         if (ticket.ticket_status == "close") {
@@ -1205,7 +1273,7 @@ export const ticketSvc = {
             '<tr><th style="vertical-align:top">Appointment Time</th><td style="vertical-align:top">' + ticket.appointment_date + " " + ticket.appointment_time + '</td></tr>' +
             '<tr><th style="vertical-align:top">Time Start</th><td style="vertical-align:top">' + dayjs(ticket.time_in).format('DD/MM/YYYY HH:mm') + '</td></tr>' +
             '<tr><th style="vertical-align:top">Time Finish</th><td style="vertical-align:top">' + dayjs(ticket.time_out).format('DD/MM/YYYY HH:mm') + '</td></tr>' +
-            '</table>';
+            '</table>' + '<br><br>' + signature;
         let attachments: any = [];
         for (const image of ticket.ticket_image) {
             // Detect file type by extension
@@ -1291,7 +1359,8 @@ export const ticketSvc = {
     },
 
 
-    sendReturnMail: async (id: number) => {
+    sendReturnMail: async (id: number, user_id: number) => {
+        const user = await db.users.findFirst({ where: { id: user_id } })
         const ticket = await db.tickets.findFirst({
             where: {
                 id: id
@@ -1299,7 +1368,11 @@ export const ticketSvc = {
             include: {
                 shop: true,
                 engineer: true,
-                customer: true,
+                customer: {
+                    include: {
+                        mail_signature: true
+                    }
+                },
                 ticket_image: {
                     where: {
                         deleted_at: null
@@ -1339,17 +1412,48 @@ export const ticketSvc = {
                 customer_id: ticket.customer_id
             }
         })
+        let signature = ticket.customer.mail_signature ? `
+        <div dir="ltr" class="gmail_signature" >
+            <div dir="ltr" style="margin: 0; padding: 0;">
+               <div style="margin: 0; padding: 0; color: gray; line-height: 0.2;">
+                <p>${user?.fullname}</p>
+                ${ticket.customer?.mail_signature?.signature_body}
+                </div>
+                ${ticket.customer?.mail_signature?.image ? `<img 
+                src="${Bun.env.FILE_URL + ticket.customer?.mail_signature?.image}" 
+                width="96" 
+                height="43"
+                style="filter: grayscale(100%);" 
+                alt="Company Logo"
+                />` : ""}
+            </div>
+        </div>
+    ` : ""
         // Set email content
         let status_title = ""
         status_title = "Return Case";
+
         // if (ticket.ticket_status == "close") {
         //     status_title = "Resolved Case";
         // } else if (ticket.ticket_status == "spare") {
         //     status_title = "Install Spare";
         // }
 
-        const deviceListClean = ticket.return_item.filter((element) => element.item_type == "spare" && element.status == "return");
-        const replaceDeviceListClean = ticket.return_item.filter((element) => element.item_type == "store" && element.status == "return");
+        // const deviceListClean = ticket.return_item.filter(
+        //     (element) => element.item_type == "spare" && (element.status == "return" || element.status == "replace")
+        // );
+
+        // const replaceDeviceListClean = ticket.return_item.filter(
+        //     (element) => element.item_type == "store" && (element.status == "return" || element.status == "replace")
+        // );
+        const deviceListClean = ticket.return_item.filter(
+            (element) => element.item_type == "spare" && (element.status == "return")
+        );
+
+        const replaceDeviceListClean = ticket.return_item.filter(
+            (element) => element.item_type == "store" && (element.status == "return")
+        );
+
 
         const oldDeviceLabel = "   เก่า<br>";
         const newDeviceLabel = "   ใหม่<br>";
@@ -1373,7 +1477,7 @@ export const ticketSvc = {
             '<tr><th style="vertical-align:top">Appointment Time</th><td style="vertical-align:top">' + ticket.appointment_date + " " + ticket.appointment_time + '</td></tr>' +
             '<tr><th style="vertical-align:top">Time Start</th><td style="vertical-align:top">' + dayjs(ticket.return_ticket?.time_in).format('DD/MM/YYYY HH:mm') + '</td></tr>' +
             '<tr><th style="vertical-align:top">Time Finish</th><td style="vertical-align:top">' + dayjs(ticket.return_ticket?.time_out).format('DD/MM/YYYY HH:mm') + '</td></tr>' +
-            '</table>';
+            '</table>' + '<br><br>' + signature;
         let attachments: any = [];
         for (const image of ticket.return_ticket_images) {
             // Detect file type by extension
@@ -1457,7 +1561,8 @@ export const ticketSvc = {
         };
     },
 
-    sendAppointmentMail: async (id: number, payload: mailRemark) => {
+    sendAppointmentMail: async (id: number, user_id: number, payload: mailRemark) => {
+        const user = await db.users.findFirst({ where: { id: user_id } })
         const ticket = await db.tickets.findFirst({
             where: {
                 id: id
@@ -1469,7 +1574,11 @@ export const ticketSvc = {
                     }
                 },
                 engineer: true,
-                customer: true,
+                customer: {
+                    include: {
+                        mail_signature: true
+                    }
+                },
                 ticket_image: {
                     where: {
                         deleted_at: null
@@ -1481,6 +1590,23 @@ export const ticketSvc = {
 
         if (!ticket) return { message: "No Ticket Data" }
         // Set email content
+        let signature = ticket.customer.mail_signature ? `
+            <div dir="ltr" class="gmail_signature" >
+                <div dir="ltr" style="margin: 0; padding: 0;">
+                   <div style="margin: 0; padding: 0; color: gray; line-height: 0.2;">
+                    <p>${user?.fullname}</p>
+                    ${ticket.customer?.mail_signature?.signature_body}
+                    </div>
+                    ${ticket.customer?.mail_signature?.image ? `<img 
+                    src="${Bun.env.FILE_URL + ticket.customer?.mail_signature?.image}" 
+                    width="96" 
+                    height="43"
+                    style="filter: grayscale(100%);" 
+                    alt="Company Logo"
+                    />` : ""}
+                </div>
+            </div>
+        ` : ""
         let mailSubject = `Appointment | ${ticket.sla_priority_level} | Assigned | ${ticket.inc_number == "n/a" ? ticket.ticket_number : ticket.inc_number} | ${ticket.shop.shop_number}-${ticket.shop.shop_name} | ${ticket.item_category} | ${ticket.title}`;
         let htmlString = `
             <p>Open Case ${ticket.inc_number == "n/a" ? ticket.ticket_number : ticket.inc_number}</p>
@@ -1496,7 +1622,8 @@ export const ticketSvc = {
             <p>Appointment : ${ticket.appointment_date} ${ticket.appointment_time}</p>
             <br>
             <p>ช่างนัดหมายสาขาวันที่ ${ticket.appointment_date} ${ticket.appointment_time} ${payload.remark || "เนื่องจากสาขาสะดวกให้เข้าเวลาดังกล่าว"}</p>
-        `;
+            ${signature}
+            `;
 
         const mailer = await db.customer_mailer.findFirst({
             where: {

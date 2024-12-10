@@ -45,10 +45,10 @@ export function ItemRoute(app: any) {
                 inc_number: t.Optional(t.String()),
                 status: t.String(),
                 storage_id: t.Number(),
-                item_type: t.Optional(t.String()),
+                item_type: t.Optional(t.Nullable(t.String())),
                 condition: t.Optional(t.Nullable(t.String())),
                 remark: t.Optional(t.Nullable(t.String())),
-                reuse: t.Optional(t.Boolean()),
+                reuse: t.Optional(t.Nullable(t.Boolean())),
             }),
             detail: {
                 tags: ['Item']
@@ -71,8 +71,8 @@ export function ItemRoute(app: any) {
                 storage_id: t.Number(),
                 remark: t.Optional(t.Nullable(t.String())),
                 condition: t.Optional(t.Nullable(t.String())),
-                item_type: t.Optional(t.String()),
-                reuse: t.Optional(t.Boolean()),
+                item_type: t.Optional(t.Nullable(t.String())),
+                reuse: t.Optional(t.Nullable(t.Boolean())),
             }),
             params: t.Object({
                 id: t.Numeric()

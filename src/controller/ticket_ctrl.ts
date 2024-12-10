@@ -82,17 +82,20 @@ export const TicketCtrl = {
     },
 
     sendMail: async (ctx: any) => {
-        const data = await ticketSvc.sendMail(ctx.params.id)
+        const userID = await middleware.GetUserFromToken(ctx);
+        const data = await ticketSvc.sendMail(ctx.params.id, userID)
         return response.SuccessResponse(ctx, data)
     },
 
     sendReturnMail: async (ctx: any) => {
-        const data = await ticketSvc.sendReturnMail(ctx.params.id)
+        const userID = await middleware.GetUserFromToken(ctx);
+        const data = await ticketSvc.sendReturnMail(ctx.params.id, userID)
         return response.SuccessResponse(ctx, data)
     },
 
     sendAppointmentMail: async (ctx: any) => {
-        const data = await ticketSvc.sendAppointmentMail(ctx.params.id, {...ctx.body})
+        const userID = await middleware.GetUserFromToken(ctx);
+        const data = await ticketSvc.sendAppointmentMail(ctx.params.id, userID, ctx.body.remark)
         return response.SuccessResponse(ctx, data)
     },
 
