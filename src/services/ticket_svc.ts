@@ -3,12 +3,10 @@ import db from "../adapter.ts/database";
 import { unlink } from "node:fs/promises";
 import crypto from 'crypto';
 import * as turf from '@turf/turf';
-import sharp from 'sharp';
 import nodemailer from 'nodemailer';
 import { SecToTimeString } from "../utilities/sec_to_time_string";
 import dayjs from "dayjs";
 import { Line_svc } from "./line_svc";
-import { cc } from "bun:ffi";
 
 interface itemList {
     id?: number,
@@ -558,23 +556,27 @@ export const ticketSvc = {
                         }
                     });
 
-                    await db.items.update({
-                        where: {
-                            id: checkItem.id
-                        },
-                        data: {
-                            status: item.status,
-                            engineers_id: ticket.engineer_id,
-                            warranty_expiry_date: item.warranty_expire_date ? new Date(item.warranty_expire_date) : null,
-                            brand_id: item.brand_id,
-                            model_id: item.model_id,
-                            category_id: item.category_id,
-                            type: item.type,
-                            ticket_id: id,
-                            shop_number: item.status == "spare" ? shop : null,
-                            updated_at: new Date()
-                        }
-                    })
+                    try {
+                        await db.items.update({
+                            where: {
+                                id: checkItem.id
+                            },
+                            data: {
+                                status: item.status,
+                                engineers_id: ticket.engineer_id,
+                                warranty_expiry_date: item.warranty_expire_date ? new Date(item.warranty_expire_date) : null,
+                                brand_id: item.brand_id,
+                                model_id: item.model_id,
+                                category_id: item.category_id,
+                                type: item.type,
+                                ticket_id: id,
+                                shop_number: item.status == "spare" ? shop : null,
+                                updated_at: new Date()
+                            }
+                        })
+                    } catch (e) {
+                        console.log(e)
+                    }
 
                     continue;
                 }

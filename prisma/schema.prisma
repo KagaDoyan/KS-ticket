@@ -27,6 +27,7 @@ enum ticket_status {
   oncall
   pending
   spare
+  cancel
   close
 }
 
