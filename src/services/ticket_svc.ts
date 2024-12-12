@@ -1272,7 +1272,7 @@ export const ticketSvc = {
             '<tr><th style="vertical-align:top">Equipment</th><td style="vertical-align:top">' + ticket.item_category + '</td></tr>' +
             '<tr><th style="vertical-align:top">Investigation</th><td style="vertical-align:top">' + ticket.investigation + '</td></tr>' +
             '<tr><th style="vertical-align:top">Solution</th><td style="vertical-align:top">' + ticket.solution + '<br>' + deviceStr + replaceDeviceStr + '</td></tr>' +
-            '<tr><th style="vertical-align:top">Appointment Time</th><td style="vertical-align:top">' + ticket.appointment_date + " " + ticket.appointment_time + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Appointment Time</th><td style="vertical-align:top">' + dayjs(ticket.appointment_date + " " + ticket.appointment_time).format('DD/MM/YYYY HH:mm') + '</td></tr>' +
             '<tr><th style="vertical-align:top">Time Start</th><td style="vertical-align:top">' + dayjs(ticket.time_in).format('DD/MM/YYYY HH:mm') + '</td></tr>' +
             '<tr><th style="vertical-align:top">Time Finish</th><td style="vertical-align:top">' + dayjs(ticket.time_out).format('DD/MM/YYYY HH:mm') + '</td></tr>' +
             '</table>' + '<br><br>' + signature;
@@ -1476,7 +1476,7 @@ export const ticketSvc = {
             '<tr><th style="vertical-align:top">Equipment</th><td style="vertical-align:top">' + ticket.return_ticket?.item_category + '</td></tr>' +
             '<tr><th style="vertical-align:top">Investigation</th><td style="vertical-align:top">' + ticket.return_ticket?.investigation + '</td></tr>' +
             '<tr><th style="vertical-align:top">Solution</th><td style="vertical-align:top">' + ticket.return_ticket?.solution + '<br>' + deviceStr + replaceDeviceStr + '</td></tr>' +
-            '<tr><th style="vertical-align:top">Appointment Time</th><td style="vertical-align:top">' + ticket.appointment_date + " " + ticket.appointment_time + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Appointment Time</th><td style="vertical-align:top">' + dayjs(ticket.appointment_date + " " + ticket.appointment_time).format('DD/MM/YYYY HH:mm') + '</td></tr>' +
             '<tr><th style="vertical-align:top">Time Start</th><td style="vertical-align:top">' + dayjs(ticket.return_ticket?.time_in).format('DD/MM/YYYY HH:mm') + '</td></tr>' +
             '<tr><th style="vertical-align:top">Time Finish</th><td style="vertical-align:top">' + dayjs(ticket.return_ticket?.time_out).format('DD/MM/YYYY HH:mm') + '</td></tr>' +
             '</table>' + '<br><br>' + signature;
@@ -1621,9 +1621,9 @@ export const ticketSvc = {
             <p>Contact Phone : ${ticket.contact_tel}</p>
             <p>Priority : ${ticket.sla_priority_level} ${SecToTimeString(parseInt(ticket.prioritie?.time_sec ? ticket.prioritie.time_sec : "0"))}</p>
             <p>Engineer : ${ticket.engineer.name} ${ticket.engineer.lastname}</p>
-            <p>Appointment : ${ticket.appointment_date} ${ticket.appointment_time}</p>
+            <p>Appointment : ${dayjs(ticket.appointment_date + " " + ticket.appointment_time).format('DD/MM/YYYY HH:mm')}</p>
             <br>
-            <p>ช่างนัดหมายสาขาวันที่ ${ticket.appointment_date} ${ticket.appointment_time} ${payload.remark || "เนื่องจากสาขาสะดวกให้เข้าเวลาดังกล่าว"}</p>
+            <p>ช่างนัดหมายสาขาวันที่ ${dayjs(ticket.appointment_date + " " + ticket.appointment_time).format('DD/MM/YYYY HH:mm')} ${payload.remark || "เนื่องจากสาขาสะดวกให้เข้าเวลาดังกล่าว"}</p>
             ${signature}
             `;
 
