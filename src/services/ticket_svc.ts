@@ -499,7 +499,7 @@ export const ticketSvc = {
                             },
                             data: {
                                 status: item.status,
-                                shop_number: item.status == "spare" ? shop : null,
+                                shop_number: item.status == "spare" || item.status == "replace" ? shop : null,
                                 updated_at: new Date(),
                                 warranty_expiry_date: item.warranty_expire_date ? new Date(item.warranty_expire_date) : null,
                                 brand_id: item.brand_id,
@@ -570,7 +570,7 @@ export const ticketSvc = {
                                 category_id: item.category_id,
                                 type: item.type,
                                 ticket_id: id,
-                                shop_number: item.status == "spare" ? shop : null,
+                                shop_number: item.status == "spare" || item.status == "replace" ? shop : null,
                                 updated_at: new Date()
                             }
                         })
@@ -981,7 +981,11 @@ export const ticketSvc = {
             },
             include: {
                 return_ticket: true,
-                shop: true,
+                shop: {
+                    include: {
+                        province: true
+                    }
+                },
                 engineer: {
                     include: {
                         node: true
@@ -1441,20 +1445,20 @@ export const ticketSvc = {
         //     status_title = "Install Spare";
         // }
 
-        // const deviceListClean = ticket.return_item.filter(
-        //     (element) => element.item_type == "spare" && (element.status == "return" || element.status == "replace")
-        // );
-
-        // const replaceDeviceListClean = ticket.return_item.filter(
-        //     (element) => element.item_type == "store" && (element.status == "return" || element.status == "replace")
-        // );
         const deviceListClean = ticket.return_item.filter(
-            (element) => element.item_type == "spare" && (element.status == "return")
+            (element) => element.item_type == "spare" && (element.status == "return" || element.status == "replace")
         );
 
         const replaceDeviceListClean = ticket.return_item.filter(
-            (element) => element.item_type == "store" && (element.status == "return")
+            (element) => element.item_type == "store" && (element.status == "return" || element.status == "replace")
         );
+        // const deviceListClean = ticket.return_item.filter(
+        //     (element) => element.item_type == "spare" && (element.status == "return")
+        // );
+
+        // const replaceDeviceListClean = ticket.return_item.filter(
+        //     (element) => element.item_type == "store" && (element.status == "return")
+        // );
 
 
         const oldDeviceLabel = "   เก่า<br>";
