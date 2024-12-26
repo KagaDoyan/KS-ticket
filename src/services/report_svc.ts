@@ -7,6 +7,7 @@ interface MA {
     incNo: string; // Incident Number
     ticketNumber: string;
     brand: string;
+    lastUpdated: string;
     storeNumber: string;
     storeName: string;
     storeContactPhone: string;
@@ -26,7 +27,7 @@ interface MA {
     ticketCloseDate?: string | null; // Optional if the ticket is not yet closed
     ticketCloseTime?: string | null; // Optional if the ticket is not yet closed
     engineerName: string;
-    engineerNote?: string; // Optional if no notes are provided
+    engineerNode?: string; // Optional if no notes are provided
     solution?: string | null; // Optional if no solution is provided yet
     recoveryTime: string; // Deadline for SLA (could also be Date if preferred)
     slaOverdue: string; // Whether it was closed within SLA (Yes/No as boolean)
@@ -206,8 +207,10 @@ export const reportSvc = {
                 const timeNow = new Date();
                 SLA_overdue = timeNow > timeSLA ? "No" : "Yes";
             }
+            // all date format as DD/MM/YYYY
             var ticketOnly: MA = {
                 incNo: ticket.inc_number, // Incident Number
+                lastUpdated: ticket.updated_at?.toDateString()!,
                 ticketNumber: ticket.ticket_number,
                 brand: ticket.customer.fullname,
                 storeNumber: ticket.shop.shop_number,
@@ -222,20 +225,21 @@ export const reportSvc = {
                 slaPriorityTime: SecToTimeString(parseInt(ticket.prioritie?.time_sec!)),
                 ticketopenDate: ticket.open_date,
                 ticketopenTime: ticket.open_time,
-                appointmentDate: ticket.appointment_date,
+                appointmentDate: dayjs(ticket.appointment_date).format("DD/MM/YYYY"),
                 appointmentTime: ticket.appointment_time,
                 ticketStatus: ticket.ticket_status,
                 ticketCloseTime: ticket.close_time,
                 ticketCloseDate: ticket.close_date,
                 engineerName: ticket.engineer?.name,
+                engineerNode: ticket.engineer?.node?.name,
                 solution: ticket.solution,
-                recoveryTime: dayjs(ticket.due_by).format("YYYY-MM-DD HH:mm"), // Deadline for SLA (could also be Date if preferred)
+                recoveryTime: dayjs(ticket.due_by).format("DD/MM/YYYY HH:mm"), // Deadline for SLA (could also be Date if preferred)
                 slaOverdue: SLA_overdue,
                 item_brand: ticket.item_brand,
                 item_category: ticket.item_category,
                 item_model: ticket.item_model,
                 item_sn: ticket.item_sn,
-                warranty_exp: dayjs(ticket.warranty_exp).format("YYYY-MM-DD"),
+                warranty_exp: dayjs(ticket.warranty_exp).format("DD/MM/YYYY"),
                 resloved: ticket.resolve_status,
                 resolve_remark: ticket.resolve_remark,
                 action: ticket.ticket_status === "close" ? "closed" : ticket.action,
@@ -245,8 +249,8 @@ export const reportSvc = {
                 return_investigation: ticket.return_ticket?.investigation!,
                 return_engineer: ticket.return_ticket?.engineer?.name!+" "+ ticket.return_ticket?.engineer?.lastname,
                 return_solution: ticket.return_ticket?.solution!,
-                return_time_in: ticket.return_ticket?.time_in!,
-                return_time_out: ticket.return_ticket?.time_out!
+                return_time_in: dayjs(ticket.return_ticket?.time_in).format("DD/MM/YYYY HH:mm")!,
+                return_time_out: dayjs(ticket.return_ticket?.time_out).format("DD/MM/YYYY HH:mm")!
             }
             for (var i = 0; i <= 4; i++) {
                 ticketOnly["storeDeviceBrand" + (i + 1)] = ticket.store_item[i]?.brand ?? "";

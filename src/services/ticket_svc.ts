@@ -231,7 +231,8 @@ export const ticketSvc = {
                 id: ticket.id
             },
             data: {
-                ticket_number: ticketNumber
+                ticket_number: ticketNumber,
+                updated_at: new Date()
             }
         });
         // send line notification
@@ -295,6 +296,7 @@ export const ticketSvc = {
                 appointment_time: payload.appointment_time,
                 engineer_id: payload.engineer_id,
                 item_category: payload.item_category,
+                updated_at: new Date()
             }
         });
         return ticket;
@@ -322,7 +324,8 @@ export const ticketSvc = {
                 action: payload.action,
                 time_in: payload.time_in,
                 time_out: payload.time_out,
-                updated_by: payload.updated_by
+                updated_by: payload.updated_by,
+                updated_at: new Date(),
             },
             include: {
                 shop: true,
@@ -373,6 +376,7 @@ export const ticketSvc = {
                             brand_id: item.brand_id,
                             model_id: item.model_id,
                             category_id: item.category_id,
+                            inc_number: item.status != "in_stock" ? ticket.inc_number : null
                         }
                     })
                     continue
@@ -404,7 +408,8 @@ export const ticketSvc = {
                             category_id: item.category_id,
                             type: item.type,
                             ticket_id: id,
-                            updated_at: new Date()
+                            updated_at: new Date(),
+                            inc_number: item.status != "in_stock" ? ticket.inc_number : null
                         }
                     })
 
@@ -505,6 +510,7 @@ export const ticketSvc = {
                                 brand_id: item.brand_id,
                                 model_id: item.model_id,
                                 category_id: item.category_id,
+                                inc_number: item.status != "in_stock" ? ticket.inc_number : null
                             }
                         })
                         continue;
@@ -571,7 +577,8 @@ export const ticketSvc = {
                                 type: item.type,
                                 ticket_id: id,
                                 shop_number: item.status == "spare" || item.status == "replace" ? shop : null,
-                                updated_at: new Date()
+                                updated_at: new Date(),
+                                inc_number: item.status != "in_stock" ? ticket.inc_number : null
                             }
                         })
                     } catch (e) {
@@ -589,7 +596,7 @@ export const ticketSvc = {
                         model_id: item.model_id,
                         engineers_id: ticket.engineer_id,
                         warranty_expiry_date: item.warranty_expire_date ? new Date(item.warranty_expire_date) : null,
-                        inc_number: item.inc_number,
+                        inc_number: ticket.inc_number,
                         status: item.status,
                         type: item.type,
                         created_by: payload.created_by,
@@ -832,7 +839,9 @@ export const ticketSvc = {
                             created_by: payload.created_by,
                             shop_number: ticket.shop.shop_number + '-' + ticket.shop.shop_name,
                             customer_id: ticket.customer_id,
-                            updated_at: new Date()
+                            updated_at: new Date(),
+                            item_type: item.status === "replace" ? "replacement" : "spare",
+                            condition: item.type === "replace" ? "good" : "broken"
                         },
                         include: {
                             brand: true,
@@ -1096,6 +1105,7 @@ export const ticketSvc = {
             data: {
                 deleted_at: new Date(),
                 updated_by: user_id,
+                updated_at: new Date()
             }
         });
         return ticket;
@@ -1567,7 +1577,7 @@ export const ticketSvc = {
         };
     },
 
-    sendAppointmentMail: async (id: number, user_id: number, payload: mailRemark) => {
+    sendAppointmentMail: async (id: number, user_id: number, payload: string) => {
         const user = await db.users.findFirst({ where: { id: user_id } })
         const ticket = await db.tickets.findFirst({
             where: {
@@ -1627,7 +1637,7 @@ export const ticketSvc = {
             <p>Engineer : ${ticket.engineer.name} ${ticket.engineer.lastname}</p>
             <p>Appointment : ${dayjs(ticket.appointment_date + " " + ticket.appointment_time).format('DD/MM/YYYY HH:mm')}</p>
             <br>
-            <p>ช่างนัดหมายสาขาวันที่ ${dayjs(ticket.appointment_date + " " + ticket.appointment_time).format('DD/MM/YYYY HH:mm')} ${payload.remark || "เนื่องจากสาขาสะดวกให้เข้าเวลาดังกล่าว"}</p>
+            <p>ช่างนัดหมายสาขาวันที่ ${dayjs(ticket.appointment_date + " " + ticket.appointment_time).format('DD/MM/YYYY HH:mm')} ${payload || "เนื่องจากสาขาสะดวกให้เข้าเวลาดังกล่าว"}</p>
             ${signature}
             `;
 
