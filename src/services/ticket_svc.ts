@@ -318,7 +318,7 @@ export const ticketSvc = {
                 item_category: payload.item_category,
                 item_model: payload.item_model,
                 item_sn: payload.item_sn,
-                warranty_exp: payload.warranty_exp && payload.warranty_exp != 'Invalid Date' ? new Date(payload.warranty_exp) : null,
+                warranty_exp: payload.warranty_exp ? new Date(payload.warranty_exp) : null,
                 resolve_status: payload.resolve_status,
                 resolve_remark: payload.resolve_remark && payload.resolve_remark != 'null' ? payload.resolve_remark.replace(/\n\s*\n/g, '\n') : "",
                 action: payload.action,
@@ -334,6 +334,8 @@ export const ticketSvc = {
         if (payload.store_item) {
             let storeItem = JSON.parse(payload.store_item);
             for (const item of storeItem) {
+                console.log(item.warranty_expire_date);
+                
                 let item_sn = item.serial_number;
                 let checkExistStore = await db.store_items.findFirst({
                     where: {
