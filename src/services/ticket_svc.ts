@@ -259,9 +259,9 @@ export const ticketSvc = {
             message += `Store (สาขา): ${ticketData?.shop.shop_number}-${ticketData?.shop.shop_name}\n\n`
             message += `Description (รายละเอียด):\n${ticketData?.description}\n\n`
             message += `Assigned To (ผู้เปีดงานให้กับ): ${ticketData?.assigned_to}\n\n`
-            message += `Incident open date/time (วันและเวลาที่เปิดงาน): ${dayjs(ticketData?.open_date).format('DD/MM/YYYY')} ${ticketData?.open_time}\n\n`
+            message += `Incident open date/time (วันและเวลาที่เปิดงาน): ${dayjs(ticketData?.open_date).format('DD-MM-YYYY')} ${ticketData?.open_time}\n\n`
             message += `Estimated Resolving Time (วันและเวลาแก้ไขโดยประมาณ): ${ticketData?.sla_priority_level} ${ticketData?.prioritie?.priority_group.group_name} ${ticketData?.prioritie?.time_sec ? SecToTimeString(parseInt(ticketData?.prioritie?.time_sec)) : ''}\n\n`
-            message += `DueBy Date (วันและเวลาครบกําหนด): ${dayjs(ticketData?.due_by).format('DD/MM/YYYY HH:mm')}\n\n`
+            message += `DueBy Date (วันและเวลาครบกําหนด): ${dayjs(ticketData?.due_by).format('DD-MM-YYYY HH:mm')}\n\n`
 
             const line_groups = customer.line_open.split(',');
             for (const group of line_groups) {
@@ -1289,9 +1289,9 @@ export const ticketSvc = {
             '<tr><th style="vertical-align:top">Equipment</th><td style="vertical-align:top">' + ticket.item_category + '</td></tr>' +
             '<tr><th style="vertical-align:top">Investigation</th><td style="vertical-align:top">' + ticket.investigation + '</td></tr>' +
             '<tr><th style="vertical-align:top">Solution</th><td style="vertical-align:top">' + ticket.solution + '<br>' + deviceStr + replaceDeviceStr + '</td></tr>' +
-            '<tr><th style="vertical-align:top">Appointment Time</th><td style="vertical-align:top">' + dayjs(ticket.appointment_date + " " + ticket.appointment_time).format('DD/MM/YYYY HH:mm') + '</td></tr>' +
-            '<tr><th style="vertical-align:top">Time Start</th><td style="vertical-align:top">' + dayjs(ticket.time_in).format('DD/MM/YYYY HH:mm') + '</td></tr>' +
-            '<tr><th style="vertical-align:top">Time Finish</th><td style="vertical-align:top">' + dayjs(ticket.time_out).format('DD/MM/YYYY HH:mm') + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Appointment Time</th><td style="vertical-align:top">' + dayjs(ticket.appointment_date + " " + ticket.appointment_time).format('DD-MM-YYYY HH:mm') + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Time Start</th><td style="vertical-align:top">' + dayjs(ticket.time_in).format('DD-MM-YYYY HH:mm') + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Time Finish</th><td style="vertical-align:top">' + dayjs(ticket.time_out).format('DD-MM-YYYY HH:mm') + '</td></tr>' +
             '</table>' + '<br><br>' + signature;
         let attachments: any = [];
         for (const image of ticket.ticket_image) {
@@ -1493,9 +1493,9 @@ export const ticketSvc = {
             '<tr><th style="vertical-align:top">Equipment</th><td style="vertical-align:top">' + ticket.return_ticket?.item_category + '</td></tr>' +
             '<tr><th style="vertical-align:top">Investigation</th><td style="vertical-align:top">' + ticket.return_ticket?.investigation + '</td></tr>' +
             '<tr><th style="vertical-align:top">Solution</th><td style="vertical-align:top">' + ticket.return_ticket?.solution + '<br>' + deviceStr + replaceDeviceStr + '</td></tr>' +
-            '<tr><th style="vertical-align:top">Appointment Time</th><td style="vertical-align:top">' + dayjs(ticket.appointment_date + " " + ticket.appointment_time).format('DD/MM/YYYY HH:mm') + '</td></tr>' +
-            '<tr><th style="vertical-align:top">Time Start</th><td style="vertical-align:top">' + dayjs(ticket.return_ticket?.time_in).format('DD/MM/YYYY HH:mm') + '</td></tr>' +
-            '<tr><th style="vertical-align:top">Time Finish</th><td style="vertical-align:top">' + dayjs(ticket.return_ticket?.time_out).format('DD/MM/YYYY HH:mm') + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Appointment Time</th><td style="vertical-align:top">' + dayjs(ticket.appointment_date + " " + ticket.appointment_time).format('DD-MM-YYYY HH:mm') + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Time Start</th><td style="vertical-align:top">' + dayjs(ticket.return_ticket?.time_in).format('DD-MM-YYYY HH:mm') + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Time Finish</th><td style="vertical-align:top">' + dayjs(ticket.return_ticket?.time_out).format('DD-MM-YYYY HH:mm') + '</td></tr>' +
             '</table>' + '<br><br>' + signature;
         let attachments: any = [];
         for (const image of ticket.return_ticket_images) {
@@ -1638,9 +1638,9 @@ export const ticketSvc = {
             <p>Contact Phone : ${ticket.contact_tel}</p>
             <p>Priority : ${ticket.sla_priority_level} ${SecToTimeString(parseInt(ticket.prioritie?.time_sec ? ticket.prioritie.time_sec : "0"))}</p>
             <p>Engineer : ${ticket.engineer.name} ${ticket.engineer.lastname}</p>
-            <p>Appointment : ${dayjs(ticket.appointment_date + " " + ticket.appointment_time).format('DD/MM/YYYY HH:mm')}</p>
+            <p>Appointment : ${dayjs(ticket.appointment_date + " " + ticket.appointment_time).format('DD-MM-YYYY HH:mm')}</p>
             <br>
-            <p>ช่างนัดหมายสาขาวันที่ ${dayjs(ticket.appointment_date + " " + ticket.appointment_time).format('DD/MM/YYYY HH:mm')} ${payload || "เนื่องจากสาขาสะดวกให้เข้าเวลาดังกล่าว"}</p>
+            <p>ช่างนัดหมายสาขาวันที่ ${dayjs(ticket.appointment_date + " " + ticket.appointment_time).format('DD-MM-YYYY HH:mm')} ${payload || "เนื่องจากสาขาสะดวกให้เข้าเวลาดังกล่าว"}</p>
             ${signature}
             `;
 
@@ -1697,8 +1697,8 @@ export const ticketSvc = {
             message += `Contact Phone : ${ticket.contact_tel}\n`
             message += `Priority : ${ticket.sla_priority_level} (${ticket.prioritie?.time_sec ? SecToTimeString(parseInt(ticket.prioritie.time_sec)) : ""}.)\n`
             message += `Engineer : ${ticket.engineer.name} ${ticket.engineer.lastname}\n`
-            message += `Appointment : ${dayjs(ticket.appointment_date).format('DD/MM/YYYY')} ${ticket.appointment_time}\n`
-            message += `ช่างนัดหมายสาขาวันที่ : ${dayjs(ticket.appointment_date).format('DD/MM/YYYY')} ${ticket.appointment_time}\n`
+            message += `Appointment : ${dayjs(ticket.appointment_date).format('DD-MM-YYYY')} ${ticket.appointment_time}\n`
+            message += `ช่างนัดหมายสาขาวันที่ : ${dayjs(ticket.appointment_date).format('DD-MM-YYYY')} ${ticket.appointment_time}\n`
 
             const line_groups = ticket.customer.line_appointment;
             for (const group of line_groups.split(',')) {
@@ -1802,7 +1802,7 @@ export const ticketSvc = {
     
             <p class="MsoNormal" style="margin:0cm;font-size:11pt;font-family:Calibri,sans-serif">
                 <b><span style="font-size:12pt;font-family:Tahoma,sans-serif">Incident open date/time (<span lang="TH">วันและเวลาที่เปิดงาน):&nbsp;</span></span></b>
-                <span style="font-size:12pt;font-family:Tahoma,sans-serif">${dayjs(ticket.open_date).format("DD/MM/YYYY")} ${ticket.open_time}</span>
+                <span style="font-size:12pt;font-family:Tahoma,sans-serif">${dayjs(ticket.open_date).format("DD-MM-YYYY")} ${ticket.open_time}</span>
             </p>
     
             <p class="MsoNormal" style="margin:0cm;font-size:11pt;font-family:Calibri,sans-serif">
@@ -1820,7 +1820,7 @@ export const ticketSvc = {
     
             <p class="MsoNormal" style="margin:0cm;font-size:11pt;font-family:Calibri,sans-serif">
                 <b><span style="font-size:12pt;font-family:Tahoma,sans-serif">DueBy Date (<span lang="TH">วันและเวลาที่ครบกำหนด):&nbsp;</span></span></b>
-                <span style="font-family:Tahoma,sans-serif;font-size:16px">${dayjs(ticket.due_by).format("DD/MM/YYYY hh:mm")}</span>
+                <span style="font-family:Tahoma,sans-serif;font-size:16px">${dayjs(ticket.due_by).format("DD-MM-YYYY HH:mm")}</span>
             </p>
     
             <p class="MsoNormal" style="margin:0cm;font-size:11pt;font-family:Calibri,sans-serif">
