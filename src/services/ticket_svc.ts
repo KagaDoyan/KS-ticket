@@ -736,7 +736,7 @@ export const ticketSvc = {
                                 id: checkExistReturn.id,
                             },
                             data: {
-                                status: item.status
+                                status: item.status,
                             }
                         });
 
@@ -795,7 +795,8 @@ export const ticketSvc = {
                     //     });
                     //     continue;
                     // }
-
+                    console.log(item);
+                    
                     await prisma.return_items.create({
                         data: {
                             ticket_id: id,
@@ -803,7 +804,7 @@ export const ticketSvc = {
                             category: selectItem.category.name,
                             model: selectItem.model.name,
                             serial_number: item.serial_number,
-                            warranty_exp: item.warranty_expiry_date || null,
+                            warranty_exp: item.warranty_expiry_date ? new Date(item.warranty_expiry_date) : null,
                             status: item.status,
                             created_by: payload.created_by,
                             engineer_id: ticket.engineer_id,
@@ -834,7 +835,7 @@ export const ticketSvc = {
                             brand_id: item.brand_id,
                             model_id: item.model_id,
                             engineers_id: ticket.engineer_id,
-                            warranty_expiry_date: item.warranty_expire_date ? new Date(item.warranty_expire_date) : null,
+                            warranty_expiry_date: item.warranty_expiry_date ? new Date(item.warranty_expiry_date) : null,
                             inc_number: item.inc_number,
                             status: item.status,
                             type: item.type,
@@ -843,7 +844,7 @@ export const ticketSvc = {
                             customer_id: ticket.customer_id,
                             updated_at: new Date(),
                             item_type: item.status === "replace" ? "replacement" : "spare",
-                            condition: item.type === "replace" ? "good" : "broken"
+                            condition: item.status === "replace" || item.status === "return" ? "good" : "broken"
                         },
                         include: {
                             brand: true,
