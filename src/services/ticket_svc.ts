@@ -1290,8 +1290,8 @@ export const ticketSvc = {
             '<tr><th style="vertical-align:top">Investigation</th><td style="vertical-align:top">' + ticket.investigation + '</td></tr>' +
             '<tr><th style="vertical-align:top">Solution</th><td style="vertical-align:top">' + ticket.solution + '<br>' + deviceStr + replaceDeviceStr + '</td></tr>' +
             '<tr><th style="vertical-align:top">Appointment Time</th><td style="vertical-align:top">' + dayjs(ticket.appointment_date + " " + ticket.appointment_time).format('DD-MM-YYYY HH:mm') + '</td></tr>' +
-            '<tr><th style="vertical-align:top">Time Start</th><td style="vertical-align:top">' + dayjs(ticket.time_in).format('DD-MM-YYYY HH:mm') + '</td></tr>' +
-            '<tr><th style="vertical-align:top">Time Finish</th><td style="vertical-align:top">' + dayjs(ticket.time_out).format('DD-MM-YYYY HH:mm') + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Time Start</th><td style="vertical-align:top">' + dayjs(ticket.time_in,"YYYY-MM-DD HH:mm").format('DD-MM-YYYY HH:mm') + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Time Finish</th><td style="vertical-align:top">' + dayjs(ticket.time_out,"YYYY-MM-DD HH:mm").format('DD-MM-YYYY HH:mm') + '</td></tr>' +
             '</table>' + '<br><br>' + signature;
         let attachments: any = [];
         for (const image of ticket.ticket_image) {
