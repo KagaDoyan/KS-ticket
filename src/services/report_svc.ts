@@ -346,9 +346,11 @@ export const reportSvc = {
             where: {
                 deleted_at: null,
                 status: "repair",
-                updated_at: {
-                    gte: new Date(from),
-                    lte: new Date(to)
+                ticket: {
+                    appointment_date: {
+                        gte: new Date(from).toISOString(),
+                        lte: new Date(to).toISOString()
+                    }
                 }
             },
             include: {
@@ -376,7 +378,7 @@ export const reportSvc = {
             if (!brokenItem) continue;
             var itemOnly: broken = {
                 inc_no: item.ticket?.inc_number!,
-                ticket_date: item.ticket?.appointment_date!,
+                ticket_date: dayjs(item.ticket?.appointment_date,"YYYY-MM-DD").format("DD/MM/YYYY"),
                 ticket_time: item.ticket?.appointment_time!,
                 store_id: item.ticket?.shop.shop_number!,
                 store_name: item.ticket?.shop.shop_name!,
