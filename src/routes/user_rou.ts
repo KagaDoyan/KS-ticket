@@ -37,18 +37,19 @@ export function UserRoute(app: any) {
                 fullname: t.String(),
                 password: t.String(),
                 role: t.String(),
-                customer_id: t.Optional(t.Numeric())
+                customer_id: t.Optional(t.Nullable(t.Numeric()))
             }),
             detail: {
                 tags: ['User']
             }
         })
         .put("/:id", UserCtrl.updateUser, {
+            beforeHandle: middleware.IsAuth,
             body: t.Object({
                 email: t.String(),
                 fullname: t.String(),
                 role: t.String(),
-                customer_id: t.Optional(t.Numeric())
+                customer_id: t.Optional(t.Nullable(t.Numeric()))
             }),
             params: t.Object({
                 id: t.Numeric()
