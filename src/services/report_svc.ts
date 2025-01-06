@@ -247,10 +247,10 @@ export const reportSvc = {
                 timeOut: ticket.time_out,
                 created_by: ticket.created_user.fullname,
                 return_investigation: ticket.return_ticket?.investigation!,
-                return_engineer: ticket.return_ticket?.engineer?.name! + " " + ticket.return_ticket?.engineer?.lastname,
-                return_solution: ticket.return_ticket?.solution!,
-                return_time_in: dayjs(ticket.return_ticket?.time_in).format("DD/MM/YYYY HH:mm")!,
-                return_time_out: dayjs(ticket.return_ticket?.time_out).format("DD/MM/YYYY HH:mm")!
+                return_engineer: ticket.return_ticket?.engineer?.name ? ticket.return_ticket?.engineer?.name! + " " + ticket.return_ticket?.engineer?.lastname : "",
+                return_solution: ticket.return_ticket?.solution ? ticket.return_ticket?.solution : "",
+                return_time_in: ticket.return_ticket?.time_in ? dayjs(ticket.return_ticket?.time_in).format("DD/MM/YYYY HH:mm") : "",
+                return_time_out: ticket.return_ticket?.time_out ? dayjs(ticket.return_ticket?.time_out).format("DD/MM/YYYY HH:mm") : ""
             }
             for (var i = 0; i <= 4; i++) {
                 ticketOnly["storeDeviceBrand" + (i + 1)] = ticket.store_item[i]?.brand ?? "";
