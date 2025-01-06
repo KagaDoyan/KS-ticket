@@ -341,18 +341,24 @@ export const reportSvc = {
         }
     },
 
-    reportStoreBrokenPart: async (from: string, to: string) => {
-        let storeItem = await db.items.findMany({
-            where: {
-                deleted_at: null,
-                status: "repair",
-                ticket: {
-                    appointment_date: {
-                        gte: new Date(from).toISOString(),
-                        lte: new Date(to).toISOString()
-                    }
+    reportStoreBrokenPart: async (from: string, to: string, brand_name: string) => {
+        const whereCondition: Prisma.itemsWhereInput = {
+            deleted_at: null,
+            status: "repair",
+            ticket: {
+                appointment_date: {
+                    gte: new Date(from).toISOString(),
+                    lte: new Date(to).toISOString()
                 }
-            },
+            }
+        }
+        if (brand_name) {
+            whereCondition.brand = {
+                name: brand_name
+            }
+        }
+        let storeItem = await db.items.findMany({
+            where: whereCondition,
             include: {
                 ticket: {
                     include: {

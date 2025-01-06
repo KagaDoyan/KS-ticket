@@ -48,6 +48,7 @@ export function UserRoute(app: any) {
                 email: t.String(),
                 fullname: t.String(),
                 role: t.String(),
+                customer_id: t.Optional(t.Numeric())
             }),
             params: t.Object({
                 id: t.Numeric()

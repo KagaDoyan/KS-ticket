@@ -9,7 +9,8 @@ interface userPayload {
     email: string,
     role: string,
     fullname: string,
-    password: string
+    password: string,
+    customer_id?: number
 }
 export const UserSvc = {
     Login: async (ctx: any, payload: userPayload) => {
@@ -39,7 +40,8 @@ export const UserSvc = {
                 fullname: payload.fullname,
                 email: payload.email,
                 password: hashpassword,
-                role: payload.role
+                role: payload.role,
+                customer_id: payload.customer_id
             },
             select: {
                 id: true
@@ -57,6 +59,7 @@ export const UserSvc = {
                 fullname: payload.fullname,
                 email: payload.email,
                 role: payload.role,
+                customer_id: payload.customer_id
             }
         });
         return user
@@ -92,9 +95,9 @@ export const UserSvc = {
             where: whereCondition,
             skip: offset,
             take: limit,
-			orderBy: {
-				id: "desc"
-			}
+            orderBy: {
+                id: "desc"
+            }
         });
 
         return {
@@ -114,6 +117,9 @@ export const UserSvc = {
             },
             where: {
                 id: id
+            },
+            include: {
+                customer: true
             }
         })
         if (!user) {
@@ -152,7 +158,7 @@ export const UserSvc = {
                 deleted_at: null
             }
         })
-        if(!user) return { message: "User not found" }
+        if (!user) return { message: "User not found" }
         let hashpassword = CryptoUtil.encryptData(payload.password);
         await db.users.update({
             where: { id },

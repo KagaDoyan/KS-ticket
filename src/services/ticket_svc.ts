@@ -1164,7 +1164,7 @@ export const ticketSvc = {
             const openTicket = await db.tickets.count({
                 where: {
                     engineer_id: item.id,
-                    ticket_status: { not: 'close' },
+                    ticket_status: { in: ['open', 'pending'] },
                     deleted_at: null
                 }
             })
