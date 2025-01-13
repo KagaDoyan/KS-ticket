@@ -353,8 +353,10 @@ export const reportSvc = {
             }
         }
         if (brand_name) {
-            whereCondition.brand = {
-                name: brand_name
+            whereCondition.customer = {
+                fullname: {
+                    equals: brand_name
+                }
             }
         }
         let storeItem = await db.items.findMany({

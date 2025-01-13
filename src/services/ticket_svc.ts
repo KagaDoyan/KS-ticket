@@ -992,7 +992,11 @@ export const ticketSvc = {
                 id: id
             },
             include: {
-                return_ticket: true,
+                return_ticket: {
+                    include: {
+                        engineer: true
+                    }
+                },
                 shop: {
                     include: {
                         province: true
@@ -1408,6 +1412,9 @@ export const ticketSvc = {
                     }
                 },
                 return_ticket: {
+                    include: {
+                        engineer: true,
+                    },
                     where: {
                         deleted_at: null
                     }
@@ -1489,7 +1496,7 @@ export const ticketSvc = {
             '<h3>Service Detail</h3><br>' +
             '<table style="width:100%;text-align:left;">' +
             '<tr><th style="vertical-align:top">Service Number</th><td style="vertical-align:top">' + ticket.ticket_number + '</td></tr>' +
-            '<tr><th style="vertical-align:top">Engineer</th><td style="vertical-align:top">' + ticket.engineer.name + " " + ticket.engineer.lastname + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Engineer</th><td style="vertical-align:top">' + ticket.return_ticket?.engineer?.name + " " + ticket.return_ticket?.engineer?.lastname + '</td></tr>' +
             '<tr><th style="vertical-align:top">Equipment</th><td style="vertical-align:top">' + ticket.return_ticket?.item_category + '</td></tr>' +
             '<tr><th style="vertical-align:top">Investigation</th><td style="vertical-align:top">' + ticket.return_ticket?.investigation + '</td></tr>' +
             '<tr><th style="vertical-align:top">Solution</th><td style="vertical-align:top">' + ticket.return_ticket?.solution + '<br>' + deviceStr + replaceDeviceStr + '</td></tr>' +
