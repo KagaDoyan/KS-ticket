@@ -44,4 +44,32 @@ export function ReportRoute(app: any) {
                 tags: ['Report']
             }
         })
+        .get("/engineerkpi", ReportCtrl.getReportEngineerKPI, {
+            beforeHandle: middleware.IsAuth,
+            headers: t.Object({
+                authorization: t.String()
+            }),
+            query: t.Object({
+                from: t.String(),
+                to: t.String(),
+                brand_name: t.Optional(t.String()),
+            }),
+            detail: {
+                tags: ['Report']
+            }
+        })
+        .get("/ticketkpi", ReportCtrl.getReportTicketKPI, {
+            beforeHandle: middleware.IsAuth,
+            headers: t.Object({
+                authorization: t.String()
+            }),
+            query: t.Object({
+                from: t.String(),
+                to: t.String(),
+                brand_name: t.Optional(t.String()),
+            }),
+            detail: {
+                tags: ['Report']
+            }
+        })
 }

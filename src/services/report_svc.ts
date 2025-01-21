@@ -132,6 +132,43 @@ interface broken {
     remark: string
 }
 
+interface EngineerKPI {
+    ticket_date: string
+    appointment_date: string
+    time_in: string
+    time_out: string
+    engineer: string
+    node: string
+    ticket_number: string
+    inc_number: string
+    ticket_title: string
+    shop_name: string
+}
+
+interface TicketKPI {
+    ticket_date: string
+    ticket_time: string
+    ticket_number: string
+    inc_number: string
+    ticket_title: string
+    category: string
+    shop_name: string
+    send_appointment: string
+    send_mail: string
+    time_in: string
+    time_out: string
+    kpi_mail_appointment: any
+    kpi_mail_appointment_status: string
+    kpi_appointment: any
+    kpi_appointment_status: string
+    kpi_arrival: any
+    kpi_arrival_status: string
+    kpi_solving_under_90min: any
+    kpi_solving_under_90min_status: string
+    kpi_document_and_close_under_10min: any
+    kpi_document_and_close_under_10min_status: string
+}
+
 export const reportSvc = {
     reportMA: async (from: string, to: string, brand_name: string) => {
         var wharecondition: Prisma.ticketsWhereInput = {
@@ -386,7 +423,7 @@ export const reportSvc = {
             if (!brokenItem) continue;
             var itemOnly: broken = {
                 inc_no: item.ticket?.inc_number!,
-                ticket_date: dayjs(item.ticket?.appointment_date,"YYYY-MM-DD").format("DD/MM/YYYY"),
+                ticket_date: dayjs(item.ticket?.appointment_date, "YYYY-MM-DD").format("DD/MM/YYYY"),
                 ticket_time: item.ticket?.appointment_time!,
                 store_id: item.ticket?.shop.shop_number!,
                 store_name: item.ticket?.shop.shop_name!,
@@ -407,5 +444,175 @@ export const reportSvc = {
         return {
             report: storeReport
         }
+    },
+
+    reportEngineerKPI: async (from: string, to: string, brand_name: string) => {
+        var wharecondition: Prisma.ticketsWhereInput = {
+            open_date: {
+                gte: from,
+                lte: to
+            },
+            deleted_at: null
+        }
+
+        if (brand_name) {
+            wharecondition = {
+                AND: [
+                    wharecondition,
+                    {
+                        customer: {
+                            fullname: {
+                                contains: brand_name
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+        let allTicket = await db.tickets.findMany({
+            where: wharecondition,
+            include: {
+                shop: true,
+                engineer: {
+                    include: {
+                        node: true,
+                    }
+                },
+                customer: true,
+                created_user: true,
+            }
+        });
+        let engineerKPI: EngineerKPI[] = []
+        for (const ticket of allTicket) {
+            var engineerOnly: EngineerKPI = {
+                ticket_date: dayjs(ticket.open_date).format("DD/MM/YYYY"),
+                appointment_date: dayjs(ticket.appointment_date).format("DD/MM/YYYY") + " " + ticket.appointment_time,
+                time_in: dayjs(ticket.time_in).format("DD/MM/YYYY HH:mm:ss"),
+                time_out: dayjs(ticket.time_out).format("DD/MM/YYYY HH:mm:ss"),
+                engineer: ticket.engineer.name + " " + ticket.engineer.lastname,
+                node: ticket.engineer?.node?.name ? ticket.engineer?.node?.name : "",
+                ticket_number: ticket.ticket_number,
+                inc_number: ticket.inc_number,
+                ticket_title: ticket.title,
+                shop_name: ticket.shop.shop_number + " - " + ticket.shop.shop_name,
+            }
+            engineerKPI.push(engineerOnly);
+        }
+        return {
+            report: engineerKPI
+        }
+    },
+
+    reportTicketKPI: async (from: string, to: string, brand_name: string) => {
+        var wharecondition: Prisma.ticketsWhereInput = {
+            open_date: {
+                gte: from,
+                lte: to
+            },
+            deleted_at: null
+        }
+
+        if (brand_name) {
+            wharecondition = {
+                AND: [
+                    wharecondition,
+                    {
+                        customer: {
+                            fullname: {
+                                contains: brand_name
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+
+        let allTicket = await db.tickets.findMany({
+            where: wharecondition,
+            include: {
+                shop: true,
+                engineer: {
+                    include: {
+                        node: true,
+                    }
+                },
+                customer: true,
+                created_user: true,
+            }
+        });
+
+        let ticketKPI: TicketKPI[] = []
+        for (const ticket of allTicket) {
+            var openDate = new Date(ticket.open_date + " " + ticket.open_time);
+            var kpi_mail_appointment: any
+            var kpi_mail_appointment_status: string
+            // kpi kpi_mail_appointment base on send appointment and open date time diff
+            kpi_mail_appointment = ticket.send_appointment ? timeDiffInMinutes(ticket.send_appointment, openDate) : "N/A"
+            kpi_mail_appointment_status = kpi_mail_appointment == "N/A" ? "N/A" : kpi_mail_appointment < 15 ? "PASS" : "FAIL"
+
+            var kpi_appointment: any
+            var kpi_appointment_status: string
+            // kpi kpi_appointment base on appointment date time diff
+            var appointment_date = new Date(ticket.appointment_date + " " + ticket.appointment_time);
+            kpi_appointment = ticket.appointment_date ? timeDiffInMinutes(appointment_date, openDate) : "N/A"
+            kpi_appointment_status = kpi_appointment == "N/A" ? "N/A" : kpi_appointment < ticket.engineer.node?.node_time! ? "PASS" : "FAIL"
+
+            var kpi_arrival: any
+            var kpi_arrival_status: string
+            // kpi kpi_arrival base on arrival date time diff
+            var timeArrival = new Date(ticket.time_in!)
+            
+            kpi_arrival = timeArrival ? timeDiffInMinutes(timeArrival, appointment_date) : "N/A"
+            kpi_arrival_status = kpi_arrival == "N/A" ? "N/A" : timeArrival <= appointment_date ? "PASS" : "FAIL"
+
+            var kpi_solving_under_90min: any
+            var kpi_solving_under_90min_status: string
+            // kpi kpi_solving_under_90min base on time out date time diff
+            var timeOut = new Date(ticket.time_out!)
+            kpi_solving_under_90min = timeOut ? timeDiffInMinutes(timeOut, timeArrival) : "N/A"
+            kpi_solving_under_90min_status = kpi_solving_under_90min == "N/A" ? "N/A" : kpi_solving_under_90min < 90 ? "PASS" : "FAIL"
+
+            var kpi_document_and_close_under_10min
+            var kpi_document_and_close_under_10min_status
+            // kpi kpi_document_and_close_under_10min base on time out date time diff
+            kpi_document_and_close_under_10min = timeOut && ticket.send_close ? timeDiffInMinutes(ticket.send_close, timeOut) : "N/A"
+            kpi_document_and_close_under_10min_status = kpi_document_and_close_under_10min == "N/A" ? "N/A" : kpi_document_and_close_under_10min < 10 ? "PASS" : "FAIL"
+
+            var ticketOnly: TicketKPI = {
+                ticket_date: dayjs(ticket.open_date).format("DD/MM/YYYY"),
+                ticket_time: ticket.open_time,
+                ticket_number: ticket.ticket_number,
+                inc_number: ticket.inc_number,
+                ticket_title: ticket.title,
+                category: ticket.item_category ? ticket.item_category : "",
+                shop_name: ticket.shop.shop_number + " - " + ticket.shop.shop_name,
+                send_appointment: ticket.send_appointment ? dayjs(ticket.send_appointment).format("DD/MM/YYYY HH:mm:ss") : "",
+                send_mail: ticket.send_close ? dayjs(ticket.send_close).format("DD/MM/YYYY HH:mm:ss") : "",
+                time_in: dayjs(ticket.time_in).format("DD/MM/YYYY HH:mm:ss"),
+                time_out: dayjs(ticket.time_out).format("DD/MM/YYYY HH:mm:ss"),
+                kpi_mail_appointment: kpi_mail_appointment,
+                kpi_mail_appointment_status: kpi_mail_appointment_status,
+                kpi_appointment: kpi_appointment,
+                kpi_appointment_status: kpi_appointment_status,
+                kpi_arrival: kpi_arrival,
+                kpi_arrival_status: kpi_arrival_status,
+                kpi_solving_under_90min: kpi_solving_under_90min,
+                kpi_solving_under_90min_status: kpi_solving_under_90min_status,
+                kpi_document_and_close_under_10min: kpi_document_and_close_under_10min,
+                kpi_document_and_close_under_10min_status: kpi_document_and_close_under_10min_status
+            }
+            ticketKPI.push(ticketOnly);
+        }
+        return {
+            report: ticketKPI
+        }
     }
+}
+
+
+function timeDiffInMinutes(date1: Date, date2: Date) {
+    let difference = (date1.valueOf() - date2.valueOf())
+    let diffminute = difference / (1000 * 60)
+
+    return Math.floor(diffminute);
 }

@@ -334,8 +334,7 @@ export const ticketSvc = {
         if (payload.store_item) {
             let storeItem = JSON.parse(payload.store_item);
             for (const item of storeItem) {
-                console.log(item.warranty_expire_date);
-                
+
                 let item_sn = item.serial_number;
                 let checkExistStore = await db.store_items.findFirst({
                     where: {
@@ -688,8 +687,6 @@ export const ticketSvc = {
     },
 
     updateReturnItem: async (id: number, payload: returnItem) => {
-        console.log(payload.engineer_id);
-
         if (payload.items == null || payload.items.length === 0) {
             return { message: "No Return Item list to add" };
         }
@@ -795,8 +792,7 @@ export const ticketSvc = {
                     //     });
                     //     continue;
                     // }
-                    console.log(item);
-                    
+
                     await prisma.return_items.create({
                         data: {
                             ticket_id: id,
@@ -1240,6 +1236,17 @@ export const ticketSvc = {
             }
         });
 
+        //update kpi send email time
+        var send_close = new Date();
+        await db.tickets.update({
+            where: {
+                id: id
+            },
+            data: {
+                send_close: send_close
+            }
+        })
+
         if (!ticket) return { message: "No Ticket Data" }
         const cc = await db.mail_recipient.findMany({
             where: {
@@ -1294,8 +1301,8 @@ export const ticketSvc = {
             '<tr><th style="vertical-align:top">Investigation</th><td style="vertical-align:top">' + ticket.investigation + '</td></tr>' +
             '<tr><th style="vertical-align:top">Solution</th><td style="vertical-align:top">' + ticket.solution + '<br>' + deviceStr + replaceDeviceStr + '</td></tr>' +
             '<tr><th style="vertical-align:top">Appointment Time</th><td style="vertical-align:top">' + dayjs(ticket.appointment_date + " " + ticket.appointment_time).format('DD-MM-YYYY HH:mm') + '</td></tr>' +
-            '<tr><th style="vertical-align:top">Time Start</th><td style="vertical-align:top">' + dayjs(ticket.time_in,"YYYY-MM-DD HH:mm").format('DD-MM-YYYY HH:mm') + '</td></tr>' +
-            '<tr><th style="vertical-align:top">Time Finish</th><td style="vertical-align:top">' + dayjs(ticket.time_out,"YYYY-MM-DD HH:mm").format('DD-MM-YYYY HH:mm') + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Time Start</th><td style="vertical-align:top">' + dayjs(ticket.time_in, "YYYY-MM-DD HH:mm").format('DD-MM-YYYY HH:mm') + '</td></tr>' +
+            '<tr><th style="vertical-align:top">Time Finish</th><td style="vertical-align:top">' + dayjs(ticket.time_out, "YYYY-MM-DD HH:mm").format('DD-MM-YYYY HH:mm') + '</td></tr>' +
             '</table>' + '<br><br>' + signature;
         let attachments: any = [];
         for (const image of ticket.ticket_image) {
@@ -1613,6 +1620,17 @@ export const ticketSvc = {
                 prioritie: true
             }
         });
+
+        //update kpi send email time
+        var send_close = new Date();
+        await db.tickets.update({
+            where: {
+                id: id
+            },
+            data: {
+                send_appointment: send_close
+            }
+        })
 
         if (!ticket) return { message: "No Ticket Data" }
         // Set email content

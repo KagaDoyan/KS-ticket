@@ -35,6 +35,16 @@ export const NodeCtrl = {
     getnodeoption: async (ctx: any) => {
         const data = await NodeSvc.getNodeOption()
         return response.SuccessResponse(ctx, data)
+    },
+
+    getNodeWithActiveEngineer: async (ctx: any) => {
+        const data = await NodeSvc.getNodewithActiveEngineer(ctx.query.date)
+        return response.SuccessResponse(ctx, data)
+    },
+
+    getEngineersTaskCountForNode: async (ctx: any) => {
+        const data = await NodeSvc.getEngineersTaskCountForNode(ctx.params.id, ctx.query.date)
+        return response.SuccessResponse(ctx, data)
     }
 
 }

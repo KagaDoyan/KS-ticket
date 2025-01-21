@@ -126,6 +126,7 @@ model nodes {
   province         provinces[]
   engineers        engineers[]
   node_on_province node_on_province[]
+  node_time        Int?
 }
 
 model node_on_province {
@@ -330,6 +331,8 @@ model tickets {
   return_ticket_images return_ticket_images[]
   prioritie            priorities?            @relation(fields: [priority_id], references: [id])
   updated_at           DateTime?
+  send_appointment     DateTime?
+  send_close           DateTime?
 }
 
 model store_items {

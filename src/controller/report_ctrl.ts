@@ -16,5 +16,15 @@ export const ReportCtrl = {
     getReportStoreBrokenPart: async (ctx: any) => {
         const data = await reportSvc.reportStoreBrokenPart(ctx.query.from, ctx.query.to,ctx.query.brand_name);
         return response.SuccessResponse(ctx, data); 
-    }
+    },
+
+    getReportEngineerKPI: async (ctx: any) => {
+        const data = await reportSvc.reportEngineerKPI(ctx.query.from, ctx.query.to,ctx.query.brand_name);
+        return response.SuccessResponse(ctx, data); 
+    },
+
+    getReportTicketKPI: async (ctx: any) => {
+        const data = await reportSvc.reportTicketKPI(ctx.query.from, ctx.query.to,ctx.query.brand_name);
+        return response.SuccessResponse(ctx, data); 
+    },
 }

@@ -47,6 +47,7 @@ export function NodeRoute(app: any) {
             body: t.Object({
                 name: t.String(),
                 province_id: t.Array(t.Numeric()),
+                node_time: t.Optional(t.Nullable(t.Numeric()))
             }),
             detail: {
                 tags: ['Node']
@@ -60,6 +61,7 @@ export function NodeRoute(app: any) {
             body: t.Object({
                 name: t.String(),
                 province_id: t.Array(t.Numeric()),
+                node_time: t.Optional(t.Nullable(t.Numeric()))
             }),
             params: t.Object({
                 id: t.Numeric()
@@ -75,6 +77,33 @@ export function NodeRoute(app: any) {
             }),
             params: t.Object({
                 id: t.Numeric()
+            }),
+            detail: {
+                tags: ['Node']
+            }
+        })
+        .get("/with-engineer", NodeCtrl.getNodeWithActiveEngineer, {
+            beforeHandle: middleware.IsAuth,
+            headers: t.Object({
+                authorization: t.String()
+            }),
+            query: t.Object({
+                date: t.Optional(t.Nullable(t.String()))
+            }),
+            detail: {
+                tags: ['Node']
+            }
+        })
+        .get("/engineer-count/:id", NodeCtrl.getEngineersTaskCountForNode, {
+            beforeHandle: middleware.IsAuth,
+            headers: t.Object({
+                authorization: t.String()
+            }),
+            params: t.Object({
+                id: t.Numeric()
+            }),
+            query: t.Object({
+                date: t.Optional(t.Nullable(t.String()))
             }),
             detail: {
                 tags: ['Node']
