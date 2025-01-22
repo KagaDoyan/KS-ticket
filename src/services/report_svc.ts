@@ -580,7 +580,7 @@ export const reportSvc = {
             var kpi_arrival_status: string
             // kpi kpi_arrival base on arrival date time diff
             var timeArrival = new Date(ticket.time_in!)
-            
+
             kpi_arrival = timeArrival ? timeDiffInMinutes(timeArrival, appointment_date) : "N/A"
             kpi_arrival_status = kpi_arrival == "N/A" ? "N/A" : timeArrival <= appointment_date ? "PASS" : "FAIL"
 
@@ -609,7 +609,7 @@ export const reportSvc = {
                 send_mail: ticket.send_close ? dayjs(ticket.send_close).format("DD/MM/YYYY HH:mm:ss") : "",
                 time_in: dayjs(ticket.time_in).format("DD/MM/YYYY HH:mm:ss"),
                 time_out: dayjs(ticket.time_out).format("DD/MM/YYYY HH:mm:ss"),
-                sla: ticket.prioritie?.name ? ticket.prioritie.priority_group.group_name + " - " + ticket.prioritie?.name+" - " + SecToTimeString(parseInt(ticket.prioritie?.time_sec ? ticket.prioritie.time_sec : "0")) : "",
+                sla: ticket.prioritie?.name ? ticket.prioritie.priority_group.group_name + " - " + ticket.prioritie?.name + " - " + SecToTimeString(parseInt(ticket.prioritie?.time_sec ? ticket.prioritie.time_sec : "0")) : "",
                 kpi_mail_appointment: kpi_mail_appointment,
                 kpi_mail_appointment_status: kpi_mail_appointment_status,
                 kpi_appointment: kpi_appointment,
