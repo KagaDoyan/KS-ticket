@@ -574,7 +574,7 @@ export const reportSvc = {
             // kpi kpi_appointment base on appointment date time diff
             var appointment_date = new Date(ticket.appointment_date + " " + ticket.appointment_time);
             kpi_appointment = ticket.appointment_date ? timeDiffInMinutes(appointment_date, openDate) : "N/A"
-            kpi_appointment_status = kpi_appointment == "N/A" ? "N/A" : kpi_appointment < nodetime! ? "PASS" : "FAIL"
+            kpi_appointment_status = kpi_appointment == "N/A" ? "N/A" : kpi_appointment <= nodetime! ? "PASS" : "FAIL"
 
             var kpi_arrival: any
             var kpi_arrival_status: string
@@ -582,7 +582,7 @@ export const reportSvc = {
             var timeArrival = new Date(ticket.time_in!)
 
             kpi_arrival = timeArrival ? timeDiffInMinutes(timeArrival, appointment_date) : "N/A"
-            kpi_arrival_status = kpi_arrival == "N/A" ? "N/A" : timeArrival <= appointment_date ? "PASS" : "FAIL"
+            kpi_arrival_status = kpi_arrival == "N/A" ? "N/A" : truncateToMinutes(timeArrival) <= truncateToMinutes(appointment_date) ? "PASS" : "FAIL"
 
             var kpi_solving_under_90min: any
             var kpi_solving_under_90min_status: string
@@ -636,3 +636,5 @@ function timeDiffInMinutes(date1: Date, date2: Date) {
 
     return Math.floor(diffminute);
 }
+
+const truncateToMinutes = (date) => new Date(date.setSeconds(0, 0));
