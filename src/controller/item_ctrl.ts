@@ -4,7 +4,7 @@ import { response } from "./reponse"
 
 export const ItemCtrl = {
     getallItem: async (ctx: any) => {
-        const data = await itemSvc.getAllItem(ctx.query.limit, ctx.query.page, ctx.query.search)
+        const data = await itemSvc.getAllItem(ctx.query.limit, ctx.query.page, ctx.query.search,ctx.query.category,ctx.query.location,ctx.query.condition,ctx.query.type,ctx.query.status)
         return response.SuccessResponse(ctx, data)
     },
 

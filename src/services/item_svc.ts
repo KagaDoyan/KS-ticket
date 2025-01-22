@@ -23,7 +23,7 @@ interface itemPayload {
 }
 
 export const itemSvc = {
-	getAllItem: async (limit: number, page: number, search: string) => {
+	getAllItem: async (limit: number, page: number, search: string, category: number, location: string, condition: string, type: item_types, status: item_status) => {
 		let whereCondition: Prisma.itemsWhereInput = {
 			deleted_at: null
 		}
@@ -44,6 +44,70 @@ export const itemSvc = {
 						{ Remark: { contains: search } },
 						{ condition: { contains: search } },
 					]
+				}
+			]
+		}
+		if (category) {
+			whereCondition.AND = [
+				{
+					category_id: category
+				}
+			]
+		}
+		if (location) {
+			whereCondition.AND = [
+				{
+					OR: [
+						{
+							storage: {
+								name: {
+									contains: location.toString()
+								}
+							}
+						},
+						{
+							shop_number: {
+								contains: location.toString()
+							}
+						},
+						{
+							engineer: {
+								node: {
+									name: {
+										contains: location.toString()
+									}
+								}
+							}
+						},
+						{
+							engineer: {
+								name: {
+									contains: location.toString()
+								}
+							}
+						}
+					]
+				}
+			]
+		}
+		if (condition) {
+			whereCondition.AND = [
+				{
+					condition: condition
+				}
+			]
+		}
+		if (type) {
+			whereCondition.AND = [
+				{
+					item_type: type
+				}
+			]
+		}
+		if (status) {
+			whereCondition.AND = [
+				{
+					status: status
 				}
 			]
 		}

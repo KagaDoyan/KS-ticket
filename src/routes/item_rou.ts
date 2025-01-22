@@ -12,7 +12,12 @@ export function ItemRoute(app: any) {
             query: t.Object({
                 limit: t.Numeric(),
                 page: t.Numeric(),
-                search: t.Optional(t.String())
+                search: t.Optional(t.String()),
+                category: t.Optional(t.Numeric()),
+                location: t.Optional(t.String()),
+                condition: t.Optional(t.String()),
+                type: t.Optional(t.String()),
+                status: t.Optional(t.String()),
             }),
             detail: {
                 tags: ['Item']
