@@ -46,8 +46,10 @@ export function NodeRoute(app: any) {
             }),
             body: t.Object({
                 name: t.String(),
-                province_id: t.Array(t.Numeric()),
-                node_time: t.Optional(t.Nullable(t.Numeric()))
+                provinceData: t.Optional(t.Nullable(t.Array(t.Object({
+                    province_id: t.Numeric(),
+                    node_time: t.Numeric()
+                }))))
             }),
             detail: {
                 tags: ['Node']
@@ -60,8 +62,10 @@ export function NodeRoute(app: any) {
             }),
             body: t.Object({
                 name: t.String(),
-                province_id: t.Array(t.Numeric()),
-                node_time: t.Optional(t.Nullable(t.Numeric()))
+                provinceData: t.Optional(t.Nullable(t.Array(t.Object({
+                    province_id: t.Numeric(),
+                    node_time: t.Numeric()
+                })))),
             }),
             params: t.Object({
                 id: t.Numeric()

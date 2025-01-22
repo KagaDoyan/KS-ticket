@@ -157,6 +157,7 @@ interface TicketKPI {
     send_mail: string
     time_in: string
     time_out: string
+    sla: string
     kpi_mail_appointment: any
     kpi_mail_appointment_status: string
     kpi_appointment: any
@@ -530,10 +531,27 @@ export const reportSvc = {
         let allTicket = await db.tickets.findMany({
             where: wharecondition,
             include: {
-                shop: true,
+                prioritie: {
+                    include: {
+                        priority_group: true
+                    }
+                },
+                shop: {
+                    include: {
+                        province: true
+                    }
+                },
                 engineer: {
                     include: {
-                        node: true,
+                        node: {
+                            include: {
+                                node_on_province: {
+                                    include: {
+                                        provinces: true
+                                    }
+                                }
+                            }
+                        },
                     }
                 },
                 customer: true,
@@ -543,6 +561,7 @@ export const reportSvc = {
 
         let ticketKPI: TicketKPI[] = []
         for (const ticket of allTicket) {
+            var nodetime = ticket.engineer?.node?.node_on_province?.find((item) => item.province_id == ticket.shop?.province?.id)?.node_time
             var openDate = new Date(ticket.open_date + " " + ticket.open_time);
             var kpi_mail_appointment: any
             var kpi_mail_appointment_status: string
@@ -555,7 +574,7 @@ export const reportSvc = {
             // kpi kpi_appointment base on appointment date time diff
             var appointment_date = new Date(ticket.appointment_date + " " + ticket.appointment_time);
             kpi_appointment = ticket.appointment_date ? timeDiffInMinutes(appointment_date, openDate) : "N/A"
-            kpi_appointment_status = kpi_appointment == "N/A" ? "N/A" : kpi_appointment < ticket.engineer.node?.node_time! ? "PASS" : "FAIL"
+            kpi_appointment_status = kpi_appointment == "N/A" ? "N/A" : kpi_appointment < nodetime! ? "PASS" : "FAIL"
 
             var kpi_arrival: any
             var kpi_arrival_status: string
@@ -590,6 +609,7 @@ export const reportSvc = {
                 send_mail: ticket.send_close ? dayjs(ticket.send_close).format("DD/MM/YYYY HH:mm:ss") : "",
                 time_in: dayjs(ticket.time_in).format("DD/MM/YYYY HH:mm:ss"),
                 time_out: dayjs(ticket.time_out).format("DD/MM/YYYY HH:mm:ss"),
+                sla: ticket.prioritie?.name ? ticket.prioritie.priority_group.group_name + " - " + ticket.prioritie?.name+" - " + SecToTimeString(parseInt(ticket.prioritie?.time_sec ? ticket.prioritie.time_sec : "0")) : "",
                 kpi_mail_appointment: kpi_mail_appointment,
                 kpi_mail_appointment_status: kpi_mail_appointment_status,
                 kpi_appointment: kpi_appointment,

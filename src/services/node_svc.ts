@@ -4,10 +4,9 @@ import dayjs from "dayjs"
 
 interface nodePayload {
     id?: number,
-    name: string,
-    province: number[],
-    created_by: number,
-    node_time: number
+    name: string;
+    created_by: number;
+    provinceData: { province_id: number; node_time: number }[];
 }
 
 export const NodeSvc = {
@@ -35,7 +34,11 @@ export const NodeSvc = {
                 id: "desc"
             },
             include: {
-                province: true
+                node_on_province: {
+                    include: {
+                        provinces: true
+                    }
+                }
             }
         })
         return {
@@ -46,35 +49,99 @@ export const NodeSvc = {
             data: nodes
         }
     },
+    createNodeWithProvinces: async (data: nodePayload) => {
+        const { name, created_by, provinceData } = data;
 
-    createNode: async (payload: nodePayload) => {
-        const node = await db.nodes.create({
-            data: {
-                name: payload.name,
-                node_time: payload.node_time,
-                province: {
-                    connect: payload.province.map(id => ({ id }))
+        try {
+            const node = await db.nodes.create({
+                data: {
+                    name,
+                    created_by,
+                    node_on_province: {
+                        create: provinceData.map((item) => ({
+                            province_id: item.province_id,
+                            node_time: item.node_time,
+                        })),
+                    },
                 },
-                created_by: payload.created_by
-            }
-        })
-        return node
+            });
+
+            console.log('Node created successfully:', node);
+            return node;
+        } catch (error) {
+            console.error('Error creating node:', error);
+            throw error;
+        }
     },
 
     updateNode: async (id: number, payload: nodePayload) => {
-        const node = await db.nodes.update({
-            where: {
-                id: id
-            },
-            data: {
-                name: payload.name,
-                node_time: payload.node_time,
-                province: {
-                    set: payload.province.map(id => ({ id }))
+        try {
+            // Step 1: Update the `nodes` table
+            const node = await db.nodes.update({
+                where: { id },
+                data: {
+                    name: payload.name,
+                    created_by: payload.created_by,
                 },
+            });
+
+            // Step 2: Handle `node_on_province` updates
+            const currentProvinces = await db.node_on_province.findMany({
+                where: { node_id: id },
+                select: { province_id: true },
+            });
+
+            const currentProvinceIds = currentProvinces.map((p) => p.province_id);
+
+            // Identify provinces to create, update, and delete
+            const provincesToCreate = payload.provinceData.filter((p) => !currentProvinceIds.includes(p.province_id));
+            const provincesToUpdate = payload.provinceData.filter((p) => currentProvinceIds.includes(p.province_id));
+            const provincesToDelete = currentProvinces.filter((p) => !payload.provinceData.some((newP) => newP.province_id === p.province_id));
+
+            // Step 2a: Create new `node_on_province` entries
+            for (const province of provincesToCreate) {
+                await db.node_on_province.create({
+                    data: {
+                        node_id: id,
+                        province_id: province.province_id,
+                        node_time: province.node_time,
+                    },
+                });
             }
-        })
-        return node
+
+            // Step 2b: Update existing `node_on_province` entries
+            for (const province of provincesToUpdate) {
+                await db.node_on_province.update({
+                    where: {
+                        province_id_node_id: {
+                            node_id: id,
+                            province_id: province.province_id,
+                        },
+                    },
+                    data: {
+                        node_time: province.node_time,
+                    },
+                });
+            }
+
+            // Step 2c: Delete `node_on_province` entries that are not in the provided data
+            for (const province of provincesToDelete) {
+                await db.node_on_province.delete({
+                    where: {
+                        province_id_node_id: {
+                            node_id: id,
+                            province_id: province.province_id,
+                        },
+                    },
+                });
+            }
+
+            console.log('Node and node_on_province updated successfully');
+            return node;
+        } catch (error) {
+            console.error('Error updating node and node_on_province:', error);
+            throw error;
+        }
     },
 
     softDeleteNode: async (id: number) => {
@@ -95,7 +162,11 @@ export const NodeSvc = {
                 id: id
             },
             include: {
-                province: true
+                node_on_province: {
+                    include: {
+                        provinces: true
+                    }
+                }
             }
         })
         return node
@@ -118,12 +189,15 @@ export const NodeSvc = {
         try {
             const today = date ? new Date(date) : new Date();
             const todayDate = today.toISOString().split("T")[0];
-    
+
             const nodes = await db.nodes.findMany({
                 select: {
                     id: true,
                     name: true,
                     engineers: {
+                        where: {
+                            deleted_at: null
+                        },
                         select: {
                             id: true,
                             name: true, // Include engineer name
@@ -146,11 +220,11 @@ export const NodeSvc = {
                     },
                 },
             });
-    
+
             const nodeSummary = nodes.map((node) => {
                 const totalEngineers = node.engineers.length;
                 const uniqueWorkingEngineers = new Set<number>();
-    
+
                 // Initialize hourly distribution
                 const hourlyDistribution = Array.from({ length: 24 }, (_, hour) => ({
                     time: `${hour.toString().padStart(2, "0")}:00`,
@@ -159,36 +233,36 @@ export const NodeSvc = {
                     workingEngineers: new Set<number>(),
                     ticketDetails: [] as any[], // Array to store ticket_number and engineer_name
                 }));
-    
+
                 // Process tickets
                 node.engineers.forEach((engineer) => {
                     engineer.tickets.forEach((ticket) => {
                         const openDateTime = new Date(`${ticket.open_date}T${ticket.open_time}`);
                         const openHour = openDateTime.getHours();
-    
+
                         // Update hourly distribution
                         if (!hourlyDistribution[openHour].workingEngineers.has(engineer.id)) {
                             hourlyDistribution[openHour].workingEngineers.add(engineer.id);
                             hourlyDistribution[openHour].working++;
                             hourlyDistribution[openHour].available--;
                         }
-    
+
                         // Add ticket details
                         hourlyDistribution[openHour].ticketDetails.push({
                             ticket_number: ticket.ticket_number,
                             inc_number: ticket.inc_number,
                             engineer_name: engineer.name + " " + engineer.lastname,
                         });
-    
+
                         // Track unique engineers for the day
                         uniqueWorkingEngineers.add(engineer.id);
                     });
                 });
-    
+
                 // Calculate totals
                 const totalUniqueWorkingEngineers = uniqueWorkingEngineers.size;
                 const totalAvailable = totalEngineers - totalUniqueWorkingEngineers;
-    
+
                 return {
                     date: dayjs(todayDate).format("DD/MM/YYYY"),
                     nodeId: node.id,
@@ -204,7 +278,7 @@ export const NodeSvc = {
                     })),
                 };
             });
-    
+
             return nodeSummary;
         } catch (error) {
             console.error("Error fetching node data:", error);
@@ -232,6 +306,9 @@ export const NodeSvc = {
                 id: true,
                 name: true,
                 engineers: {
+                    where: {
+                        deleted_at: null
+                    },
                     select: {
                         id: true,
                         name: true,

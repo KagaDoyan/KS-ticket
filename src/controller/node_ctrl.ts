@@ -6,12 +6,12 @@ export const NodeCtrl = {
     createnode: async (ctx: any) => {
         const userID = await middleware.GetUserFromToken(ctx)
         ctx.body.created_by = userID
-        const data = await NodeSvc.createNode({ ...ctx.body, province: ctx.body.province_id })
+        const data = await NodeSvc.createNodeWithProvinces({ ...ctx.body })
         return response.SuccessResponse(ctx, data)
     },
 
     updatenode: async (ctx: any) => {
-        const data = await NodeSvc.updateNode(ctx.params.id, {...ctx.body, province: ctx.body.province_id })
+        const data = await NodeSvc.updateNode(ctx.params.id, { ...ctx.body })
         return response.SuccessResponse(ctx, data)
     },
 
