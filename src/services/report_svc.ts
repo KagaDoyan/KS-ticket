@@ -601,7 +601,10 @@ export const reportSvc = {
             var kpi_sla: any
             var kpi_sla_status: string
             // koi koi_sla base on time out date time diff
-            var closedate = new Date(ticket.close_date + " " + ticket.close_time);
+            var closedate: Date | null = new Date(ticket.close_date + " " + ticket.close_time);
+            if (ticket.ticket_status != "close") {
+                closedate = null
+            }
             var DueBy = new Date(ticket.due_by);
             kpi_sla = closedate ? timeDiffInMinutes(closedate, DueBy) : "N/A"
             kpi_sla_status = kpi_sla == "N/A" ? "N/A" : truncateToMinutes(closedate) <= truncateToMinutes(DueBy) ? "PASS" : "FAIL"
