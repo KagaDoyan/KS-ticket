@@ -331,8 +331,8 @@ model tickets {
   return_ticket_images return_ticket_images[]
   prioritie            priorities?            @relation(fields: [priority_id], references: [id])
   updated_at           DateTime?
-  send_appointment     DateTime?
-  send_close           DateTime?
+  send_appointment     String?
+  send_close           String?
 }
 
 model store_items {

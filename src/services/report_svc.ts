@@ -564,10 +564,12 @@ export const reportSvc = {
         for (const ticket of allTicket) {
             var nodetime = ticket.engineer?.node?.node_on_province?.find((item) => item.province_id == ticket.shop?.province?.id)?.node_time
             var openDate = new Date(ticket.open_date + " " + ticket.open_time);
+            var send_close = new Date(ticket.send_close!);
+            var send_appointment = new Date(ticket.send_appointment!)
             var kpi_mail_appointment: any
             var kpi_mail_appointment_status: string
             // kpi kpi_mail_appointment base on send appointment and open date time diff
-            kpi_mail_appointment = ticket.send_appointment ? timeDiffInMinutes(ticket.send_appointment, openDate) : "N/A"
+            kpi_mail_appointment = ticket.send_appointment ? timeDiffInMinutes(send_appointment, openDate) : "N/A"
             kpi_mail_appointment_status = kpi_mail_appointment == "N/A" ? "N/A" : kpi_mail_appointment < 15 ? "PASS" : "FAIL"
 
             var kpi_appointment: any
@@ -595,7 +597,7 @@ export const reportSvc = {
             var kpi_document_and_close_under_10min
             var kpi_document_and_close_under_10min_status
             // kpi kpi_document_and_close_under_10min base on time out date time diff
-            kpi_document_and_close_under_10min = timeOut && ticket.send_close ? timeDiffInMinutes(ticket.send_close, timeOut) : "N/A"
+            kpi_document_and_close_under_10min = timeOut && ticket.send_close ? timeDiffInMinutes(send_close, timeOut) : "N/A"
             kpi_document_and_close_under_10min_status = kpi_document_and_close_under_10min == "N/A" ? "N/A" : kpi_document_and_close_under_10min < 10 ? "PASS" : "FAIL"
 
             var kpi_sla: any
