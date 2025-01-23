@@ -157,7 +157,8 @@ interface TicketKPI {
     send_mail: string
     time_in: string
     time_out: string
-    sla: string
+    kpi_sla: string
+    kpi_sla_status: string
     kpi_mail_appointment: any
     kpi_mail_appointment_status: string
     kpi_appointment: any
@@ -597,6 +598,14 @@ export const reportSvc = {
             kpi_document_and_close_under_10min = timeOut && ticket.send_close ? timeDiffInMinutes(ticket.send_close, timeOut) : "N/A"
             kpi_document_and_close_under_10min_status = kpi_document_and_close_under_10min == "N/A" ? "N/A" : kpi_document_and_close_under_10min < 10 ? "PASS" : "FAIL"
 
+            var kpi_sla: any
+            var kpi_sla_status: string
+            // koi koi_sla base on time out date time diff
+            var closedate = new Date(ticket.close_date + " " + ticket.close_time);
+            var DueBy = new Date(ticket.due_by);
+            kpi_sla = closedate ? timeDiffInMinutes(closedate, DueBy) : "N/A"
+            kpi_sla_status = kpi_sla == "N/A" ? "N/A" : truncateToMinutes(closedate) <= truncateToMinutes(DueBy) ? "PASS" : "FAIL"
+
             var ticketOnly: TicketKPI = {
                 ticket_date: dayjs(ticket.open_date).format("DD/MM/YYYY"),
                 ticket_time: ticket.open_time,
@@ -609,7 +618,8 @@ export const reportSvc = {
                 send_mail: ticket.send_close ? dayjs(ticket.send_close).format("DD/MM/YYYY HH:mm:ss") : "",
                 time_in: dayjs(ticket.time_in).format("DD/MM/YYYY HH:mm:ss"),
                 time_out: dayjs(ticket.time_out).format("DD/MM/YYYY HH:mm:ss"),
-                sla: ticket.prioritie?.name ? ticket.prioritie.priority_group.group_name + " - " + ticket.prioritie?.name + " - " + SecToTimeString(parseInt(ticket.prioritie?.time_sec ? ticket.prioritie.time_sec : "0")) : "",
+                kpi_sla: kpi_sla,
+                kpi_sla_status: kpi_sla_status,
                 kpi_mail_appointment: kpi_mail_appointment,
                 kpi_mail_appointment_status: kpi_mail_appointment_status,
                 kpi_appointment: kpi_appointment,
