@@ -1237,7 +1237,7 @@ export const ticketSvc = {
         });
 
         //update kpi send email time
-        var send_close = new Date();
+        var send_close = new Date().toLocaleString("en-US", { timeZone: "Asia/Bangkok" });
         await db.tickets.update({
             where: {
                 id: id
@@ -1621,8 +1621,7 @@ export const ticketSvc = {
             }
         });
 
-        //update kpi send email time
-        var send_close = new Date();
+        var send_close = new Date().toLocaleString("en-US", { timeZone: "Asia/Bangkok" });
         await db.tickets.update({
             where: {
                 id: id
