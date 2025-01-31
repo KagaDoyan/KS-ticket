@@ -12,7 +12,8 @@ export function TeamRou(app: any) {
             query: t.Object({
                 limit: t.Numeric(),
                 page: t.Numeric(),
-                search: t.Optional(t.String())
+                search: t.Optional(t.String()),
+                customer_id: t.Optional(t.String())
             }),
             detail: {
                 tags: ['Team']
@@ -37,6 +38,7 @@ export function TeamRou(app: any) {
             }),
             body: t.Object({
                 team_name: t.String(),
+                customers_id: t.Optional(t.Numeric())
             }),
             detail: {
                 tags: ['Team']
@@ -52,6 +54,7 @@ export function TeamRou(app: any) {
             }),
             body: t.Object({
                 team_name: t.String(),
+                customers_id: t.Optional(t.Numeric())
             }),
             detail: {
                 tags: ['Team']
@@ -73,6 +76,9 @@ export function TeamRou(app: any) {
             beforeHandle: middleware.IsAuth,
             headers: t.Object({
                 authorization: t.String()
+            }),
+            query: t.Object({
+                customer_id: t.Optional(t.Numeric())
             }),
             detail: {
                 tags: ['Team']

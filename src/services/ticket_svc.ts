@@ -296,7 +296,7 @@ export const ticketSvc = {
                 appointment_time: payload.appointment_time,
                 engineer_id: payload.engineer_id,
                 item_category: payload.item_category,
-                updated_at: new Date()
+                updated_at: new Date(),
             }
         });
         return ticket;
@@ -918,7 +918,7 @@ export const ticketSvc = {
                 data: {
                     ticket_status: 'close',
                     close_date: payload.close_date,
-                    close_time: payload.close_time
+                    close_time: payload.close_time,
                 },
                 where: {
                     id: id,

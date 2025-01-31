@@ -4,6 +4,7 @@ import dayjs from "dayjs";
 import { SecToTimeString } from "../utilities/sec_to_time_string";
 
 interface MA {
+    updated_by: string;
     incNo: string; // Incident Number
     ticketNumber: string;
     brand: string;
@@ -237,7 +238,11 @@ export const reportSvc = {
         });
         let ticketReport: any = [];
         for (const ticket of allTicket) {
-
+            const updated_by = await db.users.findUnique({
+                where: {
+                    id: ticket.updated_by
+                }
+            })
             let SLA_overdue: string = "";
             const timeSLA = new Date(ticket.due_by);
             if (ticket.ticket_status === "close") {
@@ -251,6 +256,7 @@ export const reportSvc = {
             var ticketOnly: MA = {
                 incNo: ticket.inc_number, // Incident Number
                 lastUpdated: ticket.updated_at?.toDateString()!,
+                updated_by: updated_by?.fullname!,
                 ticketNumber: ticket.ticket_number,
                 brand: ticket.customer.fullname,
                 storeNumber: ticket.shop.shop_number,
@@ -293,16 +299,19 @@ export const reportSvc = {
                 return_time_out: ticket.return_ticket?.time_out ? dayjs(ticket.return_ticket?.time_out).format("DD/MM/YYYY HH:mm") : ""
             }
             for (var i = 0; i <= 4; i++) {
+                ticketOnly["storeDeviceCategory" + (i + 1)] = ticket.store_item[i]?.category ?? "";
                 ticketOnly["storeDeviceBrand" + (i + 1)] = ticket.store_item[i]?.brand ?? "";
                 ticketOnly["storeDeviceModel" + (i + 1)] = ticket.store_item[i]?.model ?? "";
                 ticketOnly["storeDeviceSerial" + (i + 1)] = ticket.store_item[i]?.serial_number ?? "";
             }
             for (var i = 0; i <= 4; i++) {
+                ticketOnly["spareDeviceCategory" + (i + 1)] = ticket.spare_item[i]?.category ?? "";
                 ticketOnly["spareDeviceBrand" + (i + 1)] = ticket.spare_item[i]?.brand ?? "";
                 ticketOnly["spareDeviceModel" + (i + 1)] = ticket.spare_item[i]?.model ?? "";
                 ticketOnly["spareDeviceSerial" + (i + 1)] = ticket.spare_item[i]?.serial_number ?? "";
             }
             for (var i = 0; i <= 4; i++) {
+                ticketOnly["returnDeviceCategory" + (i + 1)] = ticket.return_item[i]?.category ?? "";
                 ticketOnly["returnDeviceBrand" + (i + 1)] = ticket.return_item[i]?.brand ?? "";
                 ticketOnly["returnDeviceModel" + (i + 1)] = ticket.return_item[i]?.model ?? "";
                 ticketOnly["returnDeviceSerial" + (i + 1)] = ticket.return_item[i]?.serial_number ?? "";

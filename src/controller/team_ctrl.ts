@@ -4,7 +4,7 @@ import { response } from "./reponse";
 export const TeamCtrl = {
     async getTeams(ctx: any) {
         //paginate team filter
-        const teams = await TeamSvc.getTeams(ctx.query.limit, ctx.query.page, ctx.query.search);
+        const teams = await TeamSvc.getTeams(ctx.query.limit, ctx.query.page, ctx.query.search, ctx.query.customer_id);
         return teams
     },
 
@@ -29,7 +29,7 @@ export const TeamCtrl = {
     },
 
     async getTeamOption(ctx: any) {
-        const teams = await TeamSvc.getTeamOption();
+        const teams = await TeamSvc.getTeamOption(ctx.query.customer_id);
         return response.SuccessResponse(ctx, teams)
     }
 }
