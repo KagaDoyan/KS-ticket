@@ -157,6 +157,7 @@ interface TicketKPI {
     send_mail: string
     time_in: string
     time_out: string
+    ticket_status: string
     kpi_sla: string
     kpi_sla_status: string
     kpi_mail_appointment: any
@@ -385,7 +386,7 @@ export const reportSvc = {
             deleted_at: null,
             status: "repair",
             ticket: {
-                appointment_date: {
+                open_date: {
                     gte: new Date(from).toISOString(),
                     lte: new Date(to).toISOString()
                 }
@@ -563,7 +564,19 @@ export const reportSvc = {
         let ticketKPI: TicketKPI[] = []
         for (const ticket of allTicket) {
             var nodetime = ticket.engineer?.node?.node_on_province?.find((item) => item.province_id == ticket.shop?.province?.id)?.node_time
+            if (ticket.engineer.out_source && nodetime) {
+                nodetime = nodetime + 30
+            }
             var openDate = new Date(ticket.open_date + " " + ticket.open_time);
+            if (ticket.is_pending && ticket.leave_pending_time) {
+                openDate = new Date(ticket.leave_pending_time)
+            }
+            var DueBy = new Date(ticket.due_by);
+            if (ticket.is_pending && ticket.leave_pending_time) {
+                if (ticket.prioritie?.time_sec) {
+                    DueBy = new Date(openDate.getTime() + (Number(ticket.prioritie.time_sec || 0) * 1000));
+                }
+            }
             var send_close = new Date(ticket.send_close!);
             var send_appointment = new Date(ticket.send_appointment!)
             var kpi_mail_appointment: any
@@ -607,7 +620,10 @@ export const reportSvc = {
             if (ticket.ticket_status != "close") {
                 closedate = null
             }
-            var DueBy = new Date(ticket.due_by);
+            if (ticket.ticket_status == "oncall" || ticket.ticket_status == "spare") {
+                closedate = timeOut
+            }
+
             kpi_sla = closedate ? timeDiffInMinutes(closedate, DueBy) : "N/A"
             kpi_sla_status = kpi_sla == "N/A" ? "N/A" : truncateToMinutes(closedate) <= truncateToMinutes(DueBy) ? "PASS" : "FAIL"
 
@@ -623,6 +639,7 @@ export const reportSvc = {
                 send_mail: ticket.send_close ? dayjs(ticket.send_close).format("DD/MM/YYYY HH:mm:ss") : "",
                 time_in: dayjs(ticket.time_in).format("DD/MM/YYYY HH:mm:ss"),
                 time_out: dayjs(ticket.time_out).format("DD/MM/YYYY HH:mm:ss"),
+                ticket_status: ticket.ticket_status,
                 kpi_sla: kpi_sla,
                 kpi_sla_status: kpi_sla_status,
                 kpi_mail_appointment: kpi_mail_appointment,

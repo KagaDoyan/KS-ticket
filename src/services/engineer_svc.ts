@@ -16,6 +16,7 @@ interface engineerPayload {
 	created_by: number,
 	email: string,
 	role: string,
+	out_source: boolean
 }
 
 export const engineerSvc = {
@@ -102,6 +103,7 @@ export const engineerSvc = {
 						node_id: payload.node_id,
 						password: hashpassword,
 						created_by: payload.created_by,
+						out_source: payload.out_source
 					},
 					select: {
 						id: true,
@@ -133,7 +135,8 @@ export const engineerSvc = {
 				province: {
 					set: payload.province_id.map((provinceId) => ({ id: provinceId })),
 				},
-				node_id: payload.node_id
+				node_id: payload.node_id,
+				out_source: payload.out_source,
 			}
 		});
 		// await db.users.update({

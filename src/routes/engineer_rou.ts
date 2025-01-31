@@ -47,6 +47,7 @@ export function EngineerRoute(app: any) {
                 node_id: t.Numeric(),
                 email: t.String(),
                 password: t.String(),
+                out_source: t.Boolean()
             }),
             detail: {
                 tags: ['Engineer']
@@ -65,7 +66,9 @@ export function EngineerRoute(app: any) {
                 node_id: t.Numeric(),
                 email: t.Optional(t.String()),
                 password: t.Optional(t.String()),
+                out_source: t.Boolean()
             }),
+            beforeHandle: middleware.IsAuth,
             params: t.Object({
                 id: t.Numeric()
             }),

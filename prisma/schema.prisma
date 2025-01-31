@@ -72,6 +72,7 @@ model customers {
   mail_signature   mail_signature?
   customer_mailer  customer_mailer[] @relation("customer_on_customer_mailer")
   users            users[]
+  teams            teams[]
 }
 
 model shops {
@@ -218,14 +219,16 @@ enum item_types {
 }
 
 model teams {
-  id        Int    @id @default(autoincrement())
-  team_name String
+  id           Int        @id @default(autoincrement())
+  team_name    String
+  customer     customers? @relation(fields: [customers_id], references: [id])
+  customers_id Int?
 }
 
 model priority_groups {
   id                      Int                       @id @default(autoincrement())
   group_name              String
-  customer                customers                 @relation(fields: [customers_id], references: [id])
+  customer                customers?                @relation(fields: [customers_id], references: [id])
   deleted_at              DateTime?
   created_at              DateTime                  @default(now())
   created_by              Int
@@ -277,6 +280,7 @@ model engineers {
   node                 nodes?                 @relation(fields: [node_id], references: [id])
   return_items         return_items[]
   return_ticket        return_ticket[]
+  out_source           Boolean?
 }
 
 model tickets {
@@ -333,6 +337,8 @@ model tickets {
   updated_at           DateTime?
   send_appointment     String?
   send_close           String?
+  is_pending           Boolean?
+  leave_pending_time   String?
 }
 
 model store_items {
