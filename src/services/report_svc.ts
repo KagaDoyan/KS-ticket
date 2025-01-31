@@ -231,7 +231,9 @@ export const reportSvc = {
                 return_item: {
                     where: {
                         deleted_at: null,
-                        status: "return"
+                        status: {
+                            in: ["return", "replace"]
+                        }
                     },
                 }
             }
