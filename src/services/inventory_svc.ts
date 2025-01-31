@@ -116,7 +116,8 @@ export const InventorySvc = {
 			sell_date: {
 				gte: form,
 				lte: to
-			}
+			},
+			deleted_at: null
 		}
 		if (search) {
 			whereCondition.AND = [
