@@ -4,7 +4,7 @@ import { response } from "./reponse"
 
 export const PriorityGroupCtrl = {
     getallPriorityGroup: async (ctx: any) => {
-        const data = await PriorityGroupSvc.getAllPriorityGroup(ctx.query.limit, ctx.query.page, ctx.query.search)
+        const data = await PriorityGroupSvc.getAllPriorityGroup(ctx.query.limit, ctx.query.page, ctx.query.search, ctx.query.customer_id)
         return response.SuccessResponse(ctx, data)
     },
 

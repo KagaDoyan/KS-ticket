@@ -12,7 +12,8 @@ export function EngineerRoute(app: any) {
             query: t.Object({
                 limit: t.Numeric(),
                 page: t.Numeric(),
-                search: t.Optional(t.String())
+                search: t.Optional(t.String()),
+                node_id: t.Optional(t.String())
             }),
             detail: {
                 tags: ['Engineer']

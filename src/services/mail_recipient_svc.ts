@@ -2,22 +2,29 @@ import { Prisma } from "@prisma/client";
 import db from "../adapter.ts/database";
 
 export const MailRecipientSvc = {
-    async getRecipientAll(limit: number, page: number, search: string, brand?: string) {
+    async getRecipientAll(limit: number, page: number, search: string, brand?: string, customer_id?: string) {
         let whereCondition: Prisma.mail_recipientWhereInput = {}
-
+        whereCondition.AND = []
+        if (customer_id) {
+            whereCondition.AND.push(
+                {
+                    customer_id: Number(customer_id)
+                }
+            )
+        }
         if (search) {
-            whereCondition.AND = [
+            whereCondition.AND.push(
                 {
                     OR: [
                         { email: { contains: search } },
                         { customer: { shortname: { contains: search } } }
                     ]
                 }
-            ]
+            )
         }
 
         if (brand) {
-            whereCondition.AND = [
+            whereCondition.AND.push(
                 {
                     customer: {
                         shortname: {
@@ -25,7 +32,7 @@ export const MailRecipientSvc = {
                         }
                     }
                 }
-            ]
+            )
         }
 
         const total_item = await db.mail_recipient.count({ where: whereCondition });

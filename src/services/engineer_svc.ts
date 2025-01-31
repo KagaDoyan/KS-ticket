@@ -20,20 +20,30 @@ interface engineerPayload {
 }
 
 export const engineerSvc = {
-	getAllEngineer: async (limit: number, page: number, search: string) => {
+	getAllEngineer: async (limit: number, page: number, search: string, node_id: string) => {
 		let whereCondition: Prisma.engineersWhereInput = {
 			deleted_at: null
 		}
 
+		whereCondition.AND = []
+
 		if (search) {
-			whereCondition.AND = [
+			whereCondition.AND.push(
 				{
 					OR: [
 						{ name: { contains: search } },
 						{ lastname: { contains: search } }
 					]
 				}
-			]
+			)
+		}
+
+		if (node_id) {
+			whereCondition.AND.push(
+				{
+					node_id: Number(node_id)
+				}
+			)
 		}
 		const total_item = await db.engineers.count({ where: whereCondition });
 		const totalPages = Math.ceil(total_item / limit);

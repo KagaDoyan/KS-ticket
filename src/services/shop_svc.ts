@@ -15,19 +15,29 @@ interface shopPayload {
 }
 
 export const ShopSvc = {
-    getallShops: async (limit: number, page: number, search: string) => {
+    getallShops: async (limit: number, page: number, search: string, customer_id: number) => {
         let whereCondition: Prisma.shopsWhereInput = {
-            deleted_at: null
+            deleted_at: null,
         }
+
+        whereCondition.AND = []
+
         if (search) {
-            whereCondition.AND = [
+            whereCondition.AND.push(
                 {
                     OR: [
                         { shop_name: { contains: search } },
                         { shop_number: { contains: search } }
                     ]
                 }
-            ]
+            )
+        }
+        if (customer_id) {
+            whereCondition.AND.push(
+                {
+                    customers_id: Number(customer_id)
+                }
+            )
         }
         const total_shops = await db.shops.count({ where: whereCondition })
         const totalPages = Math.ceil(total_shops / limit);
@@ -36,9 +46,9 @@ export const ShopSvc = {
             where: whereCondition,
             skip: offset,
             take: limit,
-			orderBy: {
-				id: "desc"
-			},
+            orderBy: {
+                id: "desc"
+            },
             include: {
                 customer: true,
                 province: true

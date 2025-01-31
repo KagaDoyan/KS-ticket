@@ -4,7 +4,7 @@ import { response } from "./reponse"
 
 export const EngineerCtrl = {
     getallEngineer: async (ctx: any) => {
-        const data = await engineerSvc.getAllEngineer(ctx.query.limit, ctx.query.page, ctx.query.search)
+        const data = await engineerSvc.getAllEngineer(ctx.query.limit, ctx.query.page, ctx.query.search, ctx.query.node_id)
         return response.SuccessResponse(ctx, data)
     },
 

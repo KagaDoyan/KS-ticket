@@ -10,19 +10,27 @@ interface priorityGroupPayload {
 }
 
 export const PriorityGroupSvc = {
-	getAllPriorityGroup: async (limit: number, page: number, search: string) => {
+	getAllPriorityGroup: async (limit: number, page: number, search: string, customer_id: string) => {
 		let whereCondition: Prisma.priority_groupsWhereInput = {
 			deleted_at: null
 		}
+		whereCondition.AND = []
 
 		if (search) {
-			whereCondition.AND = [
+			whereCondition.AND.push(
 				{
 					OR: [
 						{ group_name: { contains: search } }
 					]
 				}
-			]
+			)
+		}
+		if (customer_id) {
+			whereCondition.AND.push(
+				{
+					customers_id: Number(customer_id)
+				}
+			)
 		}
 		const total_priority_group = await db.priority_groups.count({ where: whereCondition });
 		const totalPages = Math.ceil(total_priority_group / limit);

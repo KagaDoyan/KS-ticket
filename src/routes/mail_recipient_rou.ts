@@ -50,7 +50,8 @@ export function MailRecipientRoute(app: any) {
                 limit: t.Numeric(),
                 page: t.Numeric(),
                 search: t.Optional(t.String()),
-                brand: t.Optional(t.String())
+                brand: t.Optional(t.String()),
+                customer_id: t.Optional(t.String())
             }),
             detail: {
                 tags: ['mailRecipient']
