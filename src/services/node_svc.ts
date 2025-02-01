@@ -185,10 +185,20 @@ export const NodeSvc = {
         return nodes
     },
 
-    getNodewithActiveEngineer: async (date: string) => {
+    getNodewithActiveEngineer: async (date: string,customer_id: string) => {
         try {
             const today = date ? new Date(date) : new Date();
             const todayDate = today.toISOString().split("T")[0];
+            let whereCondition: Prisma.ticketsWhereInput = {
+                open_date: todayDate,
+            }
+            whereCondition.AND = []
+
+            if (customer_id) {
+                whereCondition.AND.push({
+                    customer_id: Number(customer_id)
+                })
+            }
 
             const nodes = await db.nodes.findMany({
                 select: {
@@ -203,9 +213,7 @@ export const NodeSvc = {
                             name: true, // Include engineer name
                             lastname: true,
                             tickets: {
-                                where: {
-                                    open_date: todayDate,
-                                },
+                                where: whereCondition,
                                 select: {
                                     inc_number: true,
                                     ticket_status: true,
@@ -214,6 +222,12 @@ export const NodeSvc = {
                                     close_date: true,
                                     close_time: true,
                                     ticket_number: true, // Include ticket number
+                                    shop: {
+                                        select: {
+                                            shop_name: true,
+                                            shop_number: true
+                                        }
+                                    }
                                 },
                             },
                         },
@@ -252,6 +266,8 @@ export const NodeSvc = {
                             ticket_number: ticket.ticket_number,
                             inc_number: ticket.inc_number,
                             engineer_name: engineer.name + " " + engineer.lastname,
+                            shop_name: ticket.shop.shop_number + "-" + ticket.shop.shop_name,
+                            node_name: node.name
                         });
 
                         // Track unique engineers for the day

@@ -92,7 +92,8 @@ export function NodeRoute(app: any) {
                 authorization: t.String()
             }),
             query: t.Object({
-                date: t.Optional(t.Nullable(t.String()))
+                date: t.Optional(t.Nullable(t.String())),
+                customer_id: t.Optional(t.Nullable(t.String()))
             }),
             detail: {
                 tags: ['Node']

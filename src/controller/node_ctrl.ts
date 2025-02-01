@@ -38,7 +38,7 @@ export const NodeCtrl = {
     },
 
     getNodeWithActiveEngineer: async (ctx: any) => {
-        const data = await NodeSvc.getNodewithActiveEngineer(ctx.query.date)
+        const data = await NodeSvc.getNodewithActiveEngineer(ctx.query.date,ctx.query.customer_id)
         return response.SuccessResponse(ctx, data)
     },
 
