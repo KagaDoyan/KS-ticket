@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import db from "../adapter.ts/database";
 import dayjs from "dayjs";
 import { SecToTimeString } from "../utilities/sec_to_time_string";
+import { startOfDay, endOfDay, parse } from 'date-fns'
 
 interface MA {
     updated_by: string;
@@ -668,6 +669,104 @@ export const reportSvc = {
         }
         return {
             report: ticketKPI
+        }
+    },
+
+    ReportReturn: async (from: string, to: string, brand_name?: string) => {
+        try {
+            let serialNumbers: string[] | undefined;
+            // Convert `from` and `to` to cover the full day range
+            const fromDate = startOfDay(new Date(from));
+            const toDate = endOfDay(new Date(to));
+            // Step 1: Fetch serial numbers if brand_name is provided
+            if (brand_name) {
+                const itemSerialNumbers = await db.items.findMany({
+                    where: {
+                        customer: {
+                            fullname: {
+                                equals: brand_name,
+                            }
+                        },
+                    },
+                    select: {
+                        serial_number: true, // Only fetch serial_number
+                    },
+                });
+
+                // Extract serial numbers into an array
+                serialNumbers = itemSerialNumbers.map((item) => item.serial_number);
+            }
+
+            // Step 2: Construct the where condition for return_items
+            const whereCondition: Prisma.return_itemsWhereInput = {
+                created_at: {
+                    gte: fromDate,
+                    lte: toDate,
+                },
+                deleted_at: null,
+                status: {
+                    equals: "return",
+                },
+                item_type: {
+                    equals: "store",
+                },
+                ...(serialNumbers && { serial_number: { in: serialNumbers } }), // Filter by serial_number only if provided
+            };
+            console.log(whereCondition);
+
+            // Step 3: Fetch return_items based on the where condition
+            const returnItems = await db.return_items.findMany({
+                where: whereCondition,
+                include: {
+                    ticket: {
+                        include: {
+                            shop: true
+                        }
+                    },
+                },
+            });
+
+            // Step 4: Process or return the fetched data
+            let storeReport: broken[] = [];
+            for (const item of returnItems) {
+                let returnItem = await db.items.findFirst({
+                    where: {
+                        serial_number: item.serial_number,
+                        deleted_at: null
+                    },
+                    include: {
+                        storage: true,
+                        category: true,
+                        brand: true,
+                        model: true
+                    }
+                })
+                if (!returnItem) continue;
+                var itemOnly: broken = {
+                    inc_no: item.ticket?.inc_number!,
+                    ticket_date: dayjs(item.ticket?.appointment_date, "YYYY-MM-DD").format("DD/MM/YYYY"),
+                    ticket_time: item.ticket?.appointment_time!,
+                    store_id: item.ticket?.shop.shop_number!,
+                    store_name: item.ticket?.shop.shop_name!,
+                    ticket_title: item.ticket?.title!,
+                    location: returnItem.engineers_id ? "Node" : returnItem.storage?.name!,
+                    brand: returnItem.brand.name,
+                    model: returnItem.model.name,
+                    serial: returnItem.serial_number,
+                    category: returnItem.category.name,
+                    warranty: returnItem.warranty_expiry_date ? dayjs(returnItem.warranty_expiry_date).format("YYYY-MM-DD") : "",
+                    status: returnItem.status,
+                    updated_at: dayjs(returnItem.updated_at).format("DD/MM/YYYY HH:mm:ss"),
+                    remark: returnItem.Remark!,
+                    condition: ""
+                }
+                storeReport.push(itemOnly);
+            }
+            return {
+                report: storeReport
+            }
+        } catch (error) {
+            return null
         }
     }
 }

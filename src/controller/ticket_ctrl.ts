@@ -5,7 +5,7 @@ import { response } from "./reponse"
 
 export const TicketCtrl = {
     getallTicket: async (ctx: any) => {
-        const data = await ticketSvc.getAllTicket(ctx.query.limit, ctx.query.page, ctx.query.status, ctx.query.search)
+        const data = await ticketSvc.getAllTicket(ctx.query.limit, ctx.query.page, ctx.query.status, ctx.query.search, ctx.query.brand_name)
         return response.SuccessResponse(ctx, data)
     },
 

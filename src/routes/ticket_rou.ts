@@ -14,7 +14,8 @@ export function TicketRoute(app: any) {
                 limit: t.Numeric(),
                 page: t.Numeric(),
                 status: t.Optional(t.String()),
-                search: t.Optional(t.String())
+                search: t.Optional(t.String()),
+                brand_name: t.Optional(t.String())
             }),
             detail: {
                 tags: ['Ticket']

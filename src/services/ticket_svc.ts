@@ -128,14 +128,16 @@ async function generateNameForImage(name: string) {
 }
 
 export const ticketSvc = {
-    getAllTicket: async (limit: number, page: number, status: ticket_status, search: string) => {
+    getAllTicket: async (limit: number, page: number, status: ticket_status, search: string, brand_name: string) => {
         let whereCondition: Prisma.ticketsWhereInput = {
             deleted_at: null,
-            ...(status && { ticket_status: status })
+            ...(status && { ticket_status: status }),
+            ...(brand_name && { customer: { id: Number(brand_name) } })
         }
+        whereCondition.AND = []
 
         if (search) {
-            whereCondition.AND = [
+            whereCondition.AND.push(
                 {
                     OR: [
                         { ticket_number: { contains: search } },
@@ -151,7 +153,7 @@ export const ticketSvc = {
                         { customer: { shortname: { contains: search } } },
                     ]
                 }
-            ]
+            )
         }
         const total_ticket = await db.tickets.count({ where: whereCondition });
         const totalPages = Math.ceil(total_ticket / limit);
@@ -1239,7 +1241,7 @@ export const ticketSvc = {
         //update kpi send email time
         var send_close = new Date().toLocaleString("en-US", { timeZone: "Asia/Bangkok" });
         console.log(send_close);
-        
+
         await db.tickets.update({
             where: {
                 id: id
@@ -1274,7 +1276,7 @@ export const ticketSvc = {
     ` : ""
         // Set email content
         let status_title = ""
-        if (ticket.ticket_status == "close") {
+        if (ticket.ticket_status == "close" || ticket.ticket_status == "oncall") {
             status_title = "Resolved Case";
         } else if (ticket.ticket_status == "spare") {
             status_title = "Install Spare";

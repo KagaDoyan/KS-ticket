@@ -72,4 +72,18 @@ export function ReportRoute(app: any) {
                 tags: ['Report']
             }
         })
+        .get("/return", ReportCtrl.getReportReturnItem, {
+            beforeHandle: middleware.IsAuth,
+            headers: t.Object({
+                authorization: t.String()
+            }),
+            query: t.Object({
+                from: t.String(),
+                to: t.String(),
+                brand_name: t.Optional(t.String()),
+            }),
+            detail: {
+                tags: ['Report']
+            }
+        })
 }

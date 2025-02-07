@@ -225,7 +225,16 @@ export const NodeSvc = {
                                     shop: {
                                         select: {
                                             shop_name: true,
-                                            shop_number: true
+                                            shop_number: true,
+                                            province: {
+                                                select: {
+                                                    node: {
+                                                        select:{
+                                                            name: true
+                                                        }
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 },
@@ -267,7 +276,7 @@ export const NodeSvc = {
                             inc_number: ticket.inc_number,
                             engineer_name: engineer.name + " " + engineer.lastname,
                             shop_name: ticket.shop.shop_number + "-" + ticket.shop.shop_name,
-                            node_name: node.name
+                            node_name: ticket.shop.province.node[0].name
                         });
 
                         // Track unique engineers for the day
