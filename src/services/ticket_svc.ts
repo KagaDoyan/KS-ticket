@@ -142,7 +142,6 @@ export const ticketSvc = {
                     OR: [
                         { ticket_number: { contains: search } },
                         { inc_number: { contains: search } },
-                        { ticket_status: status },
                         { title: { contains: search } },
                         { description: { contains: search } },
                         { shop: { shop_name: { contains: search } } },
