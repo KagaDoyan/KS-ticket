@@ -7,7 +7,6 @@ RUN curl -fsSL https://bun.sh/install | bash -s "bun-v1.2.5"
 COPY . .
 
 ENV PATH="/root/.bun/bin:${PATH}"
-RUN bun upgrade
 RUN bun install --production
 ENV NODE_ENV=production
 RUN bunx prisma generate
