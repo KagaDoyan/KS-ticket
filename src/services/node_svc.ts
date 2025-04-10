@@ -263,21 +263,26 @@ export const NodeSvc = {
                         const openDateTime = new Date(`${ticket.open_date}T${ticket.open_time}`);
                         const openHour = openDateTime.getHours();
 
-                        // Update hourly distribution
-                        if (!hourlyDistribution[openHour].workingEngineers.has(engineer.id)) {
-                            hourlyDistribution[openHour].workingEngineers.add(engineer.id);
-                            hourlyDistribution[openHour].working++;
-                            hourlyDistribution[openHour].available--;
-                        }
+                        // Validate openHour is within bounds
+                        if (openHour >= 0 && openHour < 24 && hourlyDistribution[openHour]) {
+                            // Update hourly distribution
+                            if (!hourlyDistribution[openHour].workingEngineers.has(engineer.id)) {
+                                hourlyDistribution[openHour].workingEngineers.add(engineer.id);
+                                hourlyDistribution[openHour].working++;
+                                hourlyDistribution[openHour].available--;
+                            }
 
-                        // Add ticket details
-                        hourlyDistribution[openHour].ticketDetails.push({
-                            ticket_number: ticket.ticket_number,
-                            inc_number: ticket.inc_number,
-                            engineer_name: engineer.name + " " + engineer.lastname,
-                            shop_name: ticket.shop.shop_number + "-" + ticket.shop.shop_name,
-                            node_name: ticket.shop.province.node[0].name
-                        });
+                            // Add ticket details
+                            hourlyDistribution[openHour].ticketDetails.push({
+                                ticket_number: ticket.ticket_number,
+                                inc_number: ticket.inc_number,
+                                engineer_name: engineer.name + " " + engineer.lastname,
+                                shop_name: ticket.shop.shop_number + "-" + ticket.shop.shop_name,
+                                node_name: ticket.shop.province.node[0].name
+                            });
+                        } else {
+                            console.warn(`Invalid hour value (${openHour}) for ticket ${ticket.ticket_number}`);
+                        }
 
                         // Track unique engineers for the day
                         uniqueWorkingEngineers.add(engineer.id);
