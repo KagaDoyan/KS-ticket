@@ -29,6 +29,7 @@ enum ticket_status {
   spare
   cancel
   close
+  claim
 }
 
 enum action_status {
