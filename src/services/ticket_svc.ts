@@ -1279,6 +1279,8 @@ export const ticketSvc = {
             status_title = "Resolved Case";
         } else if (ticket.ticket_status == "spare") {
             status_title = "Install Spare";
+        } else if (ticket.ticket_status == "claim") {
+            status_title = "Claim Case";
         }
 
         const deviceListClean = ticket.store_item.filter((element) => element);
