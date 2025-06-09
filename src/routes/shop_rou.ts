@@ -45,6 +45,7 @@ export function ShopRoute(app: any) {
                 longitude: t.String(),
                 province_id: t.Numeric(),
                 customer_id: t.Numeric(),
+                is_cc: t.Optional(t.Nullable(t.Boolean())),
             }),
             detail: {
                 tags: ['Shop']
@@ -64,6 +65,7 @@ export function ShopRoute(app: any) {
                 longitude: t.String(),
                 province_id: t.Numeric(),
                 customer_id: t.Numeric(),
+                is_cc: t.Optional(t.Nullable(t.Boolean())),
             }),
             params: t.Object({
                 id: t.Numeric()

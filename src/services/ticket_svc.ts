@@ -1357,9 +1357,26 @@ export const ticketSvc = {
             },
         });
 
+        var customer_email = await db.customer_mail.findFirst({
+            where: {
+                customer_id: ticket.customer_id
+            }
+        })
+
+        if (ticket.shop.is_cc) {
+            if (!customer_email) {
+                throw new Error("Customer Email not found");
+            }
+            cc.push({
+                email: ticket.shop.email,
+                customer_id: ticket.customer_id,
+                id: 0
+            })
+        }
+
         const mailOptions = {
             from: mailer.sender_email,
-            to: ticket.shop.email,
+            to: ticket.shop.is_cc ? customer_email?.email : ticket.shop.email,
             subject: mailSubject,
             html: htmlString,
             attachments: attachments,
@@ -1563,9 +1580,26 @@ export const ticketSvc = {
             },
         });
 
+        var customer_email = await db.customer_mail.findFirst({
+            where: {
+                customer_id: ticket.customer_id
+            }
+        })
+
+        if (ticket.shop.is_cc) {
+            if (!customer_email) {
+                throw new Error("Customer Email not found");
+            }
+            cc.push({
+                email: ticket.shop.email,
+                customer_id: ticket.customer_id,
+                id: 0
+            })
+        }
+
         const mailOptions = {
             from: mailer.sender_email,
-            to: ticket.shop.email,
+            to: ticket.shop.is_cc ? customer_email?.email : ticket.shop.email,
             subject: mailSubject,
             html: htmlString,
             attachments: attachments,
@@ -1704,9 +1738,26 @@ export const ticketSvc = {
                 customer_id: ticket.customer_id
             }
         })
+        var customer_email = await db.customer_mail.findFirst({
+            where: {
+                customer_id: ticket.customer_id
+            }
+        })
+
+        if (ticket.shop.is_cc) {
+            if (!customer_email) {
+                throw new Error("Customer Email not found");
+            }
+            cc.push({
+                email: ticket.shop.email,
+                customer_id: ticket.customer_id,
+                id: 0
+            })
+        }
+
         const mailOptions = {
             from: mailer.sender_email,
-            to: ticket.shop.email,
+            to: ticket.shop.is_cc ? customer_email?.email : ticket.shop.email,
             subject: mailSubject,
             html: htmlString,
             cc: cc.map(obj => obj.email)
@@ -1891,9 +1942,26 @@ export const ticketSvc = {
             }
         })
 
+        var customer_email = await db.customer_mail.findFirst({
+            where: {
+                customer_id: ticket.customer_id
+            }
+        })
+
+        if (ticket.shop.is_cc) {
+            if (!customer_email) {
+                throw new Error("Customer Email not found");
+            }
+            cc.push({
+                email: ticket.shop.email,
+                customer_id: ticket.customer_id,
+                id: 0
+            })
+        }
+
         const mailOptions = {
             from: mailer.sender_email,
-            to: ticket.shop.email,
+            to: ticket.shop.is_cc ? customer_email?.email : ticket.shop.email,
             subject: mailSubject,
             html: htmlString,
             // attachments: attachments,

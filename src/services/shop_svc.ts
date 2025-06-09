@@ -12,6 +12,7 @@ interface shopPayload {
     province_id: number
     created_by: number
     customer_id: number
+    is_cc: boolean
 }
 
 export const ShopSvc = {
@@ -74,7 +75,8 @@ export const ShopSvc = {
                 longitude: payload.longitude,
                 province_id: payload.province_id,
                 created_by: payload.created_by,
-                customers_id: payload.customer_id
+                customers_id: payload.customer_id,
+                is_cc: payload.is_cc ?? false
             }
         })
         return shop
@@ -93,7 +95,8 @@ export const ShopSvc = {
                 latitude: payload.latitude,
                 longitude: payload.longitude,
                 province_id: payload.province_id,
-                customers_id: payload.customer_id
+                customers_id: payload.customer_id,
+                is_cc: payload.is_cc ?? false
             }
         })
         return shop

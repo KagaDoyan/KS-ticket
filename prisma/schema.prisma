@@ -71,9 +71,10 @@ model customers {
   line_close       String?
   mail_recipient   mail_recipient[]
   mail_signature   mail_signature?
-  customer_mailer  customer_mailer[] @relation("customer_on_customer_mailer")
+  customer_mailer  customer_mailer[] @relation("customer_on_customer_mailer") 
   users            users[]
   teams            teams[]
+  customer_mail    customer_mail[]
 }
 
 model shops {
@@ -92,6 +93,7 @@ model shops {
   customer     customers @relation(fields: [customers_id], references: [id])
   customers_id Int
   tickets      tickets[]
+  is_cc        Boolean? @default(false)
 }
 
 model provinces {
@@ -453,6 +455,13 @@ model storages {
 }
 
 model mail_recipient {
+  id          Int        @id @default(autoincrement())
+  email       String
+  customer    customers? @relation(fields: [customer_id], references: [id])
+  customer_id Int?
+}
+
+model customer_mail {
   id          Int        @id @default(autoincrement())
   email       String
   customer    customers? @relation(fields: [customer_id], references: [id])

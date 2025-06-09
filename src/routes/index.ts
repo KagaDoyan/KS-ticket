@@ -19,6 +19,7 @@ import { LineRoute } from "./line_rou";
 import { MailRecipientRoute } from "./mail_recipient_rou";
 import { MailSignatureRoute } from "./mail_signature";
 import { CustomerMailerRou } from "./customer_mailer_rou";
+import { CustomerEmailRoute } from "./customer_email_rou";
 
 export function MainRoute(app: any) {
     return app
@@ -43,4 +44,5 @@ export function MainRoute(app: any) {
         .group("/mail_recipient", MailRecipientRoute)
         .group("/mail_signature", MailSignatureRoute)
         .group("/customer_mailer", CustomerMailerRou)
+        .group("/customer_email", CustomerEmailRoute)
 }
