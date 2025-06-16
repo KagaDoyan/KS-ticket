@@ -209,6 +209,11 @@ export const NodeSvc = {
                             deleted_at: null
                         },
                         select: {
+                            node: {
+                                select: {
+                                    name: true
+                                }
+                            },
                             id: true,
                             name: true, // Include engineer name
                             lastname: true,
@@ -226,15 +231,6 @@ export const NodeSvc = {
                                         select: {
                                             shop_name: true,
                                             shop_number: true,
-                                            province: {
-                                                select: {
-                                                    node: {
-                                                        select:{
-                                                            name: true
-                                                        }
-                                                    }
-                                                }
-                                            }
                                         }
                                     }
                                 },
@@ -243,6 +239,8 @@ export const NodeSvc = {
                     },
                 },
             });
+
+            // console.log(JSON.stringify(nodes, null, 2))
 
             const nodeSummary = nodes.map((node) => {
                 const totalEngineers = node.engineers.length;
@@ -272,13 +270,14 @@ export const NodeSvc = {
                                 hourlyDistribution[openHour].available--;
                             }
 
+                            
                             // Add ticket details
                             hourlyDistribution[openHour].ticketDetails.push({
                                 ticket_number: ticket.ticket_number,
                                 inc_number: ticket.inc_number,
                                 engineer_name: engineer.name + " " + engineer.lastname,
                                 shop_name: ticket.shop.shop_number + "-" + ticket.shop.shop_name,
-                                node_name: ticket.shop.province.node[0].name
+                                node_name: node.name
                             });
                         } else {
                             console.warn(`Invalid hour value (${openHour}) for ticket ${ticket.ticket_number}`);

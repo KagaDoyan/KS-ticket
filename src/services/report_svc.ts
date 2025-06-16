@@ -3,6 +3,7 @@ import db from "../adapter.ts/database";
 import dayjs from "dayjs";
 import { SecToTimeString } from "../utilities/sec_to_time_string";
 import { startOfDay, endOfDay, parse } from 'date-fns'
+import { log } from "node:console";
 
 interface MA {
     updated_by: string;
@@ -579,18 +580,33 @@ export const reportSvc = {
             if (ticket.engineer.out_source && nodetime) {
                 nodetime = nodetime + 30
             }
+
+            // if (ticket.inc_number.includes("INC079836")) {
+            //     console.log(JSON.stringify(ticket.engineer, null, 2))
+            // }
+
+
+            // Set seconds to 00 for all dates
             var openDate = new Date(ticket.open_date + " " + ticket.open_time);
             if (ticket.is_pending && ticket.leave_pending_time) {
-                openDate = new Date(ticket.leave_pending_time)
+                openDate = new Date(ticket.leave_pending_time);
             }
+            openDate.setSeconds(0);
+
             var DueBy = new Date(ticket.due_by);
             if (ticket.is_pending && ticket.leave_pending_time) {
                 if (ticket.prioritie?.time_sec) {
                     DueBy = new Date(openDate.getTime() + (Number(ticket.prioritie.time_sec || 0) * 1000));
                 }
             }
+            DueBy.setSeconds(0);
+
             var send_close = new Date(ticket.send_close!);
-            var send_appointment = new Date(ticket.send_appointment!)
+            send_close.setSeconds(0);
+
+            var send_appointment = new Date(ticket.send_appointment!);
+            send_appointment.setSeconds(0);
+
             var kpi_mail_appointment: any
             var kpi_mail_appointment_status: string
             // kpi kpi_mail_appointment base on send appointment and open date time diff
@@ -601,13 +617,24 @@ export const reportSvc = {
             var kpi_appointment_status: string
             // kpi kpi_appointment base on appointment date time diff
             var appointment_date = new Date(ticket.appointment_date + " " + ticket.appointment_time);
+            appointment_date.setSeconds(0);
             kpi_appointment = ticket.appointment_date ? timeDiffInMinutes(appointment_date, openDate) : "N/A"
             kpi_appointment_status = kpi_appointment == "N/A" ? "N/A" : kpi_appointment <= nodetime! ? "PASS" : "FAIL"
+
+            // if (ticket.inc_number.includes("INC079836")) {
+            //     console.log("================================================")
+            //     console.log("KPI Appointment:", kpi_appointment)
+            //     console.log("Node Time:", nodetime)
+            //     console.log("Appointment Date:", appointment_date)
+            //     console.log("Open Date:", openDate)
+            //     console.log("================================================")
+            // }
 
             var kpi_arrival: any
             var kpi_arrival_status: string
             // kpi kpi_arrival base on arrival date time diff
             var timeArrival = new Date(ticket.time_in!)
+            timeArrival.setSeconds(0);
 
             kpi_arrival = timeArrival ? timeDiffInMinutes(timeArrival, appointment_date) : "N/A"
             kpi_arrival_status = kpi_arrival == "N/A" ? "N/A" : truncateToMinutes(timeArrival) <= truncateToMinutes(appointment_date) ? "PASS" : "FAIL"
@@ -616,6 +643,7 @@ export const reportSvc = {
             var kpi_solving_under_90min_status: string
             // kpi kpi_solving_under_90min base on time out date time diff
             var timeOut = new Date(ticket.time_out!)
+            timeOut.setSeconds(0);
             kpi_solving_under_90min = timeOut ? timeDiffInMinutes(timeOut, timeArrival) : "N/A"
             kpi_solving_under_90min_status = kpi_solving_under_90min == "N/A" ? "N/A" : kpi_solving_under_90min < 90 ? "PASS" : "FAIL"
 
@@ -635,6 +663,7 @@ export const reportSvc = {
             if (ticket.ticket_status == "oncall" || ticket.ticket_status == "spare") {
                 closedate = timeOut
             }
+            closedate?.setSeconds(0);
 
             kpi_sla = closedate ? timeDiffInMinutes(closedate, DueBy) : "N/A"
             kpi_sla_status = kpi_sla == "N/A" ? "N/A" : truncateToMinutes(closedate) <= truncateToMinutes(DueBy) ? "PASS" : "FAIL"
@@ -712,7 +741,7 @@ export const reportSvc = {
                 },
                 ...(serialNumbers && { serial_number: { in: serialNumbers } }), // Filter by serial_number only if provided
             };
-            console.log(whereCondition);
+            // console.log(whereCondition);
 
             // Step 3: Fetch return_items based on the where condition
             const returnItems = await db.return_items.findMany({
