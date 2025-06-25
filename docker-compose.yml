@@ -4,7 +4,7 @@ services:
   app-dev:
     image: dev:latest # Use prebuilt image for development
     ports:
-      - "3000:3000" # Expose the app on port 3030 for dev
+      - "8001:8001" # Expose the app on port 3030 for dev
     environment:
       NODE_ENV: development
     command: ["bun", "src/server.ts"]
